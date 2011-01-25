@@ -11,7 +11,7 @@ public class SelectedBlock implements Renderable {
     private int thickness;
 
     public SelectedBlock() {
-        thickness = 1;
+        thickness = 3;
     }
 
     public int getThickness() {
@@ -47,8 +47,9 @@ public class SelectedBlock implements Renderable {
         int w = c.worldToPixelX(1);
         int h = c.worldToPixelY(1);
 
+        g.setColor(Color.BLUE);
         for (int i = 0; i < thickness; i++) {
-            g.drawRect(sx - i, sy - i, w + 2 * i, h + 2 * i);
+            g.drawRect(sx - i - 1, sy - i - 1, w + 2 * i, h + 2 * i);
         }
     }
 }

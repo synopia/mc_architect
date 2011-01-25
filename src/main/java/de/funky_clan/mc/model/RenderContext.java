@@ -25,6 +25,14 @@ public class RenderContext {
         this.g = g;
     }
 
+    public int pixelToWorldX(int x) {
+        return (int) (x / pixelSizeX);
+    }
+
+    public int pixelToWorldY(int y) {
+        return (int) (y / pixelSizeY);
+    }
+
     public int worldToPixelX(int x) {
         return (int) (x * pixelSizeX);
     }

@@ -7,6 +7,8 @@ import de.funky_clan.mc.model.Slice;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author synopia
@@ -21,6 +23,17 @@ public class RasterPanel extends JPanel {
         this.model = model;
         this.sliceNo = 0;
         setPreferredSize(new Dimension(model.getWidth() * 2, model.getHeight() * 2));
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (selectedBlock == null) {
+                    selectedBlock = new SelectedBlock();
+                }
+                selectedBlock.setX(context.pixelToWorldX(e.getX()));
+                selectedBlock.setY(context.pixelToWorldY(e.getY()));
+                repaint();
+            }
+        });
     }
 
     @Override
