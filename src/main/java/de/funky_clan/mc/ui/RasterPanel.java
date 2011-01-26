@@ -4,6 +4,7 @@ import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.SelectedBlock;
 import de.funky_clan.mc.model.Slice;
+import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +19,8 @@ public class RasterPanel extends JPanel {
     private int sliceNo;
     private RenderContext context;
     private SelectedBlock selectedBlock;
+    private SelectedBlock clientBlock;
+    private final ClientThread clientThread;
 
     public RasterPanel(Model model) {
         this.model = model;
@@ -34,6 +37,19 @@ public class RasterPanel extends JPanel {
                 repaint();
             }
         });
+
+        clientBlock = new SelectedBlock();
+        clientThread = new ClientThread();
+        clientThread.start();
+        boolean connected = clientThread.connect("localhost", 12345, new ClientThread.DataListener() {
+            @Override
+            public void onPlayerPosition(int x, int y, int z) {
+                clientBlock.setX(x);
+                clientBlock.setY(y);
+                sliceNo = z;
+                repaint();
+            }
+        });
     }
 
     @Override
@@ -47,6 +63,9 @@ public class RasterPanel extends JPanel {
 
         if (selectedBlock != null) {
             selectedBlock.render(context);
+        }
+        if (clientBlock != null) {
+            clientBlock.render(context);
         }
 
     }
