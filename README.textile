@@ -1,0 +1,38 @@
+h1. Minecraft Architect
+
+Minecraft Architect helps you building complex structures in "minecraft":http://www.minecraft.net.
+As everyone familiar to the game knows, building interesting constructions like spheres, ellipses or arcs is a very
+challenging task.
+
+This tool will simplify the process by taking away the annoying counting blocks action. Instead, you will see your actual
+construction sliced by levels and your current position in a running minecraft client.
+
+For simplicity there is no 3d rasterization unit, but you are forced to "program" your structure using a simple ruby script.
+
+<pre><code>
+  config.create 187, 155, 2
+  config.ellipse 93, 77, 93, 77, 0
+  config.image "floor.png", 0
+
+  config.ellipse 93, 77, 92, 76, 1
+  config.image "level1.png", 1
+</code></pre>
+
+Of course you may use the full power of ruby:
+
+<pre><code>
+  profile = <<EOP
+    XXXX
+    X  X
+    X  X
+    XXXX
+  EOP
+
+  profile.split("\n").each_with_index do |line, level|
+    line.chars.each_with_index do |char, index|
+      config.ellipse 10, 10, 20-index, 15-index, level
+    end
+  end
+</code></pre>
+
+Which will generate an elliptic ring with a squarish profile.
