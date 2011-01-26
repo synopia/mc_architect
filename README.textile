@@ -30,6 +30,7 @@ Of course you may use the full power of ruby:
 
   profile.split("\n").each_with_index do |line, level|
     line.chars.each_with_index do |char, index|
+      next if char==" "
       config.ellipse 10, 10, 20-index, 15-index, level
     end
   end
