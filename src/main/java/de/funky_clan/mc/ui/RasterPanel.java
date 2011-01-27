@@ -78,6 +78,11 @@ public class RasterPanel extends JPanel implements Scrollable {
                 clientBlock.setX(x);
                 clientBlock.setY(y);
                 sliceNo = z;
+                Rectangle rect = new Rectangle(
+                        context.worldToPixelX(x), context.worldToPixelY(y),
+                        context.worldToPixelX(1), context.worldToPixelY(1)
+                );
+                scrollRectToVisible(rect);
                 repaint();
             }
         });
@@ -89,6 +94,8 @@ public class RasterPanel extends JPanel implements Scrollable {
 
     @Override
     protected void paintComponent(Graphics g) {
+
+        System.out.println(g.getClip());
         initContext((Graphics2D) g);
 
         Slice slice = model.getSlice(sliceNo);
