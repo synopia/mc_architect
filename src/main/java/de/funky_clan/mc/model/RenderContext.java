@@ -14,6 +14,7 @@ public class RenderContext {
     private int height;
     private int windowWidth;
     private int windowHeight;
+
     private float pixelSizeX;
     private float pixelSizeY;
 
@@ -21,7 +22,7 @@ public class RenderContext {
         this.model = model;
     }
 
-    public void setG(Graphics2D g) {
+    public void setGraphics(Graphics2D g) {
         this.g = g;
     }
 
@@ -44,7 +45,7 @@ public class RenderContext {
     public void setWindowSize(int width, int height) {
         windowWidth = width;
         windowHeight = height;
-        setPixelSize((float) width / model.getWidth(), (float) height / model.getHeight());
+        setPixelSize((float) width / getWidth(), (float) height / getHeight());
     }
 
     public int getWindowWidth() {
@@ -61,7 +62,7 @@ public class RenderContext {
     }
 
 
-    public Graphics2D getG() {
+    public Graphics2D getGraphics() {
         return g;
     }
 
@@ -102,5 +103,14 @@ public class RenderContext {
 
     public int getEndY() {
         return startY + height;
+    }
+
+
+    public float getPixelSizeX() {
+        return pixelSizeX;
+    }
+
+    public float getPixelSizeY() {
+        return pixelSizeY;
     }
 }

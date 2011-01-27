@@ -54,7 +54,7 @@ public class Slice implements Renderable {
             image.render(context);
         }
 
-        Graphics2D g = context.getG();
+        Graphics2D g = context.getGraphics();
 
         for (int y = context.getStartY(); y < context.getEndY(); y++) {
             for (int x = context.getStartX(); x < context.getEndX(); x++) {

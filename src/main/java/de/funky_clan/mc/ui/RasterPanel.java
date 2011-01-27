@@ -8,13 +8,15 @@ import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
  * @author synopia
  */
-public class RasterPanel extends JPanel {
+public class RasterPanel extends JPanel implements Scrollable {
     private Model model;
     private int sliceNo;
     private RenderContext context;
@@ -25,7 +27,9 @@ public class RasterPanel extends JPanel {
     public RasterPanel(Model model) {
         this.model = model;
         this.sliceNo = 0;
+        setFocusable(true);
         setPreferredSize(new Dimension(model.getWidth() * 2, model.getHeight() * 2));
+        setAutoscrolls(true);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -35,6 +39,33 @@ public class RasterPanel extends JPanel {
                 selectedBlock.setX(context.pixelToWorldX(e.getX()));
                 selectedBlock.setY(context.pixelToWorldY(e.getY()));
                 repaint();
+            }
+
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+                scrollRectToVisible(r);
+            }
+        });
+
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                Dimension size = getSize();
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                        setPreferredSize(new Dimension(size.width + 5, size.height + 5));
+                        revalidate();
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        setPreferredSize(new Dimension(size.width - 5, size.height - 5));
+                        revalidate();
+                        break;
+                }
+
             }
         });
 
@@ -50,6 +81,10 @@ public class RasterPanel extends JPanel {
                 repaint();
             }
         });
+        context = new RenderContext(model);
+        context.setStartPosition(0, 0);
+        context.setSize(model.getWidth(), model.getHeight());
+
     }
 
     @Override
@@ -71,12 +106,32 @@ public class RasterPanel extends JPanel {
     }
 
     private void initContext(Graphics2D g) {
-        if (context == null) {
-            context = new RenderContext(model);
-        }
-        context.setG(g);
-        context.setStartPosition(0, 0);
-        context.setSize(model.getWidth(), model.getHeight());
+        context.setGraphics(g);
         context.setWindowSize(getWidth(), getHeight());
+    }
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return new Dimension(model.getWidth(), model.getHeight());
+    }
+
+    @Override
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 1;
+    }
+
+    @Override
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 1;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return false;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
     }
 }

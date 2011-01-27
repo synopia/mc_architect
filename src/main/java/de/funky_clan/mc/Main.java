@@ -18,8 +18,10 @@ public class Main extends JFrame {
         rasterPanel = new RasterPanel(model);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(rasterPanel);
+        JScrollPane scrollPane = new JScrollPane(rasterPanel);
+        add(scrollPane);
         pack();
+
     }
 
     public void start() {

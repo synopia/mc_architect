@@ -38,7 +38,7 @@ public class BackgroundImage implements Renderable {
                 imageWidth = width;
                 imageHeight = height;
             }
-            c.getG().drawImage(scaledImage, 0, 0, null);
+            c.getGraphics().drawImage(scaledImage, 0, 0, null);
         }
     }
 }

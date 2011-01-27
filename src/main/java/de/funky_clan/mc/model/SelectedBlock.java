@@ -11,7 +11,7 @@ public class SelectedBlock implements Renderable {
     private int thickness;
 
     public SelectedBlock() {
-        thickness = 3;
+        thickness = 2;
     }
 
     public int getThickness() {
@@ -40,7 +40,7 @@ public class SelectedBlock implements Renderable {
 
     @Override
     public void render(RenderContext c) {
-        Graphics2D g = c.getG();
+        Graphics2D g = c.getGraphics();
 
         int sx = c.worldToPixelX(x);
         int sy = c.worldToPixelY(y);
