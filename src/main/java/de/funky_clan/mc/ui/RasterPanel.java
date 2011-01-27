@@ -94,8 +94,6 @@ public class RasterPanel extends JPanel implements Scrollable {
 
     @Override
     protected void paintComponent(Graphics g) {
-
-        System.out.println(g.getClip());
         initContext((Graphics2D) g);
 
         Slice slice = model.getSlice(sliceNo);
