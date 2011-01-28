@@ -66,8 +66,8 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                 player.setDirection((int)(radius)%360);
                 sliceNo = z;
                 Rectangle rect = new Rectangle(
-                        context.worldToPixelX(x), context.worldToPixelY(y),
-                        context.worldToPixelX(1), context.worldToPixelY(1)
+                        context.worldToPixelX(x-context.getWidth()/2), context.worldToPixelY(y-context.getHeight()/2),
+                        context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
                 );
                 scrollRectToVisible(rect);
                 player.repaint(RasterPanel.this, context);

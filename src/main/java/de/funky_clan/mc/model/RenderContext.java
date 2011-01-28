@@ -112,14 +112,14 @@ public class RenderContext {
     }
 
     /**
-     * @return width of the screen (equals model's width if no zoom)
+     * @return width of the screen (equals model's width if no zoom) in pixels
      */
     public int getScreenWidth() {
         return screenWidth;
     }
 
     /**
-     * @return height of the screen (equals model's height if no zoom)
+     * @return height of the screen (equals model's height if no zoom) in pixels
      */
     public int getScreenHeight() {
         return screenHeight;
@@ -173,6 +173,22 @@ public class RenderContext {
      */
     public int getEndY() {
         return getStartY() + getHeight();
+    }
+
+    public int getWindowX() {
+        return windowX;
+    }
+
+    public int getWindowY() {
+        return windowY;
+    }
+
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return windowHeight;
     }
 
     protected void setPixelSize(float x, float y) {
