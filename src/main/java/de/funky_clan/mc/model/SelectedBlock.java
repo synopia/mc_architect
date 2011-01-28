@@ -1,5 +1,6 @@
 package de.funky_clan.mc.model;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -51,5 +52,10 @@ public class SelectedBlock implements Renderable {
         for (int i = 0; i < thickness; i++) {
             g.drawRect(sx - i - 1, sy - i - 1, w + 2 * i, h + 2 * i);
         }
+    }
+
+    // todo move this to Renderable
+    public void repaint( JComponent component, RenderContext c) {
+        component.repaint( c.worldToPixelX(getX()-1), c.worldToPixelX(getY()-1), c.worldToPixelX(3), c.worldToPixelY(3) );
     }
 }

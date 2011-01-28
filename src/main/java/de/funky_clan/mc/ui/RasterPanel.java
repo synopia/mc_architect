@@ -34,10 +34,14 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                 if( !e.isConsumed() ) {
                     if (selectedBlock == null) {
                         selectedBlock = new SelectedBlock();
+                    } else {
+                        selectedBlock.repaint(RasterPanel.this, context);
                     }
-                    selectedBlock.setX(context.pixelToWorldX(e.getX()));
-                    selectedBlock.setY(context.pixelToWorldY(e.getY()));
-                    repaint();
+                    int x = context.pixelToWorldX(e.getX());
+                    int y = context.pixelToWorldY(e.getY());
+                    selectedBlock.setX(x);
+                    selectedBlock.setY(y);
+                    selectedBlock.repaint(RasterPanel.this, context);
                 }
             }
         });
@@ -64,7 +68,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                         context.worldToPixelX(1), context.worldToPixelY(1)
                 );
                 scrollRectToVisible(rect);
-                repaint();
+                clientBlock.repaint(RasterPanel.this, context);
             }
         });
         context = new RenderContext(model);

@@ -31,4 +31,5 @@ public class BackgroundImage implements Renderable {
             c.getGraphics().drawImage(image, 0, 0, width, height, null);
         }
     }
+
 }

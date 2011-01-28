@@ -64,17 +64,12 @@ public abstract class ZoomPanel extends JPanel {
 
     /**
      * Overwrite this method, to define when zooming.
-     * Notice: Default impementation consumes zooming MouseEvents!
      *
      * @param e current MouseEvent
      * @return true if the MouseEvent is a zooming event, false if not
      */
     public boolean isMouseZooming( MouseEvent e ) {
-        boolean result = e.getButton() == MouseEvent.BUTTON1;
-        if( result ) {
-            e.consume();
-        }
-        return result;
+        return e.getButton() == MouseEvent.BUTTON1;
     }
 
     @Override
@@ -104,6 +99,7 @@ public abstract class ZoomPanel extends JPanel {
         zoomRect = null;
         Point end = e.getPoint();
         if( start!=null && !start.equals(end) ) {
+            e.consume();
             double selectedWidth  = Math.abs( end.getX() - start.getX() );
             double selectedHeight = Math.abs( end.getY() - start.getY() );
             if( selectedHeight<5 || selectedWidth<5 ) {
@@ -137,6 +133,7 @@ public abstract class ZoomPanel extends JPanel {
     }
 
     protected void zoomMouseDragged(MouseEvent e) {
+        e.consume();
         int width  = start.x - e.getX();
         int height = start.y - e.getY();
         int w = Math.abs(width);
