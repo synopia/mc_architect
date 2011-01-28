@@ -24,9 +24,10 @@ public class BackgroundImage implements Renderable {
     @Override
     public void render(RenderContext c) {
         if (image != null) {
-            int width = c.getWindowWidth();
-            int height = c.getWindowHeight();
+            int width  = c.getScreenWidth();
+            int height = c.getScreenHeight();
 
+            // todo is clipping rectangle applied to drawImage? is manual clipping required?
             c.getGraphics().drawImage(image, 0, 0, width, height, null);
         }
     }

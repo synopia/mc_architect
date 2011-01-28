@@ -8,8 +8,6 @@ import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -28,7 +26,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
         this.model = model;
         this.sliceNo = 0;
         setFocusable(true);
-        setPreferredSize(new Dimension(model.getWidth() * 2, model.getHeight() * 2));
+        setPreferredSize(new Dimension(model.getWidth(), model.getHeight()));
         setAutoscrolls(true);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -70,9 +68,6 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
             }
         });
         context = new RenderContext(model);
-        context.setStartPosition(0, 0);
-        context.setSize(model.getWidth(), model.getHeight());
-
     }
 
     @Override
@@ -103,7 +98,14 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
 
     private void initContext(Graphics2D g) {
         context.setGraphics(g);
-        context.setWindowSize(getWidth(), getHeight());
+        int windowWidth  = getParent().getWidth();
+        int windowHeight = getParent().getHeight();
+        int screenWidth  = getWidth();
+        int screenHeight = getHeight();
+
+        context.setScreenSize(screenWidth, screenHeight);
+        context.setWindowStart(-getX(), -getY());
+        context.setWindowSize(windowWidth, windowHeight);
     }
 
     @Override
