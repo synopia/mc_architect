@@ -10,17 +10,11 @@ import java.io.IOException;
  */
 public class BackgroundImage implements Renderable {
     private Image image;
-    private int imageWidth;
-    private int imageHeight;
-    private Image scaledImage;
 
     public BackgroundImage(String filename) {
         try {
             File file = new File(filename);
             image = ImageIO.read(file);
-            imageWidth = image.getWidth(null);
-            imageHeight = image.getHeight(null);
-            scaledImage = image;
         } catch (IOException e) {
             e.printStackTrace();
             image = null;
@@ -33,12 +27,7 @@ public class BackgroundImage implements Renderable {
             int width = c.getWindowWidth();
             int height = c.getWindowHeight();
 
-            if (width != imageWidth || height != imageHeight) {
-                scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                imageWidth = width;
-                imageHeight = height;
-            }
-            c.getGraphics().drawImage(scaledImage, 0, 0, null);
+            c.getGraphics().drawImage(image, 0, 0, width, height, null);
         }
     }
 }

@@ -39,7 +39,6 @@ public class ClientThread extends Thread {
             input = new ObjectInputStream(socket.getInputStream());
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
             result = false;
         }
 

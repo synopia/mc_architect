@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
 /**
  * @author synopia
  */
-public class RasterPanel extends JPanel implements Scrollable {
+public class RasterPanel extends ZoomPanel implements Scrollable {
     private Model model;
     private int sliceNo;
     private RenderContext context;
@@ -24,7 +24,7 @@ public class RasterPanel extends JPanel implements Scrollable {
     private SelectedBlock clientBlock;
     private final ClientThread clientThread;
 
-    public RasterPanel(Model model) {
+    public RasterPanel(final Model model) {
         this.model = model;
         this.sliceNo = 0;
         setFocusable(true);
@@ -33,14 +33,15 @@ public class RasterPanel extends JPanel implements Scrollable {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (selectedBlock == null) {
-                    selectedBlock = new SelectedBlock();
+                if( !e.isConsumed() ) {
+                    if (selectedBlock == null) {
+                        selectedBlock = new SelectedBlock();
+                    }
+                    selectedBlock.setX(context.pixelToWorldX(e.getX()));
+                    selectedBlock.setY(context.pixelToWorldY(e.getY()));
+                    repaint();
                 }
-                selectedBlock.setX(context.pixelToWorldX(e.getX()));
-                selectedBlock.setY(context.pixelToWorldY(e.getY()));
-                repaint();
             }
-
         });
 
         addMouseMotionListener(new MouseAdapter() {
@@ -48,24 +49,6 @@ public class RasterPanel extends JPanel implements Scrollable {
             public void mouseDragged(MouseEvent e) {
                 Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
                 scrollRectToVisible(r);
-            }
-        });
-
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                Dimension size = getSize();
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        setPreferredSize(new Dimension(size.width + 5, size.height + 5));
-                        revalidate();
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        setPreferredSize(new Dimension(size.width - 5, size.height - 5));
-                        revalidate();
-                        break;
-                }
-
             }
         });
 
@@ -93,6 +76,13 @@ public class RasterPanel extends JPanel implements Scrollable {
     }
 
     @Override
+    public void applyZoom(double zoom) {
+        Dimension newSize = new Dimension((int) (model.getWidth() * zoom), (int) (model.getHeight() * zoom));
+        setPreferredSize(newSize);
+        revalidate();
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         initContext((Graphics2D) g);
 
@@ -107,6 +97,7 @@ public class RasterPanel extends JPanel implements Scrollable {
         if (clientBlock != null) {
             clientBlock.render(context);
         }
+        super.paintComponent(g);
 
     }
 
