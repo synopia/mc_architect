@@ -56,6 +56,6 @@ public class SelectedBlock implements Renderable {
 
     // todo move this to Renderable
     public void repaint( JComponent component, RenderContext c) {
-        component.repaint( c.worldToPixelX(getX()-1), c.worldToPixelX(getY()-1), c.worldToPixelX(3), c.worldToPixelY(3) );
+        component.repaint( c.worldToPixelX(getX()-2), c.worldToPixelX(getY()-2), c.worldToPixelX(5), c.worldToPixelY(5) );
     }
 }

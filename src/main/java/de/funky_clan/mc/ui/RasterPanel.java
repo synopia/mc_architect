@@ -59,7 +59,10 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
         clientThread.start();
         boolean connected = clientThread.connect("localhost", 12345, new ClientThread.DataListener() {
             @Override
-            public void onPlayerPosition(int x, int y, int z) {
+            public void onPlayerPosition(int x, int y, int z, float radius) {
+                System.out.println("pos="+x+","+y+","+z+" r="+((int)(radius)%360));
+                clientBlock.repaint(RasterPanel.this, context);
+
                 clientBlock.setX(x);
                 clientBlock.setY(y);
                 sliceNo = z;
@@ -71,6 +74,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                 clientBlock.repaint(RasterPanel.this, context);
             }
         });
+        System.out.println(connected);
         context = new RenderContext(model);
     }
 

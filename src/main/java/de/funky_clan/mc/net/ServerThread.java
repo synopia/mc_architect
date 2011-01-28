@@ -47,13 +47,14 @@ public class ServerThread extends Thread {
         System.out.println("New client connected");
     }
 
-    public void sendPlayerPosition(int x, int y, int z) {
+    public void sendPlayerPosition(int x, int y, int z, float radius) {
         List<ObjectOutputStream> myClients = getClients();
         for (ObjectOutputStream client : myClients) {
             try {
                 client.writeInt(x);
                 client.writeInt(y);
                 client.writeInt(z);
+                client.writeFloat(radius);
                 client.flush();
             } catch (IOException e) {
                 removeClient(client);
@@ -80,9 +81,9 @@ public class ServerThread extends Thread {
         ServerThread thread = new ServerThread(12345);
         thread.start();
         while (true) {
-            thread.sendPlayerPosition(1, 2, 3);
+            thread.sendPlayerPosition(1, 2, 3, 2);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
 
             }
