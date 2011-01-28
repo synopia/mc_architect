@@ -50,7 +50,6 @@ public class ClientThread extends Thread {
         while (true) {
             if (socket != null && input != null && socket.isConnected()) {
                 try {
-                    System.out.println("Reading");
                     int x = input.readInt();
                     int y = input.readInt();
                     int z = input.readInt();

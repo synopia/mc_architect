@@ -1,13 +1,11 @@
 package de.funky_clan.mc.ui;
 
-import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.model.RenderContext;
-import de.funky_clan.mc.model.SelectedBlock;
-import de.funky_clan.mc.model.Slice;
+import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,7 +17,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     private int sliceNo;
     private RenderContext context;
     private SelectedBlock selectedBlock;
-    private SelectedBlock clientBlock;
+    private Player player;
     private final ClientThread clientThread;
 
     public RasterPanel(final Model model) {
@@ -54,24 +52,25 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
             }
         });
 
-        clientBlock = new SelectedBlock();
+        player = new Player();
         clientThread = new ClientThread();
         clientThread.start();
         boolean connected = clientThread.connect("localhost", 12345, new ClientThread.DataListener() {
             @Override
             public void onPlayerPosition(int x, int y, int z, float radius) {
-                System.out.println("pos="+x+","+y+","+z+" r="+((int)(radius)%360));
-                clientBlock.repaint(RasterPanel.this, context);
+                player.repaint(RasterPanel.this, context);
 
-                clientBlock.setX(x);
-                clientBlock.setY(y);
+                player.setX(x);
+                player.setY(y);
+                player.setZ(z);
+                player.setDirection((int)(radius)%360);
                 sliceNo = z;
                 Rectangle rect = new Rectangle(
                         context.worldToPixelX(x), context.worldToPixelY(y),
                         context.worldToPixelX(1), context.worldToPixelY(1)
                 );
                 scrollRectToVisible(rect);
-                clientBlock.repaint(RasterPanel.this, context);
+                player.repaint(RasterPanel.this, context);
             }
         });
         System.out.println(connected);
@@ -97,8 +96,8 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
         if (selectedBlock != null) {
             selectedBlock.render(context);
         }
-        if (clientBlock != null) {
-            clientBlock.render(context);
+        if (player != null) {
+            player.render(context);
         }
         super.paintComponent(g);
 
