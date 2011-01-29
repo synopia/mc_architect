@@ -39,8 +39,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>vanilla.HelloWorld</mainClass>
-                            <packageName>vanilla</packageName>
+                            <mainClass>de.funky_clan.mc.Main</mainClass>
+                            <packageName>de.funky_clan.mc</packageName>
                         </manifest>
                     </archive>
                 </configuration>
