@@ -87,6 +87,8 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     @Override
     protected void paintComponent(Graphics g) {
         initContext((Graphics2D) g);
+        g.setColor( Color.LIGHT_GRAY );
+        g.fillRect(0,0,getWidth(), getHeight());
 
         Slice slice = model.getSlice(sliceNo);
         if (slice != null) {
