@@ -2,6 +2,8 @@ package de.funky_clan.mc.net;
 
 import net.minecraft.client.Minecraft;
 
+import java.io.ObjectOutputStream;
+
 /**
  * @author paul.fritsche@googlemail.com
  */
@@ -57,5 +59,10 @@ public class MineCraftServerThread extends ServerThread {
 
     private float radius() {
         return game.g.aL;
+    }
+
+    @Override
+    protected void onNewClient(ObjectOutputStream client) {
+        sendPlayerPosition(client, lastX, lastY, lastZ, lastRadius );
     }
 }

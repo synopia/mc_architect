@@ -44,21 +44,28 @@ public class ServerThread extends Thread {
         synchronized (clients) {
             clients.add(client);
         }
+        onNewClient( client );
+    }
+
+    protected void onNewClient( ObjectOutputStream client ) {
         System.out.println("New client connected");
     }
 
+    public void sendPlayerPosition(ObjectOutputStream client, int x, int y, int z, float radius) {
+        try {
+            client.writeInt(x);
+            client.writeInt(y);
+            client.writeInt(z);
+            client.writeFloat(radius);
+            client.flush();
+        } catch (IOException e) {
+            removeClient(client);
+        }
+    }
     public void sendPlayerPosition(int x, int y, int z, float radius) {
         List<ObjectOutputStream> myClients = getClients();
         for (ObjectOutputStream client : myClients) {
-            try {
-                client.writeInt(x);
-                client.writeInt(y);
-                client.writeInt(z);
-                client.writeFloat(radius);
-                client.flush();
-            } catch (IOException e) {
-                removeClient(client);
-            }
+            sendPlayerPosition( client, x, y, z, radius);
         }
     }
 
