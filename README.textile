@@ -44,4 +44,7 @@ Maven2: (from $HOME/.minecraft/bin)
 <pre><code>
   > mvn install:install-file -Dfile=minecraft.jar -DgroupId=net.minecraft -DartifactId=minecraft-client -Dversion=1.2.02 -Dpackaging=jar
   > mvn install:install-file -Dfile=lwjgl.jar -DgroupId=net.minecraft -DartifactId=lwjgl -Dversion=1.2.02 -Dpackaging=jar
+
+  mc_architect> mvn install
+  mc_architect_patch> mvn package
 </code></pre>

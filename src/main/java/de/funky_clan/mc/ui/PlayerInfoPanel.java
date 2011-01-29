@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @author paul.fritsche@googlemail.com
+ * @author synopia
  */
 public class PlayerInfoPanel extends JPanel {
     private JTextArea textArea;

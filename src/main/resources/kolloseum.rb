@@ -19,28 +19,28 @@ profile = <<EOL
  XXXX    XXX   XX
  XXXX    XXX   XX
  XXXXXXXXXXXXXXXX
- XXXXX _XXXXX_XXXX
- XXXX ___XXX___XXXX
- XXXX ___XXX___XXXXX
- XXXX ___XXX___XXXXXX
- XXXX ___XXX___XXXXXXX
- XXXX ___XXX___XX  XXXX
- XXXX ___XXX___XX  __XXX
- XXXX ___XXX___XX   ___XXX
- XXXX ___XXX___XX    ____XXX
- XXXX ___XXX___XX      ____XXX
+ XXXXX  XXXXX XXXX
+ XXXX    XXX   XXXX
+ XXXX    XXX   XXXXX
+ XXXX    XXX   XXXXXX
+ XXXX    XXX   XXXXXXX
+ XXXX    XXX   XX  XXXX
+ XXXX    XXX   XX    XXX
+ XXXX    XXX   XX      XXX
+ XXXX    XXX   XX        XXX
+ XXXX    XXX   XX          XXX
  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- XXXXXXXXXXXX XXX      ____ XXX_XXX
- XXXXX  XXXX _ XX      ____ XX _ XXXX
- XXXX  _ XXX___XX      ____ XX___XX_ XX
- XXXX ___XXX___XX      ____ XX___XX_   XX
- XXXX ___XXX___XX      ____ XX___XX_     XX
- XXXX ___XXX___XX      ____ XX___XX_       XX
- XXXX ___XXX___XX      ____ XX___XX_         XX
- XXXX ___XXX___XX      ____ XX___XX_           XX
- XXXX ___XXX___XX      ____ XX___XX_           XX
- XXXX _ _XXX___XX      ____ XX___XX_           XX
- XXXX _ _XXX___XX      ____ XX___XX_           XX
+ XXXXXXXXXXXX XXX           XXX XXX
+ XXXXX  XXXX   XX           XX   XXXX
+ XXXX    XXX   XX           XX   XX  XX
+ XXXX    XXX   XX           XX   XX    XX
+ XXXX    XXX   XX           XX   XX      XX
+ XXXX    XXX   XX           XX   XX        XX
+ XXXX    XXX   XX           XX   XX          XX
+ XXXX    XXX   XX           XX   XX            XX
+ XXXX    XXX   XX           XX   XX            XX
+ XXXX    XXX   XX           XX   XX            XX
+ XXXX    XXX   XX           XX   XX            XX
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X                                               X
 X                                               X
