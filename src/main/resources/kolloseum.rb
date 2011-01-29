@@ -1,46 +1,46 @@
 profile = <<EOL
-  XXXXXXXXXX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXX    XX
-  XXXXXXXXXX
-  XXXX   XXX
-  XXXX   XXXX
-  XXXX   XXX XX
-  XXXX   XXX   XX
-  XXXXXXXXXXXXXXX
-  XXXXX XXXXX XXX
-  XXXX   XXX   XX
-  XXXX   XXX   XX
-  XXXX   XXX   XX
-  XXXXXXXXXXXXXXX
-  XXXXX_XXXXX_XXXX
-  XXXX___XXX___XXXX
-  XXXX___XXX___XXXXX
-  XXXX___XXX___XXXXXX
-  XXXX___XXX___XXXXXXX
-  XXXX___XXX___XX  XXXX
-  XXXX___XXX___XX  __XXX
-  XXXX___XXX___XX   ___XXX
-  XXXX___XXX___XX    ____XXX
-  XXXX___XXX___XX      ____XXX
-  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  XXXXX XXXXX XXX      ____ XXX_XXX
-  XXXX   XXX _ XX      ____ XX _ XXXX
-  XXXX _ XXX___XX      ____ XX___XX_ XX
-  XXXX___XXX___XX      ____ XX___XX_   XX
-  XXXX___XXX___XX      ____ XX___XX_     XX
-  XXXX___XXX___XX      ____ XX___XX_       XX
-  XXXX___XXX___XX      ____ XX___XX_         XX
-  XXXX___XXX___XX      ____ XX___XX_           XX
-  XXXX___XXX___XX      ____ XX___XX_           XX
-  XXXX___XXX___XX      ____ XX___XX_           XX
-  XXXX___XXX___XX      ____ XX___XX_           XX
+ XXXXXXXXXXX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXX     XX
+ XXXXXXXXXXX
+ XXXX    XXX
+ XXXX    XXXX
+ XXXX    XXX XX
+ XXXX    XXX   XX
+ XXXXXXXXXXXXXXXX
+ XXXXX  XXXXX XXX
+ XXXX    XXX   XX
+ XXXX    XXX   XX
+ XXXX    XXX   XX
+ XXXXXXXXXXXXXXXX
+ XXXXX _XXXXX_XXXX
+ XXXX ___XXX___XXXX
+ XXXX ___XXX___XXXXX
+ XXXX ___XXX___XXXXXX
+ XXXX ___XXX___XXXXXXX
+ XXXX ___XXX___XX  XXXX
+ XXXX ___XXX___XX  __XXX
+ XXXX ___XXX___XX   ___XXX
+ XXXX ___XXX___XX    ____XXX
+ XXXX ___XXX___XX      ____XXX
+ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ XXXXXXXXXXXX XXX      ____ XXX_XXX
+ XXXXX  XXXX _ XX      ____ XX _ XXXX
+ XXXX  _ XXX___XX      ____ XX___XX_ XX
+ XXXX ___XXX___XX      ____ XX___XX_   XX
+ XXXX ___XXX___XX      ____ XX___XX_     XX
+ XXXX ___XXX___XX      ____ XX___XX_       XX
+ XXXX ___XXX___XX      ____ XX___XX_         XX
+ XXXX ___XXX___XX      ____ XX___XX_           XX
+ XXXX ___XXX___XX      ____ XX___XX_           XX
+ XXXX _ _XXX___XX      ____ XX___XX_           XX
+ XXXX _ _XXX___XX      ____ XX___XX_           XX
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X                                               X
 X                                               X
@@ -58,6 +58,11 @@ mid_y   = size_y/2
 @builder.origin 607-mid_y, -15-mid_x, 65
 
 @builder.create 187, 155, profile.size
+
+@builder.image  4,  7, "level1.png"
+@builder.image  8, 15, "level2.png"
+@builder.image 16, 32, "level3.png"
+@builder.image 26, 41, "level4.png"
 
 level = 0
 profile.each do |line|
