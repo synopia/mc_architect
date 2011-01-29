@@ -67,7 +67,12 @@ public class Slice implements Renderable {
                 if (pixel > 0) {
 
                     g.setColor(Color.DARK_GRAY);
-                    g.fillRect(context.worldToPixelX(x), context.worldToPixelY(y), context.worldToPixelX(1) - 1, context.worldToPixelY(1) - 1);
+                    int next_x = context.worldToPixelX(x+1);
+                    int next_y = context.worldToPixelY(y+1);
+                    int curr_x = context.worldToPixelX(x);
+                    int curr_y = context.worldToPixelY(y);
+
+                    g.fillRect(curr_x, curr_y, next_x-curr_x-1, next_y-curr_y-1);
                 }
             }
         }
