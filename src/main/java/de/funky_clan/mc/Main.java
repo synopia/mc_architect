@@ -21,7 +21,6 @@ public class Main extends JFrame {
         JScrollPane scrollPane = new JScrollPane(rasterPanel);
         add(scrollPane);
         pack();
-
     }
 
     public void start() {
@@ -29,13 +28,7 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        Configuration conf = new Configuration();
-        conf.create(187, 155, 42)
-                .drawEllipse(92, 76, 92, 42)
-                .image("level1_small.png")
-                .axis(92, 76);
-        ;
-
+        Configuration conf = Configuration.createFromRuby("kolloseum.rb");
         Main main = new Main(conf.getModel());
         main.start();
     }

@@ -12,7 +12,7 @@ public class Graphics {
         this.model = model;
     }
 
-    public void ellipse(int xm, int ym, int width, int height, int level, int type) {
+    public void ellipse(int level, int xm, int ym, int width, int height, int type) {
         Slice slice = model.getSlice(level);
 
         int a = width;

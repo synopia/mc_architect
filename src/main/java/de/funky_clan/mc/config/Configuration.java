@@ -3,6 +3,8 @@ package de.funky_clan.mc.config;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Graphics;
 import de.funky_clan.mc.model.Model;
+import org.jruby.embed.PathType;
+import org.jruby.embed.ScriptingContainer;
 
 import java.util.HashMap;
 
@@ -22,6 +24,14 @@ public class Configuration {
 
     }
 
+    public static Configuration createFromRuby( String filename ) {
+        ScriptingContainer container = new ScriptingContainer();
+        Configuration configuration = new Configuration();
+        container.put("@builder", configuration);
+        container.runScriptlet(PathType.RELATIVE, filename);
+        return configuration;
+    }
+
     public Configuration create(int width, int height, int slices) {
         model = new Model(width, height, slices);
         graphics = new Graphics(model);
@@ -31,14 +41,14 @@ public class Configuration {
 
     public Configuration drawEllipse(int x, int y, int width, int height) {
         for (int slice = 0; slice < model.getSlices(); slice++) {
-            drawEllipse(x, y, width, height, slice);
+            drawEllipse(slice, x, y, width, height);
         }
 
         return this;
     }
 
-    public Configuration drawEllipse(int x, int y, int width, int height, int slice) {
-        graphics.ellipse(x, y, width, height, slice, 1);
+    public Configuration drawEllipse(int slice, int x, int y, int width, int height) {
+        graphics.ellipse(slice, x, y, width, height, 1);
 
         return this;
     }

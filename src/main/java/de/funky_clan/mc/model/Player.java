@@ -47,6 +47,13 @@ public class Player extends SelectedBlock {
         g.drawLine( mx, my, x1, y1);
         g.drawLine( mx, my, x2, y2);
         g.drawLine( x1, y1, x2, y2);
+/*
+        todo info panel using swing
+        System.out.println(c.getWindowX()+", "+c.getWindowY());
+        System.out.println(" "+c.worldToPixelX(c.getStartX())+", "+c.worldToPixelY(c.getStartY()));
+        g.drawString( String.format("Absolute: %d, %d, %d ", getX(), getY(), getZ()), c.worldToPixelX(c.getStartX()), c.worldToPixelY(c.getStartY())+16 );
+        g.drawRect(0, 0, 500, 200);
+*/
     }
 
     public void repaint( JComponent component, RenderContext c) {
