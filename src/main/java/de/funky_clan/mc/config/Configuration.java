@@ -50,15 +50,15 @@ public class Configuration {
         return this;
     }
 
-    public Configuration drawEllipse(int x, int y, int width, int height) {
+    public Configuration ellipse(int x, int y, int width, int height) {
         for (int slice = 0; slice < model.getSlices(); slice++) {
-            drawEllipse(slice, x, y, width, height);
+            ellipse(slice, x, y, width, height);
         }
 
         return this;
     }
 
-    public Configuration drawEllipse(int slice, int x, int y, int width, int height) {
+    public Configuration ellipse(int slice, int x, int y, int width, int height) {
         graphics.ellipse(slice, x, y, width, height, 1);
 
         return this;

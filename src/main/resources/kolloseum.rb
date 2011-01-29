@@ -68,7 +68,7 @@ level = 0
 profile.each do |line|
   line.chars.each_with_index do |c, r|
     next unless c=="X"
-    @builder.draw_ellipse level, mid_x, mid_y, mid_x-r-1, mid_y-r-1
+    @builder.ellipse level, mid_x, mid_y, mid_x-r-1, mid_y-r-1
   end
   level += 1
 end
