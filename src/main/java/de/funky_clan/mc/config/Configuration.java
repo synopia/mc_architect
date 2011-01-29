@@ -15,6 +15,9 @@ public class Configuration {
     private Model model;
     private Graphics graphics;
     private HashMap<String, BackgroundImage> images = new HashMap<String, BackgroundImage>();
+    int originX;
+    int originY;
+    int originZ;
 
     public Model getModel() {
         return model;
@@ -30,6 +33,14 @@ public class Configuration {
         container.put("@builder", configuration);
         container.runScriptlet(PathType.RELATIVE, filename);
         return configuration;
+    }
+
+    public Configuration origin(int x, int y, int z) {
+        originX = x;
+        originY = y;
+        originZ = z;
+
+        return this;
     }
 
     public Configuration create(int width, int height, int slices) {
@@ -83,5 +94,17 @@ public class Configuration {
         graphics.vLine(x, 0, model.getHeight(), 2);
 
         return this;
+    }
+
+    public int getOriginX() {
+        return originX;
+    }
+
+    public int getOriginY() {
+        return originY;
+    }
+
+    public int getOriginZ() {
+        return originZ;
     }
 }

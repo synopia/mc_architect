@@ -2,6 +2,7 @@ package de.funky_clan.mc;
 
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.ui.RasterPanel;
 
 import javax.swing.*;
@@ -10,16 +11,13 @@ import javax.swing.*;
  * @author synopia
  */
 public class Main extends JFrame {
-    private Model model;
-    private RasterPanel rasterPanel;
+    private MainPanel mainPanel;
 
-    public Main(Model model) {
-        this.model = model;
-        rasterPanel = new RasterPanel(model);
+    public Main(Configuration configuration) {
+        mainPanel = new MainPanel(configuration);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JScrollPane scrollPane = new JScrollPane(rasterPanel);
-        add(scrollPane);
+        add(mainPanel);
         pack();
     }
 
@@ -29,7 +27,7 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         Configuration conf = Configuration.createFromRuby("kolloseum.rb");
-        Main main = new Main(conf.getModel());
+        Main main = new Main(conf);
         main.start();
     }
 }

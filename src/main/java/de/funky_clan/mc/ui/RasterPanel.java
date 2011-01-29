@@ -18,7 +18,6 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     private RenderContext context;
     private SelectedBlock selectedBlock;
     private Player player;
-    private final ClientThread clientThread;
 
     public RasterPanel(final Model model) {
         this.model = model;
@@ -53,28 +52,29 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
         });
 
         player = new Player();
-        clientThread = new ClientThread();
-        clientThread.start();
-        boolean connected = clientThread.connect("localhost", 12345, new ClientThread.DataListener() {
-            @Override
-            public void onPlayerPosition(int x, int y, int z, float radius) {
-                player.repaint(RasterPanel.this, context);
-
-                player.setX(x);
-                player.setY(y);
-                player.setZ(z);
-                player.setDirection((int)(radius)%360);
-                sliceNo = z;
-                Rectangle rect = new Rectangle(
-                        context.worldToPixelX(x-context.getWidth()/2), context.worldToPixelY(y-context.getHeight()/2),
-                        context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
-                );
-                scrollRectToVisible(rect);
-                player.repaint(RasterPanel.this, context);
-            }
-        });
-        System.out.println(connected);
         context = new RenderContext(model);
+    }
+
+    public void updatePlayerPos( int x, int y, int z, int angle ) {
+        player.repaint(RasterPanel.this, context);
+
+        player.setX(x);
+        player.setY(y);
+        player.setZ(z);
+        player.setDirection(angle);
+
+        if( sliceNo!=z ) {
+            sliceNo = z;
+            repaint();
+        } else {
+            sliceNo = z;
+            Rectangle rect = new Rectangle(
+                    context.worldToPixelX(x-context.getWidth()/2), context.worldToPixelY(y-context.getHeight()/2),
+                    context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
+            );
+            scrollRectToVisible(rect);
+            player.repaint(RasterPanel.this, context);
+        }
     }
 
     @Override
