@@ -35,7 +35,7 @@ public class MainPanel extends JPanel {
             @Override
             public void onPlayerPosition(final int x, final int y, final int z, final float radius) {
                 final int relX = y-configuration.getOriginY();
-                final int relY = x-configuration.getOriginX();
+                final int relY = -x-configuration.getOriginX();
                 final int relZ = z-configuration.getOriginZ();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override

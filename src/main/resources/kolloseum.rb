@@ -55,7 +55,7 @@ size_y  = 155
 mid_x   = size_x/2
 mid_y   = size_y/2
 
-@builder.origin 607-mid_y, -15-mid_x, 65
+@builder.origin -607-mid_y, -15-mid_x, 65
 
 @builder.create 187, 155, profile.size
 

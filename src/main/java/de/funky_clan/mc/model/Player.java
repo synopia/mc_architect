@@ -23,7 +23,7 @@ public class Player extends SelectedBlock {
     }
 
     public void setDirection(int direction) {
-        this.direction = direction-180;
+        this.direction = direction;
     }
 
     @Override
