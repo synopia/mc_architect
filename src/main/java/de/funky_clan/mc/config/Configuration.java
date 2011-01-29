@@ -54,20 +54,20 @@ public class Configuration {
     }
 
     public Configuration image(String filename) {
-        image(filename, 0, model.getSlices());
+        image(0, model.getSlices(), filename);
 
         return this;
     }
 
-    public Configuration image(String filename, int sliceFrom, int sliceTo) {
+    public Configuration image(int sliceFrom, int sliceTo, String filename) {
         for (int i = sliceFrom; i <= sliceTo; i++) {
-            image(filename, i);
+            image(i, filename);
         }
 
         return this;
     }
 
-    public Configuration image(String filename, int slice) {
+    public Configuration image(int slice, String filename) {
         BackgroundImage image = images.get(filename);
         if (image == null) {
             image = new BackgroundImage(filename);
