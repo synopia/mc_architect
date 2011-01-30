@@ -114,13 +114,18 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
             }
             zoom *= scale;
 
-            applyZoom(zoom);
+            setZoom(zoom);
 
             final int x = ((int)(start.x*scale));
             final int y = ((int)(start.y*scale));
 
             setPosition(x, y);
         }
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
+        applyZoom(zoom);
     }
 
     protected void setPosition(final int x, final int y) {

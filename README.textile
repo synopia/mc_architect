@@ -28,10 +28,10 @@ Of course you may use the full power of ruby:
     XXXX
   EOP
 
-  profile.split("\n").each_with_index do |line, level|
+  profile.split("\n").each_with_index do |line, slice|
     line.chars.each_with_index do |char, index|
       next if char==" "
-      @builder.ellipse level, 10, 10, 20-index, 15-index
+      @builder.ellipse slice, 10, 10, 20-index, 15-index
     end
   end
 </code></pre>

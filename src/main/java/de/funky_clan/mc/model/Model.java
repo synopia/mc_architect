@@ -54,14 +54,4 @@ public class Model {
         }
         return result;
     }
-
-    public Slice getXSlice(int slice) {
-        return new Slice(this, Slice.SliceType.X, slice);
-    }
-    public Slice getYSlice(int slice) {
-        return new Slice(this, Slice.SliceType.Y, slice);
-    }
-    public Slice getZSlice(int slice) {
-        return new Slice(this, Slice.SliceType.Z, slice);
-    }
 }

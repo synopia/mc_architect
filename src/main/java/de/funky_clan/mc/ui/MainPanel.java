@@ -2,6 +2,7 @@ package de.funky_clan.mc.ui;
 
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.model.Slice;
 import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
@@ -14,8 +15,9 @@ public class MainPanel extends JPanel {
     private Configuration      configuration;
     private final ClientThread clientThread;
 
-    private TopDownPanel    topDown;
-    private SidePanel       side;
+    private SlicePanel topDown;
+    private SlicePanel sideX;
+    private SlicePanel sideY;
     private PlayerInfoPanel playerInfo;
 
     public MainPanel( final Configuration configuration ) {
@@ -26,14 +28,20 @@ public class MainPanel extends JPanel {
 
         playerInfo  = new PlayerInfoPanel(model);
 
-        topDown     = new TopDownPanel(model, configuration.createColors() );
-        side        = new SidePanel(model, configuration.createColors() );
+        topDown     = new SlicePanel(model, configuration.createColors(), new Slice(model, Slice.SliceType.Z) );
+        sideX       = new SlicePanel(model, configuration.createColors(), new Slice(model, Slice.SliceType.X) );
+        sideY       = new SlicePanel(model, configuration.createColors(), new Slice(model, Slice.SliceType.Y) );
 
-        JSplitPane  splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.add( new JScrollPane(topDown) );
-        splitPane.add( new JScrollPane(side) );
+        JSplitPane  rootSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        JSplitPane  northSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        JSplitPane  southSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        rootSplitPane.add(northSplitPane);
+        rootSplitPane.add(southSplitPane);
+        northSplitPane.add(new JScrollPane(topDown));
+        southSplitPane.add(new JScrollPane(sideX));
+        southSplitPane.add(new JScrollPane(sideY));
 
-        add( splitPane,  BorderLayout.CENTER );
+        add( rootSplitPane,  BorderLayout.CENTER );
         add( playerInfo, BorderLayout.NORTH );
 
         clientThread = new ClientThread();
@@ -48,7 +56,8 @@ public class MainPanel extends JPanel {
                     @Override
                     public void run() {
                         topDown.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
-                        side.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
+                        sideX.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
+                        sideY.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
                         playerInfo.updatePlayerPos(x, y, z, relX, relY, relZ, (int) (radius) % 360);
                     }
                 });

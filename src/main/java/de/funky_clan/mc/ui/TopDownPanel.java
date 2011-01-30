@@ -21,7 +21,7 @@ public class TopDownPanel extends ZoomPanel {
     public TopDownPanel(final Model model, Configuration.Colors colors) {
         this.model   = model;
         this.sliceNo = 0;
-        applyZoom(2);
+        setZoom(2);
 
         setFocusable(true);
         setAutoscrolls(true);
@@ -91,7 +91,7 @@ public class TopDownPanel extends ZoomPanel {
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect(0,0,getWidth(), getHeight());
 
-        Slice slice = model.getZSlice(sliceNo);
+        Slice slice = null;//model.getSlice(Slice.SliceType.Z, sliceNo);
         if (slice != null) {
             slice.render(context);
         }

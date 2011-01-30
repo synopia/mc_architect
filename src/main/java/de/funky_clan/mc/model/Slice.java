@@ -8,7 +8,7 @@ import java.awt.*;
 public class Slice implements Renderable {
     private int width;
     private int height;
-    private int level;
+    private int slice;
     private BackgroundImage image;
 
     private Model     model;
@@ -19,12 +19,15 @@ public class Slice implements Renderable {
         Z, // x-y
     }
 
-    public Slice(Model model, SliceType type, int level) {
+    public Slice(Model model, SliceType type) {
         this.model = model;
         this.type  = type;
-        this.level = level;
 
         setWidthAndHeight();
+    }
+
+    public void setSlice(int slice) {
+        this.slice = slice;
     }
 
     private void setWidthAndHeight() {
@@ -44,51 +47,30 @@ public class Slice implements Renderable {
         }
     }
 
-    public void setPixel(int x, int y, int value) {
-        int mapX=-1, mapY=-1, mapZ=-1;
-
-        switch( type ) {
-            case X:
-                mapX = level;
-                mapZ = y;
-                mapY = x;
-                break;
-            case Y:
-                mapY = level;
-                mapZ = y;
-                mapX = x;
-                break;
-            case Z:
-                mapZ = level;
-                mapX = x;
-                mapY = y;
-                break;
-        }
-        model.setPixel( mapX, mapY, mapZ, value );
-    }
-
     public int getPixel(int x, int y) {
         int mapX=-1, mapY=-1, mapZ=-1;
 
         switch( type ) {
             case X:
-                mapX = level;
-                mapZ = y;
+                mapX = slice;
+                mapZ = height-y;
                 mapY = x;
                 break;
             case Y:
-                mapY = level;
-                mapZ = y;
+                mapY = slice;
+                mapZ = height-y;
                 mapX = x;
                 break;
             case Z:
-                mapZ = level;
+                mapZ = slice;
                 mapX = x;
                 mapY = y;
                 break;
         }
         return model.getPixel(mapX, mapY, mapZ);
     }
+
+
 
     public BackgroundImage getImage() {
         return image;
@@ -127,4 +109,15 @@ public class Slice implements Renderable {
         }
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public SliceType getType() {
+        return type;
+    }
 }

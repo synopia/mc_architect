@@ -13,8 +13,6 @@ public class Graphics {
     }
 
     public void ellipse(int level, int xm, int ym, int width, int height, int type) {
-        Slice slice = model.getZSlice(level);
-
         int a = width;
         int b = height;
         int dx = 0;
@@ -25,10 +23,10 @@ public class Graphics {
         int e2 = 0;
 
         do {
-            slice.setPixel(xm + dx, ym + dy, type);
-            slice.setPixel(xm - dx, ym + dy, type);
-            slice.setPixel(xm - dx, ym - dy, type);
-            slice.setPixel(xm + dx, ym - dy, type);
+            setPixel(xm + dx, ym + dy, level, type);
+            setPixel(xm - dx, ym + dy, level, type);
+            setPixel(xm - dx, ym - dy, level, type);
+            setPixel(xm + dx, ym - dy, level, type);
 
             e2 = 2 * err;
             if (e2 < (2 * dx + 1) * b2) {
@@ -43,27 +41,24 @@ public class Graphics {
 
         while (dx + 1 < a) {
             dx++;
-            slice.setPixel(xm + dx, ym, type);
-            slice.setPixel(xm - dx, ym, type);
+            setPixel(xm + dx, ym, level, type);
+            setPixel(xm - dx, ym, level, type);
         }
     }
 
     public void setPixel( int x, int y, int z, int value ) {
-        Slice slice = model.getZSlice(z);
-        slice.setPixel(x, y, value);
+        model.setPixel(x, y, z, value);
     }
 
     public void hLine(int x, int y, int width, int level, int type) {
-        Slice slice = model.getZSlice(level);
         for (int i = 0; i < width; i++) {
-            slice.setPixel(x + i, y, type);
+            setPixel(x + i, y, level, type);
         }
     }
 
     public void vLine(int x, int y, int height, int level, int type) {
-        Slice slice = model.getZSlice(level);
         for (int i = 0; i < height; i++) {
-            slice.setPixel(x, y + i, type);
+            setPixel(x, y + i, level, type);
         }
     }
 
@@ -73,9 +68,9 @@ public class Graphics {
         }
     }
 
-    public void vLine(int x, int y, int width, int type) {
+    public void vLine(int x, int y, int height, int type) {
         for (int level = 0; level < model.getSizeZ(); level++) {
-            vLine(x, y, width, level, type);
+            vLine(x, y, height, level, type);
         }
     }
 }

@@ -107,7 +107,7 @@ public class Configuration {
             image = new BackgroundImage(filename);
             images.put(filename, image);
         }
-        model.getZSlice(slice).setImage(image);
+//        model.getZSlice(slice).setImage(image);
 
         return this;
     }

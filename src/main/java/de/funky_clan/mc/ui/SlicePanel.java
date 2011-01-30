@@ -9,22 +9,19 @@ import java.awt.Graphics;
 /**
  * @author paul.fritsche@googlemail.com
  */
-public class SidePanel extends ZoomPanel {
+public class SlicePanel extends ZoomPanel {
     private Model model;
     private RenderContext context;
     private SelectedBlock selectedBlock;
     private Player player;
-    private int modelSideWidth; // either models height or width (the bigger one)
-    private int modelSideHeight; // number of slices
     private int sliceNo;
+    private Slice slice;
 
-    public SidePanel(Model model, Configuration.Colors colors ) {
+    public SlicePanel(Model model, Configuration.Colors colors, Slice slice) {
         this.model = model;
+        this.slice = slice;
 
-        modelSideWidth = Math.max( model.getSizeX(), model.getSizeY() );
-        modelSideHeight = model.getSizeZ();
-
-        applyZoom((float)modelSideWidth/modelSideHeight);
+        setZoom((float) slice.getWidth() / slice.getHeight() );
         setFocusable(true);
 
         setAutoscrolls(true);
@@ -34,11 +31,29 @@ public class SidePanel extends ZoomPanel {
     }
 
     public void updatePlayerPos( int x, int y, int z, int angle ) {
-        player.repaint(SidePanel.this, context);
+        player.repaint(SlicePanel.this, context);
 
         int wx = y;
-        int wy = z;
+        int wy = model.getSizeZ()-z;
         int wz = x;
+
+        switch (slice.getType()) {
+            case X:
+                wx = y;
+                wy = model.getSizeZ()-z;
+                wz = x;
+                break;
+            case Y:
+                wx = x;
+                wy = model.getSizeZ()-z;
+                wz = y;
+                break;
+            case Z:
+                wx = x;
+                wy = y;
+                wz = z;
+                break;
+        }
 
         player.setX(wx);
         player.setY(wy);
@@ -56,13 +71,13 @@ public class SidePanel extends ZoomPanel {
                     context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
             );
             scrollRectToVisible(rect);
-            player.repaint(SidePanel.this, context);
+            player.repaint(SlicePanel.this, context);
         }
     }
 
     @Override
     public void applyZoom(double zoom) {
-        Dimension newSize = new Dimension((int) (modelSideWidth * zoom), (int) (modelSideHeight * zoom));
+        Dimension newSize = new Dimension((int) (slice.getWidth() * zoom), (int) (slice.getHeight() * zoom));
         setPreferredSize(newSize);
         revalidate();
     }
@@ -73,8 +88,8 @@ public class SidePanel extends ZoomPanel {
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect(0,0,getWidth(), getHeight());
 
-        Slice slice = model.getXSlice(sliceNo);
         if (slice != null) {
+            slice.setSlice( sliceNo );
             slice.render(context);
         }
 
@@ -95,7 +110,7 @@ public class SidePanel extends ZoomPanel {
         int screenWidth  = getWidth();
         int screenHeight = getHeight();
 
-        context.setScreenSize(screenWidth, screenHeight, modelSideWidth, modelSideHeight);
+        context.setScreenSize(screenWidth, screenHeight, slice.getWidth(), slice.getHeight() );
         context.setWindowStart(-getX(), -getY());
         context.setWindowSize(windowWidth, windowHeight);
     }
@@ -103,6 +118,6 @@ public class SidePanel extends ZoomPanel {
 
     @Override
     public Dimension getPreferredScrollableViewportSize() {
-        return new Dimension(modelSideWidth, modelSideHeight);
+        return new Dimension(slice.getWidth(), slice.getHeight());
     }
 }
