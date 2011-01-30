@@ -13,8 +13,7 @@ public class BackgroundImage implements Renderable {
 
     public BackgroundImage(String filename) {
         try {
-            File file = new File(filename);
-            image = ImageIO.read(file);
+            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(filename));
         } catch (IOException e) {
             e.printStackTrace();
             image = null;

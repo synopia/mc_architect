@@ -55,7 +55,7 @@ public class Configuration {
         ScriptingContainer container = new ScriptingContainer();
         Configuration configuration = new Configuration();
         container.put("@builder", configuration);
-        container.runScriptlet(PathType.RELATIVE, filename);
+        container.runScriptlet(PathType.CLASSPATH, filename);
         return configuration;
     }
 
