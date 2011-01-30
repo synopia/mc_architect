@@ -74,7 +74,7 @@ public class Configuration {
     }
 
     public Configuration ellipse(int x, int y, int width, int height) {
-        for (int slice = 0; slice < model.getSlices(); slice++) {
+        for (int slice = 0; slice < model.getSizeZ(); slice++) {
             ellipse(slice, x, y, width, height);
         }
 
@@ -88,7 +88,7 @@ public class Configuration {
     }
 
     public Configuration image(String filename) {
-        image(0, model.getSlices(), filename);
+        image(0, model.getSizeZ(), filename);
 
         return this;
     }
@@ -107,14 +107,14 @@ public class Configuration {
             image = new BackgroundImage(filename);
             images.put(filename, image);
         }
-        model.getSlice(slice).setImage(image);
+        model.getZSlice(slice).setImage(image);
 
         return this;
     }
 
     public Configuration axis(int x, int y) {
-        graphics.hLine(0, y, model.getWidth(), 2);
-        graphics.vLine(x, 0, model.getHeight(), 2);
+        graphics.hLine(0, y, model.getSizeX(), 2);
+        graphics.vLine(x, 0, model.getSizeY(), 2);
 
         return this;
     }

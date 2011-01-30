@@ -3,7 +3,6 @@ package de.funky_clan.mc.ui;
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.*;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -22,9 +21,9 @@ public class TopDownPanel extends ZoomPanel {
     public TopDownPanel(final Model model, Configuration.Colors colors) {
         this.model   = model;
         this.sliceNo = 0;
+        applyZoom(2);
 
         setFocusable(true);
-        setPreferredSize(new Dimension(model.getWidth(), model.getHeight()));
         setAutoscrolls(true);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -81,7 +80,7 @@ public class TopDownPanel extends ZoomPanel {
 
     @Override
     public void applyZoom(double zoom) {
-        Dimension newSize = new Dimension((int) (model.getWidth() * zoom), (int) (model.getHeight() * zoom));
+        Dimension newSize = new Dimension((int) (model.getSizeX() * zoom), (int) (model.getSizeY() * zoom));
         setPreferredSize(newSize);
         revalidate();
     }
@@ -92,7 +91,7 @@ public class TopDownPanel extends ZoomPanel {
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect(0,0,getWidth(), getHeight());
 
-        Slice slice = model.getSlice(sliceNo);
+        Slice slice = model.getZSlice(sliceNo);
         if (slice != null) {
             slice.render(context);
         }
@@ -114,9 +113,14 @@ public class TopDownPanel extends ZoomPanel {
         int screenWidth  = getWidth();
         int screenHeight = getHeight();
 
-        context.setScreenSize(screenWidth, screenHeight);
+        context.setScreenSize(screenWidth, screenHeight, model.getSizeX(), model.getSizeY());
         context.setWindowStart(-getX(), -getY());
         context.setWindowSize(windowWidth, windowHeight);
+    }
+
+        @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return new Dimension(model.getSizeX(), model.getSizeY());
     }
 
 }

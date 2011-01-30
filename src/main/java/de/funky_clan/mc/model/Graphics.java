@@ -13,7 +13,7 @@ public class Graphics {
     }
 
     public void ellipse(int level, int xm, int ym, int width, int height, int type) {
-        Slice slice = model.getSlice(level);
+        Slice slice = model.getZSlice(level);
 
         int a = width;
         int b = height;
@@ -49,32 +49,32 @@ public class Graphics {
     }
 
     public void setPixel( int x, int y, int z, int value ) {
-        Slice slice = model.getSlice(z);
+        Slice slice = model.getZSlice(z);
         slice.setPixel(x, y, value);
     }
 
     public void hLine(int x, int y, int width, int level, int type) {
-        Slice slice = model.getSlice(level);
+        Slice slice = model.getZSlice(level);
         for (int i = 0; i < width; i++) {
             slice.setPixel(x + i, y, type);
         }
     }
 
     public void vLine(int x, int y, int height, int level, int type) {
-        Slice slice = model.getSlice(level);
+        Slice slice = model.getZSlice(level);
         for (int i = 0; i < height; i++) {
             slice.setPixel(x, y + i, type);
         }
     }
 
     public void hLine(int x, int y, int width, int type) {
-        for (int level = 0; level < model.getSlices(); level++) {
+        for (int level = 0; level < model.getSizeZ(); level++) {
             hLine(x, y, width, level, type);
         }
     }
 
     public void vLine(int x, int y, int width, int type) {
-        for (int level = 0; level < model.getSlices(); level++) {
+        for (int level = 0; level < model.getSizeZ(); level++) {
             vLine(x, y, width, level, type);
         }
     }

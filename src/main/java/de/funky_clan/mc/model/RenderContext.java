@@ -100,19 +100,13 @@ public class RenderContext {
      *
      * @param width  of screen
      * @param height of screen
+     * @param modelWidth  of model
+     * @param modelHeight of model
      */
-    public void setScreenSize(int width, int height) {
+    public void setScreenSize(int width, int height, int modelWidth, int modelHeight) {
         screenWidth = width;
         screenHeight = height;
-        setPixelSize((float) width / getModelWidth(), (float) height / getModelHeight());
-    }
-
-    public int getModelWidth() {
-        return model.getWidth();
-    }
-
-    public int getModelHeight() {
-        return model.getHeight();
+        setPixelSize((float) width / modelWidth, (float) height / modelHeight);
     }
 
     /**

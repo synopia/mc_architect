@@ -15,6 +15,7 @@ public class MainPanel extends JPanel {
     private final ClientThread clientThread;
 
     private TopDownPanel    topDown;
+    private SidePanel       side;
     private PlayerInfoPanel playerInfo;
 
     public MainPanel( final Configuration configuration ) {
@@ -22,11 +23,17 @@ public class MainPanel extends JPanel {
         this.configuration = configuration;
 
         Model model = configuration.getModel();
-        topDown     = new TopDownPanel(model, configuration.createColors() );
-        JScrollPane scrollPane = new JScrollPane(topDown);
-        playerInfo = new PlayerInfoPanel(model);
 
-        add( scrollPane, BorderLayout.CENTER );
+        playerInfo  = new PlayerInfoPanel(model);
+
+        topDown     = new TopDownPanel(model, configuration.createColors() );
+        side        = new SidePanel(model, configuration.createColors() );
+
+        JSplitPane  splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.add( new JScrollPane(topDown) );
+        splitPane.add( new JScrollPane(side) );
+
+        add( splitPane,  BorderLayout.CENTER );
         add( playerInfo, BorderLayout.NORTH );
 
         clientThread = new ClientThread();
@@ -41,6 +48,7 @@ public class MainPanel extends JPanel {
                     @Override
                     public void run() {
                         topDown.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
+                        side.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
                         playerInfo.updatePlayerPos(x, y, z, relX, relY, relZ, (int) (radius) % 360);
                     }
                 });

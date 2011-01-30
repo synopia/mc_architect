@@ -1,7 +1,6 @@
 package de.funky_clan.mc.ui;
 
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.model.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +30,7 @@ public class PlayerInfoPanel extends JPanel {
                 formatDirection(angle),
                 formatCoord(x, y, z),
                 formatCoord(relX, relY, relZ),
-                formatCoord(relX-model.getWidth()/2, relY-model.getHeight()/2, relZ)
+                formatCoord(relX-model.getSizeX()/2, relY-model.getSizeY()/2, relZ)
         );
 
         textArea.setText( text );

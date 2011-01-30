@@ -144,10 +144,7 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
         repaintZoomRect(new Rectangle(x, y, w, h));
     }
 
-    @Override
-    public Dimension getPreferredScrollableViewportSize() {
-        return getPreferredSize();
-    }
+
 
     @Override
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {

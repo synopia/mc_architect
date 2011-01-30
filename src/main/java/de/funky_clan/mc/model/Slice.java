@@ -9,32 +9,85 @@ public class Slice implements Renderable {
     private int width;
     private int height;
     private int level;
-    private int map[][];
     private BackgroundImage image;
 
-    public Slice(int width, int height, int level) {
-        this.width = width;
-        this.height = height;
+    private Model     model;
+    private SliceType type;
+    public enum SliceType {
+        X, // y-z
+        Y, // x-z
+        Z, // x-y
+    }
+
+    public Slice(Model model, SliceType type, int level) {
+        this.model = model;
+        this.type  = type;
         this.level = level;
 
-        map = new int[height][];
-        for (int y = 0; y < height; y++) {
-            map[y] = new int[width];
+        setWidthAndHeight();
+    }
+
+    private void setWidthAndHeight() {
+        switch( type ) {
+            case X:
+                this.width  = model.getSizeY();
+                this.height = model.getSizeZ();
+                break;
+            case Y:
+                this.width  = model.getSizeX();
+                this.height = model.getSizeZ();
+                break;
+            case Z:
+                this.width  = model.getSizeX();
+                this.height = model.getSizeY();
+                break;
         }
     }
 
     public void setPixel(int x, int y, int value) {
-        if (inRange(x, y)) {
-            map[y][x] = value;
+        int mapX=-1, mapY=-1, mapZ=-1;
+
+        switch( type ) {
+            case X:
+                mapX = level;
+                mapZ = y;
+                mapY = x;
+                break;
+            case Y:
+                mapY = level;
+                mapZ = y;
+                mapX = x;
+                break;
+            case Z:
+                mapZ = level;
+                mapX = x;
+                mapY = y;
+                break;
         }
+        model.setPixel( mapX, mapY, mapZ, value );
     }
 
     public int getPixel(int x, int y) {
-        int result = -1;
-        if (inRange(x, y)) {
-            result = map[y][x];
+        int mapX=-1, mapY=-1, mapZ=-1;
+
+        switch( type ) {
+            case X:
+                mapX = level;
+                mapZ = y;
+                mapY = x;
+                break;
+            case Y:
+                mapY = level;
+                mapZ = y;
+                mapX = x;
+                break;
+            case Z:
+                mapZ = level;
+                mapX = x;
+                mapY = y;
+                break;
         }
-        return result;
+        return model.getPixel(mapX, mapY, mapZ);
     }
 
     public BackgroundImage getImage() {
@@ -43,10 +96,6 @@ public class Slice implements Renderable {
 
     public void setImage(BackgroundImage image) {
         this.image = image;
-    }
-
-    public boolean inRange(int x, int y) {
-        return x >= 0 && y >= 0 && x < width && y < height;
     }
 
     public void render(RenderContext context) {
@@ -66,7 +115,7 @@ public class Slice implements Renderable {
                 int pixel = getPixel(x, y);
                 if (pixel > 0) {
 
-                    g.setColor( context.getColors().getBlockColor() );
+                    g.setColor(context.getColors().getBlockColor());
                     int next_x = context.worldToPixelX(x+1);
                     int next_y = context.worldToPixelY(y+1);
                     int curr_x = context.worldToPixelX(x);
