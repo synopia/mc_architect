@@ -7,6 +7,19 @@ challenging task.
 This tool will simplify the process by taking away the annoying counting blocks action. Instead, you will see your actual
 construction sliced by levels and your current position in a running minecraft client.
 
+h1. Download and Installation
+
+ * "minecraft.jar Patch Replacement".http://mc.funky-clan.de/minecraft.jar
+ * "mc_architect.jar Runnable jar file".http://mc.funky-clan.de/mc_architect.jar
+
+ Copy minecraft.jar into your $HOME/AppData/Roaming/.minecraft/bin directory. Start Minecraft as usual.
+ Start Minecraft Architect:
+<pre><code>
+  > java -jar mc_architect.jar <optional ruby script filename to load>
+</code></pre>
+
+h1. Scripting
+
 For simplicity there is no 3d rasterization unit, but you are forced to "program" your structure using a simple ruby script.
 
 <pre><code>
