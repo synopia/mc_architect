@@ -18,6 +18,12 @@
             <artifactId>minecraft-client</artifactId>
             <version>1.2.02</version>
         </dependency>
+        <dependency>
+            <groupId>net.minecraft</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>1.2.02</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -51,8 +57,6 @@
                                 <filter>
                                     <artifact>de.funky_clan.mc:mc_architect</artifact>
                                     <includes>
-                                        <include>pe*</include>
-                                        <include>de/funky_clan/mc/net/MineCraftServerThread*</include>
                                         <include>de/funky_clan/mc/net/ServerThread*</include>
                                     </includes>
                                 </filter>
@@ -60,6 +64,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

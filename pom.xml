@@ -19,16 +19,6 @@
             <artifactId>jruby-complete</artifactId>
             <version>1.5.2</version>
         </dependency>
-        <dependency>
-            <groupId>net.minecraft</groupId>
-            <artifactId>minecraft-client</artifactId>
-            <version>1.2.02</version>
-        </dependency>
-        <dependency>
-            <groupId>net.minecraft</groupId>
-            <artifactId>lwjgl</artifactId>
-            <version>1.2.02</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -41,6 +31,7 @@
                         <manifest>
                             <mainClass>de.funky_clan.mc.Main</mainClass>
                             <packageName>de.funky_clan.mc</packageName>
+                            <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>
                 </configuration>
@@ -54,26 +45,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.jruby:jruby-complete</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 
