@@ -47,7 +47,7 @@ public class Slice implements Renderable {
         }
     }
 
-    public int getPixel(int x, int y) {
+    public int[] mapSliceToWorld( int x, int y, int slice ) {
         int mapX=-1, mapY=-1, mapZ=-1;
 
         switch( type ) {
@@ -67,10 +67,36 @@ public class Slice implements Renderable {
                 mapY = y;
                 break;
         }
-        return model.getPixel(mapX, mapY, mapZ);
+        return new int[]{ mapX, mapY, mapZ };
     }
 
+    public int[] mapWorldToSlice( int x, int y, int z ) {
+        int wx = -1, wy = -1, wz = -1;
 
+        switch (getType()) {
+            case X:
+                wx = y;
+                wy = model.getSizeZ()-z;
+                wz = x;
+                break;
+            case Y:
+                wx = x;
+                wy = model.getSizeZ()-z;
+                wz = y;
+                break;
+            case Z:
+                wx = x;
+                wy = y;
+                wz = z;
+                break;
+        }
+        return new int[]{ wx, wy, wz };
+    }
+
+    public int getPixel(int x, int y) {
+        int[] map = mapSliceToWorld( x, y, slice );
+        return model.getPixel(map[0], map[1], map[2]);
+    }
 
     public BackgroundImage getImage() {
         return image;

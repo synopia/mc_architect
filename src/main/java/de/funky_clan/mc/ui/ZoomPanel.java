@@ -24,6 +24,8 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
                 if( start!=null ) {
                     zoomMouseDragged(e);
                 }
+                Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+                scrollRectToVisible(r);
             }
         });
 

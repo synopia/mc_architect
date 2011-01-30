@@ -5,6 +5,8 @@ import de.funky_clan.mc.model.*;
 
 import java.awt.*;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author paul.fritsche@googlemail.com
@@ -17,7 +19,7 @@ public class SlicePanel extends ZoomPanel {
     private int sliceNo;
     private Slice slice;
 
-    public SlicePanel(Model model, Configuration.Colors colors, Slice slice) {
+    public SlicePanel(Model model, Configuration.Colors colors, final Slice slice) {
         this.model = model;
         this.slice = slice;
 
@@ -25,35 +27,40 @@ public class SlicePanel extends ZoomPanel {
         setFocusable(true);
 
         setAutoscrolls(true);
-        player = new Player();
+        player = new Player( slice.getType()==Slice.SliceType.Z );
         context = new RenderContext(model);
         context.setColors(colors);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if( !e.isConsumed() ) {
+                    if (selectedBlock == null) {
+                        selectedBlock = new SelectedBlock();
+                    } else {
+                        selectedBlock.repaint(SlicePanel.this, context);
+                    }
+                    int x = context.pixelToWorldX(e.getX());
+                    int y = context.pixelToWorldY(e.getY());
+
+                    int map[] = slice.mapWorldToSlice( x, y, sliceNo );
+
+                    selectedBlock.setX(map[0]);
+                    selectedBlock.setY(map[1]);
+                    selectedBlock.repaint(SlicePanel.this, context);
+                }
+            }
+        });
+
     }
 
     public void updatePlayerPos( int x, int y, int z, int angle ) {
         player.repaint(SlicePanel.this, context);
 
-        int wx = y;
-        int wy = model.getSizeZ()-z;
-        int wz = x;
-
-        switch (slice.getType()) {
-            case X:
-                wx = y;
-                wy = model.getSizeZ()-z;
-                wz = x;
-                break;
-            case Y:
-                wx = x;
-                wy = model.getSizeZ()-z;
-                wz = y;
-                break;
-            case Z:
-                wx = x;
-                wy = y;
-                wz = z;
-                break;
-        }
+        int map[] = slice.mapWorldToSlice( x, y, z );
+        int wx = map[0];
+        int wy = map[1];
+        int wz = map[2];
 
         player.setX(wx);
         player.setY(wy);

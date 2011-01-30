@@ -9,6 +9,15 @@ import java.awt.*;
 public class Player extends SelectedBlock {
     private int direction;
     private int z;
+    private boolean drawViewCone;
+
+    public Player(boolean drawViewCone) {
+        this.drawViewCone = drawViewCone;
+    }
+
+    public boolean isDrawViewCone() {
+        return drawViewCone;
+    }
 
     public int getZ() {
         return z;
@@ -33,25 +42,26 @@ public class Player extends SelectedBlock {
         setColor(color);
         super.render(c);
 
-        // draw view
-        Graphics2D g = c.getGraphics();
-        g.setColor(color);
-        int sx = c.worldToPixelX(getX());
-        int sy = c.worldToPixelY(getY());
-        int w  = c.worldToPixelX(1);
-        int h  = c.worldToPixelY(1);
+        if( isDrawViewCone() ) {
+            Graphics2D g = c.getGraphics();
+            g.setColor(color);
+            int sx = c.worldToPixelX(getX());
+            int sy = c.worldToPixelY(getY());
+            int w  = c.worldToPixelX(1);
+            int h  = c.worldToPixelY(1);
 
-        int mx = sx + w/2;
-        int my = sy + h/2;
+            int mx = sx + w/2;
+            int my = sy + h/2;
 
-        int x1 = mx + (int)(10*w * Math.cos((direction-30) / 180.0 * Math.PI));
-        int y1 = my + (int)(10*w * Math.sin((direction-30) / 180.0 * Math.PI));
-        int x2 = mx + (int)(10*w * Math.cos((direction+30) / 180.0 * Math.PI));
-        int y2 = my + (int)(10*w * Math.sin((direction+30) / 180.0 * Math.PI));
+            int x1 = mx + (int)(10*w * Math.cos((direction-30) / 180.0 * Math.PI));
+            int y1 = my + (int)(10*w * Math.sin((direction-30) / 180.0 * Math.PI));
+            int x2 = mx + (int)(10*w * Math.cos((direction+30) / 180.0 * Math.PI));
+            int y2 = my + (int)(10*w * Math.sin((direction+30) / 180.0 * Math.PI));
 
-        g.drawLine( mx, my, x1, y1);
-        g.drawLine( mx, my, x2, y2);
-        g.drawLine( x1, y1, x2, y2);
+            g.drawLine( mx, my, x1, y1);
+            g.drawLine( mx, my, x2, y2);
+            g.drawLine( x1, y1, x2, y2);
+        }
     }
 
     public void repaint( JComponent component, RenderContext c) {
