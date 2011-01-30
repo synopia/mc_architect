@@ -3,6 +3,7 @@ package de.funky_clan.mc.config;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Graphics;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.model.Slice;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -107,7 +108,7 @@ public class Configuration {
             image = new BackgroundImage(filename);
             images.put(filename, image);
         }
-//        model.getZSlice(slice).setImage(image);
+        model.addImage(Slice.SliceType.Z, slice, image);
 
         return this;
     }

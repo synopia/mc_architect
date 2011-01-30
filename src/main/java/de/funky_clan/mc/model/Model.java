@@ -1,5 +1,7 @@
 package de.funky_clan.mc.model;
 
+import java.util.HashMap;
+
 /**
  * @author synopia
  */
@@ -9,6 +11,7 @@ public class Model {
     private int sizeZ;
 
     private int map[][][];
+    private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
 
     public Model(int sizeX, int sizeY, int sizeZ) {
         this.sizeX = sizeX;
@@ -51,6 +54,22 @@ public class Model {
 
         if( isInRange(x, y, z) ) {
             result = map[z][y][x];
+        }
+        return result;
+    }
+
+    public void addImage(Slice.SliceType type, int slice, BackgroundImage image ) {
+        zSliceImages.put(slice, image);
+    }
+
+    public BackgroundImage getImage(Slice.SliceType type, int slice) {
+        BackgroundImage result;
+        switch (type) {
+            case Z:
+                result = zSliceImages.get(slice);
+                break;
+            default:
+                result = null;
         }
         return result;
     }

@@ -9,7 +9,7 @@ public class Slice implements Renderable {
     private int width;
     private int height;
     private int slice;
-    private BackgroundImage image;
+
 
     private Model     model;
     private SliceType type;
@@ -98,15 +98,8 @@ public class Slice implements Renderable {
         return model.getPixel(map[0], map[1], map[2]);
     }
 
-    public BackgroundImage getImage() {
-        return image;
-    }
-
-    public void setImage(BackgroundImage image) {
-        this.image = image;
-    }
-
     public void render(RenderContext context) {
+        BackgroundImage image = model.getImage( getType(), slice );
         if (image != null) {
             image.render(context);
         }
