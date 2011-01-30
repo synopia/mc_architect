@@ -11,10 +11,10 @@ import java.awt.*;
  * @author synopia
  */
 public class MainPanel extends JPanel {
-    private Configuration configuration;
+    private Configuration      configuration;
     private final ClientThread clientThread;
 
-    private RasterPanel raster;
+    private TopDownPanel    topDown;
     private PlayerInfoPanel playerInfo;
 
     public MainPanel( final Configuration configuration ) {
@@ -22,8 +22,8 @@ public class MainPanel extends JPanel {
         this.configuration = configuration;
 
         Model model = configuration.getModel();
-        raster      = new RasterPanel(model, configuration.createColors() );
-        JScrollPane scrollPane = new JScrollPane(raster);
+        topDown     = new TopDownPanel(model, configuration.createColors() );
+        JScrollPane scrollPane = new JScrollPane(topDown);
         playerInfo = new PlayerInfoPanel(model);
 
         add( scrollPane, BorderLayout.CENTER );
@@ -40,7 +40,7 @@ public class MainPanel extends JPanel {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        raster.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
+                        topDown.updatePlayerPos(relX, relY, relZ, (int) (radius) % 360);
                         playerInfo.updatePlayerPos(x, y, z, relX, relY, relZ, (int) (radius) % 360);
                     }
                 });

@@ -1,9 +1,7 @@
 package de.funky_clan.mc;
 
 import de.funky_clan.mc.config.Configuration;
-import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.ui.MainPanel;
-import de.funky_clan.mc.ui.RasterPanel;
 
 import javax.swing.*;
 

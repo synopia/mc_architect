@@ -46,8 +46,8 @@ public class SelectedBlock implements Renderable {
 
         int sx = c.worldToPixelX(x);
         int sy = c.worldToPixelY(y);
-        int w = c.worldToPixelX(1);
-        int h = c.worldToPixelY(1);
+        int w  = c.worldToPixelX(1);
+        int h  = c.worldToPixelY(1);
 
         if( color==null ) {
             g.setColor( c.getColors().getSelectedBlockColor() );

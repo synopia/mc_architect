@@ -2,7 +2,6 @@ package de.funky_clan.mc.ui;
 
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.*;
-import de.funky_clan.mc.net.ClientThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,14 +12,14 @@ import java.awt.event.MouseEvent;
 /**
  * @author synopia
  */
-public class RasterPanel extends ZoomPanel implements Scrollable {
+public class TopDownPanel extends ZoomPanel {
     private Model model;
     private int sliceNo;
     private RenderContext context;
     private SelectedBlock selectedBlock;
     private Player player;
 
-    public RasterPanel(final Model model, Configuration.Colors colors) {
+    public TopDownPanel(final Model model, Configuration.Colors colors) {
         this.model   = model;
         this.sliceNo = 0;
 
@@ -34,13 +33,13 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                     if (selectedBlock == null) {
                         selectedBlock = new SelectedBlock();
                     } else {
-                        selectedBlock.repaint(RasterPanel.this, context);
+                        selectedBlock.repaint(TopDownPanel.this, context);
                     }
                     int x = context.pixelToWorldX(e.getX());
                     int y = context.pixelToWorldY(e.getY());
                     selectedBlock.setX(x);
                     selectedBlock.setY(y);
-                    selectedBlock.repaint(RasterPanel.this, context);
+                    selectedBlock.repaint(TopDownPanel.this, context);
                 }
             }
         });
@@ -59,7 +58,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     }
 
     public void updatePlayerPos( int x, int y, int z, int angle ) {
-        player.repaint(RasterPanel.this, context);
+        player.repaint(TopDownPanel.this, context);
 
         player.setX(x);
         player.setY(y);
@@ -76,7 +75,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
                     context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
             );
             scrollRectToVisible(rect);
-            player.repaint(RasterPanel.this, context);
+            player.repaint(TopDownPanel.this, context);
         }
     }
 
@@ -120,28 +119,4 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
         context.setWindowSize(windowWidth, windowHeight);
     }
 
-    @Override
-    public Dimension getPreferredScrollableViewportSize() {
-        return new Dimension(model.getWidth(), model.getHeight());
-    }
-
-    @Override
-    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 1;
-    }
-
-    @Override
-    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-        return 1;
-    }
-
-    @Override
-    public boolean getScrollableTracksViewportWidth() {
-        return false;
-    }
-
-    @Override
-    public boolean getScrollableTracksViewportHeight() {
-        return false;
-    }
 }

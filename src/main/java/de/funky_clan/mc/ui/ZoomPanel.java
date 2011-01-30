@@ -11,7 +11,7 @@ import java.awt.event.MouseWheelListener;
  *
  * @author synopia
  */
-public abstract class ZoomPanel extends JPanel {
+public abstract class ZoomPanel extends JPanel implements Scrollable  {
     private Point start;
     private double zoom = 1;
     Rectangle zoomRect;
@@ -143,4 +143,30 @@ public abstract class ZoomPanel extends JPanel {
 
         repaintZoomRect(new Rectangle(x, y, w, h));
     }
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 1;
+    }
+
+    @Override
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 1;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return false;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
+    }
+
 }
