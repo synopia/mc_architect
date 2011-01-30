@@ -25,7 +25,11 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        Configuration conf = Configuration.createFromRuby("kolloseum.rb");
+        String configFilename = "kolloseum.rb";
+        if( args.length>0 ) {
+            configFilename = args[0];
+        }
+        Configuration conf = Configuration.createFromRuby(configFilename);
         Main main = new Main(conf);
         main.start();
     }
