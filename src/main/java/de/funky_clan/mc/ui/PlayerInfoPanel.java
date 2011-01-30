@@ -37,6 +37,7 @@ public class PlayerInfoPanel extends JPanel {
     }
 
     public String formatDirection( int angle ) {
+        angle += 45/2;
         angle %= 360;
         while( angle<0 ) {
             angle += 360;
