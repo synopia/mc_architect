@@ -6,18 +6,19 @@ import de.funky_clan.mc.model.Model;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
+import java.awt.*;
 import java.util.HashMap;
 
 /**
  * @author synopia
  */
 public class Configuration {
-    private Model model;
+    private Model    model;
     private Graphics graphics;
     private HashMap<String, BackgroundImage> images = new HashMap<String, BackgroundImage>();
-    int originX;
-    int originY;
-    int originZ;
+    private int originX;
+    private int originY;
+    private int originZ;
 
     public Model getModel() {
         return model;
@@ -25,6 +26,28 @@ public class Configuration {
 
     public Configuration() {
 
+    }
+
+    public class Colors {
+        public Color getBlockColor() {
+            return Color.DARK_GRAY;
+        }
+
+        public Color getBackgroundColor() {
+            return Color.LIGHT_GRAY;
+        }
+
+        public Color getPlayerBlockColor() {
+            return Color.BLUE.brighter();
+        }
+
+        public Color getSelectedBlockColor() {
+            return Color.BLUE;
+        }
+    }
+
+    public Colors createColors() {
+        return new Colors();
     }
 
     public static Configuration createFromRuby( String filename ) {
@@ -92,6 +115,12 @@ public class Configuration {
     public Configuration axis(int x, int y) {
         graphics.hLine(0, y, model.getWidth(), 2);
         graphics.vLine(x, 0, model.getHeight(), 2);
+
+        return this;
+    }
+
+    public Configuration setPixel( int x, int y, int z, int value ) {
+        graphics.setPixel( x, y, z, value);
 
         return this;
     }

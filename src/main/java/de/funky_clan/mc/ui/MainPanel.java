@@ -22,7 +22,7 @@ public class MainPanel extends JPanel {
         this.configuration = configuration;
 
         Model model = configuration.getModel();
-        raster = new RasterPanel(model);
+        raster      = new RasterPanel(model, configuration.createColors() );
         JScrollPane scrollPane = new JScrollPane(raster);
         playerInfo = new PlayerInfoPanel(model);
 

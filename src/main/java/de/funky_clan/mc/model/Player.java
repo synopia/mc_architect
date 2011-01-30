@@ -28,9 +28,14 @@ public class Player extends SelectedBlock {
 
     @Override
     public void render(RenderContext c) {
+        // draw selected block with player color
+        Color color = c.getColors().getPlayerBlockColor();
+        setColor(color);
         super.render(c);
+
+        // draw view
         Graphics2D g = c.getGraphics();
-        g.setColor(Color.BLUE.brighter());
+        g.setColor(color);
         int sx = c.worldToPixelX(getX());
         int sy = c.worldToPixelY(getY());
         int w  = c.worldToPixelX(1);

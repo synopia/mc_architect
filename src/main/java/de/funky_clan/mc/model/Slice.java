@@ -66,7 +66,7 @@ public class Slice implements Renderable {
                 int pixel = getPixel(x, y);
                 if (pixel > 0) {
 
-                    g.setColor(Color.DARK_GRAY);
+                    g.setColor( context.getColors().getBlockColor() );
                     int next_x = context.worldToPixelX(x+1);
                     int next_y = context.worldToPixelY(y+1);
                     int curr_x = context.worldToPixelX(x);

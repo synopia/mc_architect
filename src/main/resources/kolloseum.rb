@@ -29,14 +29,14 @@ profile = <<EOL
  XXXX    XXX   XX      XXX
  XXXX    XXX   XX        XXX
  XXXX    XXX   XX          XXX
- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- XXXXXXXXXXXX XXX           XXX XXX
- XXXXX  XXXX   XX           XX   XXXX
- XXXX    XXX   XX           XX   XX  XX
- XXXX    XXX   XX           XX   XX    XX
- XXXX    XXX   XX           XX   XX      XX
- XXXX    XXX   XX           XX   XX        XX
- XXXX    XXX   XX           XX   XX          XX
+ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_
+ XXXXXXXXXXXX XXX           XXX XXX_
+ XXXXX  XXXX   XX           XX   XXXX_
+ XXXX    XXX   XX           XX   XX  XX_
+ XXXX    XXX   XX           XX   XX    XX_
+ XXXX    XXX   XX           XX   XX      XX_
+ XXXX    XXX   XX           XX   XX        XX_
+ XXXX    XXX   XX           XX   XX          XX_
  XXXX    XXX   XX           XX   XX            XX
  XXXX    XXX   XX           XX   XX            XX
  XXXX    XXX   XX           XX   XX            XX

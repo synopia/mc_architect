@@ -7,9 +7,10 @@ import java.awt.*;
  * @author synopia
  */
 public class SelectedBlock implements Renderable {
-    private int x;
-    private int y;
-    private int thickness;
+    private int   x;
+    private int   y;
+    private int   thickness;
+    private Color color;
 
     public SelectedBlock() {
         thickness = 2;
@@ -48,7 +49,12 @@ public class SelectedBlock implements Renderable {
         int w = c.worldToPixelX(1);
         int h = c.worldToPixelY(1);
 
-        g.setColor(Color.BLUE);
+        if( color==null ) {
+            g.setColor( c.getColors().getSelectedBlockColor() );
+        } else {
+            g.setColor( color );
+        }
+
         for (int i = 0; i < thickness; i++) {
             g.drawRect(sx - i - 1, sy - i - 1, w + 2 * i, h + 2 * i);
         }
@@ -57,5 +63,13 @@ public class SelectedBlock implements Renderable {
     // todo move this to Renderable
     public void repaint( JComponent component, RenderContext c) {
         component.repaint( c.worldToPixelX(getX()-2), c.worldToPixelX(getY()-2), c.worldToPixelX(5), c.worldToPixelY(5) );
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

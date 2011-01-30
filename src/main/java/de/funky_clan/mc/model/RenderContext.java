@@ -1,5 +1,7 @@
 package de.funky_clan.mc.model;
 
+import de.funky_clan.mc.config.Configuration;
+
 import java.awt.*;
 
 /**
@@ -9,6 +11,8 @@ import java.awt.*;
  */
 public class RenderContext {
     private Graphics2D g;
+
+    private Configuration.Colors colors;
 
     private Model model;
     private int screenWidth;
@@ -202,5 +206,13 @@ public class RenderContext {
 
     public float getPixelSizeY() {
         return pixelSizeY;
+    }
+
+    public Configuration.Colors getColors() {
+        return colors;
+    }
+
+    public void setColors(Configuration.Colors colors) {
+        this.colors = colors;
     }
 }

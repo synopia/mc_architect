@@ -48,6 +48,11 @@ public class Graphics {
         }
     }
 
+    public void setPixel( int x, int y, int z, int value ) {
+        Slice slice = model.getSlice(z);
+        slice.setPixel(x, y, value);
+    }
+
     public void hLine(int x, int y, int width, int level, int type) {
         Slice slice = model.getSlice(level);
         for (int i = 0; i < width; i++) {

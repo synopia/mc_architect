@@ -1,5 +1,6 @@
 package de.funky_clan.mc.ui;
 
+import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.net.ClientThread;
 
@@ -19,9 +20,10 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     private SelectedBlock selectedBlock;
     private Player player;
 
-    public RasterPanel(final Model model) {
-        this.model = model;
+    public RasterPanel(final Model model, Configuration.Colors colors) {
+        this.model   = model;
         this.sliceNo = 0;
+
         setFocusable(true);
         setPreferredSize(new Dimension(model.getWidth(), model.getHeight()));
         setAutoscrolls(true);
@@ -53,6 +55,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
 
         player = new Player();
         context = new RenderContext(model);
+        context.setColors(colors);
     }
 
     public void updatePlayerPos( int x, int y, int z, int angle ) {
@@ -87,7 +90,7 @@ public class RasterPanel extends ZoomPanel implements Scrollable {
     @Override
     protected void paintComponent(Graphics g) {
         initContext((Graphics2D) g);
-        g.setColor( Color.LIGHT_GRAY );
+        g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect(0,0,getWidth(), getHeight());
 
         Slice slice = model.getSlice(sliceNo);
