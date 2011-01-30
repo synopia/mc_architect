@@ -43,10 +43,8 @@ public class SlicePanel extends ZoomPanel {
                     int x = context.pixelToWorldX(e.getX());
                     int y = context.pixelToWorldY(e.getY());
 
-                    int map[] = slice.mapWorldToSlice( x, y, sliceNo );
-
-                    selectedBlock.setX(map[0]);
-                    selectedBlock.setY(map[1]);
+                    selectedBlock.setX(x);
+                    selectedBlock.setY(y);
                     selectedBlock.repaint(SlicePanel.this, context);
                 }
             }
