@@ -32,14 +32,15 @@ public class MainPanel extends JPanel {
         sideX       = new SlicePanel(model, configuration.createColors(), new Slice(model, Slice.SliceType.X) );
         sideY       = new SlicePanel(model, configuration.createColors(), new Slice(model, Slice.SliceType.Y) );
 
-        JSplitPane  rootSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        JSplitPane  northSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        JSplitPane  southSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        rootSplitPane.add(northSplitPane);
-        rootSplitPane.add(southSplitPane);
-        northSplitPane.add(new JScrollPane(topDown));
-        southSplitPane.add(new JScrollPane(sideX));
-        southSplitPane.add(new JScrollPane(sideY));
+        JSplitPane rootSplitPane  = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        JSplitPane southSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        rootSplitPane.setResizeWeight( 0.66 );
+        rootSplitPane.setLeftComponent(new JScrollPane(topDown));
+        rootSplitPane.setRightComponent(southSplitPane);
+
+        southSplitPane.setResizeWeight( 0.5d );
+        southSplitPane.setLeftComponent(new JScrollPane(sideX));
+        southSplitPane.setRightComponent(new JScrollPane(sideY));
 
         add( rootSplitPane,  BorderLayout.CENTER );
         add( playerInfo, BorderLayout.NORTH );
