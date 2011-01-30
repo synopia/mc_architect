@@ -10,8 +10,10 @@ import java.io.IOException;
  */
 public class BackgroundImage implements Renderable {
     private Image image;
+    private String filename;
 
     public BackgroundImage(String filename) {
+        this.filename = filename;
         try {
             image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(filename));
         } catch (IOException e) {
@@ -31,4 +33,7 @@ public class BackgroundImage implements Renderable {
         }
     }
 
+    public String getFilename() {
+        return filename;
+    }
 }

@@ -13,9 +13,13 @@ public class ClientThread extends Thread {
     private Socket socket;
     private ObjectInputStream input;
     private DataListener listener;
+    private String host;
+    private int port;
 
 
     public interface DataListener {
+        public void onConnect();
+        public void onDisconnect();
         public void onPlayerPosition(int x, int y, int z, float radius);
     }
 
@@ -33,11 +37,20 @@ public class ClientThread extends Thread {
      */
     public boolean connect(String host, int port, DataListener listener) {
         this.listener = listener;
+        this.host = host;
+        this.port = port;
+        return true;
+    }
+
+    protected boolean doConnect() {
         boolean result;
         try {
             socket = new Socket(host, port);
             input = new ObjectInputStream(socket.getInputStream());
             result = true;
+            if( listener!=null ) {
+                listener.onConnect();
+            }
         } catch (IOException e) {
             result = false;
         }
@@ -62,8 +75,16 @@ public class ClientThread extends Thread {
                     e.printStackTrace();
                     socket = null;
                     input = null;
+                    if( listener!=null ) {
+                        listener.onDisconnect();
+                    }
                 }
             } else {
+                if( host!=null ) {
+                    if( !doConnect() ) {
+                        host = null;
+                    }
+                }
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) {

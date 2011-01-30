@@ -9,7 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * @author paul.fritsche@googlemail.com
+ * @author synopia
  */
 public class SlicePanel extends ZoomPanel {
     private Model model;
@@ -18,12 +18,13 @@ public class SlicePanel extends ZoomPanel {
     private Player player;
     private int sliceNo;
     private Slice slice;
+    private BackgroundImage image;
 
     public SlicePanel(Model model, Configuration.Colors colors, final Slice slice) {
         this.model = model;
         this.slice = slice;
 
-        setZoom((float) slice.getWidth() / slice.getHeight() );
+        setZoom(2 * (float) slice.getWidth() / slice.getHeight() );
         setFocusable(true);
 
         setAutoscrolls(true);
@@ -71,13 +72,13 @@ public class SlicePanel extends ZoomPanel {
             repaint();
         } else {
             sliceNo = wz;
-            Rectangle rect = new Rectangle(
-                    context.worldToPixelX(wx-context.getWidth()/2), context.worldToPixelY(wy-context.getHeight()/2),
-                    context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
-            );
-            scrollRectToVisible(rect);
             player.repaint(SlicePanel.this, context);
         }
+        Rectangle rect = new Rectangle(
+                context.worldToPixelX(wx-context.getWidth()/2), context.worldToPixelY(wy-context.getHeight()/2),
+                context.worldToPixelX(context.getWidth()), context.worldToPixelY(context.getHeight())
+        );
+        scrollRectToVisible(rect);
     }
 
     @Override
@@ -90,12 +91,23 @@ public class SlicePanel extends ZoomPanel {
     @Override
     protected void paintComponent(Graphics g) {
         initContext((Graphics2D) g);
-        g.setColor( context.getColors().getBackgroundColor() );
-        g.fillRect(0,0,getWidth(), getHeight());
+
+        BackgroundImage image = this.image;
+
+        if( image==null ) {
+            image = model.getImage( slice.getType(), sliceNo );
+        }
+        if (image != null) {
+            image.render(context);
+        } else {
+            g.setColor( context.getColors().getBackgroundColor() );
+            g.fillRect(0,0,getWidth(), getHeight());
+        }
+
 
         if (slice != null) {
-            slice.setSlice( sliceNo );
-            slice.render(context);
+                slice.setSlice( sliceNo );
+                slice.render(context);
         }
 
         if (selectedBlock != null) {
@@ -124,5 +136,10 @@ public class SlicePanel extends ZoomPanel {
     @Override
     public Dimension getPreferredScrollableViewportSize() {
         return new Dimension(slice.getWidth(), slice.getHeight());
+    }
+
+    public void setImage(BackgroundImage image) {
+        this.image = image;
+        repaint();
     }
 }

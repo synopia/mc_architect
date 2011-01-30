@@ -8,6 +8,7 @@ import java.awt.*;
 public class Slice implements Renderable {
     private int width;
     private int height;
+    private int slices;
     private int slice;
 
 
@@ -35,16 +36,23 @@ public class Slice implements Renderable {
             case X:
                 this.width  = model.getSizeY();
                 this.height = model.getSizeZ();
+                this.slices = model.getSizeX();
                 break;
             case Y:
                 this.width  = model.getSizeX();
                 this.height = model.getSizeZ();
+                this.slices = model.getSizeY();
                 break;
             case Z:
                 this.width  = model.getSizeX();
                 this.height = model.getSizeY();
+                this.slices = model.getSizeZ();
                 break;
         }
+    }
+
+    public int getSlices() {
+        return slices;
     }
 
     public int[] mapSliceToWorld( int x, int y, int slice ) {
@@ -99,11 +107,6 @@ public class Slice implements Renderable {
     }
 
     public void render(RenderContext context) {
-        BackgroundImage image = model.getImage( getType(), slice );
-        if (image != null) {
-            image.render(context);
-        }
-
         Graphics2D g = context.getGraphics();
 
         int sx = context.getStartX()-1;

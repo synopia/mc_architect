@@ -29,6 +29,10 @@ public class Configuration {
 
     }
 
+    public HashMap<String, BackgroundImage> getImages() {
+        return images;
+    }
+
     public class Colors {
         public Color getBlockColor() {
             return Color.DARK_GRAY;

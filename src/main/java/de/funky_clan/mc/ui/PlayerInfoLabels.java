@@ -8,32 +8,45 @@ import java.awt.*;
 /**
  * @author synopia
  */
-public class PlayerInfoPanel extends JPanel {
-    private JTextArea textArea;
+public class PlayerInfoLabels {
     private Model     model;
 
-    public PlayerInfoPanel(Model model) {
+    private JLabel direction;
+    private JLabel absoluteWorld;
+    private JLabel absoluteModel;
+    private JLabel relativeMid;
+
+    public PlayerInfoLabels(Model model) {
         super();
         this.model = model;
-        textArea   = new JTextArea();
 
-        textArea.setPreferredSize(new Dimension(300, 70));
-        add(textArea);
+        direction = new JLabel();
+        absoluteWorld = new JLabel();
+        absoluteModel = new JLabel();
+        relativeMid = new JLabel();
     }
 
     public void updatePlayerPos( int x, int y, int z, int relX, int relY, int relZ, int angle ) {
-        String text = String.format(
-                "Direction: %s\n"+
-                "Absolute World: %s\n"+
-                "Absolute Model: %s\n"+
-                "Relative to mid: %s\n",
-                formatDirection(angle),
-                formatCoord(x, y, z),
-                formatCoord(relX, relY, relZ),
-                formatCoord(relX-model.getSizeX()/2, relY-model.getSizeY()/2, relZ)
-        );
+        direction.setText("Direction: " + formatDirection(angle) );
+        absoluteWorld.setText("Absolute World: " + formatCoord(x, y, z));
+        absoluteModel.setText("Absolute Model: " + formatCoord(relX, relY, relZ) );
+        relativeMid.setText("Relative to mid: " + formatCoord(relX-model.getSizeX()/2, relY-model.getSizeY()/2, relZ) );
+    }
 
-        textArea.setText( text );
+    public JLabel getDirection() {
+        return direction;
+    }
+
+    public JLabel getAbsoluteWorld() {
+        return absoluteWorld;
+    }
+
+    public JLabel getAbsoluteModel() {
+        return absoluteModel;
+    }
+
+    public JLabel getRelativeMid() {
+        return relativeMid;
     }
 
     public String formatDirection( int angle ) {
