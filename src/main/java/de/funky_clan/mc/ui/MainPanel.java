@@ -77,7 +77,7 @@ public class MainPanel extends JPanel {
         });
         HashMap<String,BackgroundImage> images = configuration.getImages();
         for (final BackgroundImage image : images.values()) {
-            imageBar.add( new AbstractAction(image.getFilename()) {
+            imageBar.add( new AbstractAction(image.getFilename(), image.getIcon()) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     topDown.setImage( image );
