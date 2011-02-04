@@ -1,60 +1,63 @@
 package de.funky_clan.mc.ui;
 
-import javax.swing.*;
+//~--- JDK imports ------------------------------------------------------------
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.*;
+
 /**
  *
  * @author synopia
  */
-public abstract class ZoomPanel extends JPanel implements Scrollable  {
-    private Point start;
+public abstract class ZoomPanel extends JPanel implements Scrollable {
     private double zoom = 1;
-    Rectangle zoomRect;
-    Rectangle lastZoomRect;
+    Rectangle      lastZoomRect;
+    private Point  start;
+    Rectangle      zoomRect;
 
     public ZoomPanel() {
         addMouseMotionListener( new MouseAdapter() {
             @Override
-            public void mouseDragged(MouseEvent e) {
-                if( start!=null ) {
-                    zoomMouseDragged(e);
+            public void mouseDragged( MouseEvent e ) {
+                if( start != null ) {
+                    zoomMouseDragged( e );
                 }
-                Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
-                scrollRectToVisible(r);
-            }
-        });
 
-        addMouseListener(new MouseAdapter() {
+                Rectangle r = new Rectangle( e.getX(), e.getY(), 1, 1 );
+
+                scrollRectToVisible( r );
+            }
+        } );
+        addMouseListener( new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent e) {
-                if( isMouseZooming(e) ) {
+            public void mouseReleased( MouseEvent e ) {
+                if( isMouseZooming( e )) {
                     zoomMouseReleased( e );
                 }
             }
-
             @Override
-            public void mousePressed(MouseEvent e) {
-                if( isMouseZooming(e) ) {
-                    zoomMousePressed(e);
+            public void mousePressed( MouseEvent e ) {
+                if( isMouseZooming( e )) {
+                    zoomMousePressed( e );
                 }
             }
-        });
-
-        addMouseWheelListener(new MouseWheelListener() {
+        } );
+        addMouseWheelListener( new MouseWheelListener() {
             @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
+            public void mouseWheelMoved( MouseWheelEvent e ) {
                 double scale = 1 + e.getWheelRotation() * 0.05;
-                if( zoom*scale>1 ) {
+
+                if( zoom * scale > 1 ) {
                     zoom *= scale;
                     applyZoom( zoom );
                 }
             }
-        });
+        } );
     }
 
     /**
@@ -62,7 +65,7 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
      *
      * @param zoom factor, that should be zoom to (absolute). "1" is original size
      */
-    public abstract void applyZoom(double zoom);
+    public abstract void applyZoom( double zoom );
 
     /**
      * Overwrite this method, to define when zooming.
@@ -75,91 +78,102 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        g.setXORMode(Color.WHITE);
-        if( zoomRect!=null ) {
-            g.drawRect( zoomRect.x, zoomRect.y, zoomRect.width-1, zoomRect.height-1 );
+    protected void paintComponent( Graphics g ) {
+        g.setXORMode( Color.WHITE );
+
+        if( zoomRect != null ) {
+            g.drawRect( zoomRect.x, zoomRect.y, zoomRect.width - 1, zoomRect.height - 1 );
         }
     }
 
-    protected void repaintZoomRect(Rectangle rectangle) {
-        zoomRect        = rectangle;
+    protected void repaintZoomRect( Rectangle rectangle ) {
+        zoomRect = rectangle;
+
         Rectangle union = zoomRect;
 
-        if( lastZoomRect!=null ) {
-            union = zoomRect.union(lastZoomRect);
+        if( lastZoomRect != null ) {
+            union = zoomRect.union( lastZoomRect );
         }
+
         repaint( union );
         lastZoomRect = zoomRect;
     }
 
-    protected void zoomMousePressed(MouseEvent e) {
+    protected void zoomMousePressed( MouseEvent e ) {
         start = e.getPoint();
     }
 
-    protected void zoomMouseReleased(MouseEvent e) {
+    protected void zoomMouseReleased( MouseEvent e ) {
         zoomRect = null;
+
         Point end = e.getPoint();
-        if( start!=null && !start.equals(end) ) {
+
+        if( (start != null) && !start.equals( end )) {
             e.consume();
+
             double selectedWidth  = Math.abs( end.getX() - start.getX() );
             double selectedHeight = Math.abs( end.getY() - start.getY() );
-            if( selectedHeight<5 || selectedWidth<5 ) {
+
+            if( (selectedHeight < 5) || (selectedWidth < 5) ) {
                 return;
             }
 
             double scale;
-            if( getParent().getWidth()>getParent().getHeight() ) {
+
+            if( getParent().getWidth() > getParent().getHeight() ) {
                 scale = getParent().getWidth() / selectedWidth;
             } else {
                 scale = getParent().getHeight() / selectedHeight;
             }
+
             zoom *= scale;
+            setZoom( zoom );
 
-            setZoom(zoom);
+            final int x = ( (int) ( start.x * scale ));
+            final int y = ( (int) ( start.y * scale ));
 
-            final int x = ((int)(start.x*scale));
-            final int y = ((int)(start.y*scale));
-
-            setPosition(x, y);
+            setPosition( x, y );
         }
     }
 
-    public void setZoom(double zoom) {
+    public void setZoom( double zoom ) {
         this.zoom = zoom;
-        applyZoom(zoom);
+        applyZoom( zoom );
     }
 
-    protected void setPosition(final int x, final int y) {
-        EventQueue.invokeLater(new Runnable() {
+    protected void setPosition( final int x, final int y ) {
+        EventQueue.invokeLater( new Runnable() {
             @Override
             public void run() {
-                ((JViewport) getParent()).setViewPosition(new Point(x, y));
+                ( (JViewport) getParent() ).setViewPosition( new Point( x, y ));
             }
-        });
+        } );
     }
 
-    protected void zoomMouseDragged(MouseEvent e) {
+    protected void zoomMouseDragged( MouseEvent e ) {
         e.consume();
+
         int width  = start.x - e.getX();
         int height = start.y - e.getY();
-        int w = Math.abs(width);
-        int h = Math.abs(height);
-        int x = width < 0 ? start.x : e.getX();
-        int y = height < 0 ? start.y : e.getY();
+        int w      = Math.abs( width );
+        int h      = Math.abs( height );
+        int x      = (width < 0)
+                     ? start.x
+                     : e.getX();
+        int y      = (height < 0)
+                     ? start.y
+                     : e.getY();
 
-        repaintZoomRect(new Rectangle(x, y, w, h));
+        repaintZoomRect( new Rectangle( x, y, w, h ));
     }
 
-
-
     @Override
-    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+    public int getScrollableUnitIncrement( Rectangle visibleRect, int orientation, int direction ) {
         return 1;
     }
 
     @Override
-    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+    public int getScrollableBlockIncrement( Rectangle visibleRect, int orientation, int direction ) {
         return 1;
     }
 
@@ -172,5 +186,4 @@ public abstract class ZoomPanel extends JPanel implements Scrollable  {
     public boolean getScrollableTracksViewportHeight() {
         return false;
     }
-
 }

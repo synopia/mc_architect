@@ -1,36 +1,40 @@
 package de.funky_clan.mc.ui;
 
+//~--- non-JDK imports --------------------------------------------------------
+
 import de.funky_clan.mc.model.Model;
 
-import javax.swing.*;
+//~--- JDK imports ------------------------------------------------------------
+
 import java.awt.*;
+
+import javax.swing.*;
 
 /**
  * @author synopia
  */
 public class PlayerInfoLabels {
-    private Model     model;
-
-    private JLabel direction;
-    private JLabel absoluteWorld;
     private JLabel absoluteModel;
+    private JLabel absoluteWorld;
+    private JLabel direction;
+    private Model  model;
     private JLabel relativeMid;
 
-    public PlayerInfoLabels(Model model) {
+    public PlayerInfoLabels( Model model ) {
         super();
-        this.model = model;
-
-        direction = new JLabel();
+        this.model    = model;
+        direction     = new JLabel();
         absoluteWorld = new JLabel();
         absoluteModel = new JLabel();
-        relativeMid = new JLabel();
+        relativeMid   = new JLabel();
     }
 
     public void updatePlayerPos( int x, int y, int z, int relX, int relY, int relZ, int angle ) {
-        direction.setText("Direction: " + formatDirection(angle) );
-        absoluteWorld.setText("Absolute World: " + formatCoord(x, y, z));
-        absoluteModel.setText("Absolute Model: " + formatCoord(relX, relY, relZ) );
-        relativeMid.setText("Relative to mid: " + formatCoord(relX-model.getSizeX()/2, relY-model.getSizeY()/2, relZ) );
+        direction.setText( "Direction: " + formatDirection( angle ));
+        absoluteWorld.setText( "Absolute World: " + formatCoord( x, y, z ));
+        absoluteModel.setText( "Absolute Model: " + formatCoord( relX, relY, relZ ));
+        relativeMid.setText( "Relative to mid: "
+                             + formatCoord( relX - model.getSizeX() / 2, relY - model.getSizeY() / 2, relZ ));
     }
 
     public JLabel getDirection() {
@@ -50,28 +54,30 @@ public class PlayerInfoLabels {
     }
 
     public String formatDirection( int angle ) {
-        angle += 45/2;
+        angle += 45 / 2;
         angle %= 360;
-        while( angle<0 ) {
+
+        while( angle < 0 ) {
             angle += 360;
         }
 
         String dir = "";
-        if( angle<45 ) {
+
+        if( angle < 45 ) {
             dir = "W";
-        } else if( angle<2*45 ) {
+        } else if( angle < 2 * 45 ) {
             dir = "NW";
-        } else if( angle<3*45 ) {
+        } else if( angle < 3 * 45 ) {
             dir = "N";
-        } else if( angle<4*45 ) {
+        } else if( angle < 4 * 45 ) {
             dir = "NE";
-        } else if( angle<5*45 ) {
+        } else if( angle < 5 * 45 ) {
             dir = "E";
-        } else if( angle<6*45 ) {
+        } else if( angle < 6 * 45 ) {
             dir = "SE";
-        } else if( angle<7*45 ) {
+        } else if( angle < 7 * 45 ) {
             dir = "S";
-        } else if( angle<8*45 ) {
+        } else if( angle < 8 * 45 ) {
             dir = "SW";
         }
 
@@ -79,6 +85,6 @@ public class PlayerInfoLabels {
     }
 
     public String formatCoord( int x, int y, int z ) {
-        return x+", "+y+", "+z;
+        return x + ", " + y + ", " + z;
     }
 }

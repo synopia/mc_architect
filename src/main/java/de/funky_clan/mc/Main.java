@@ -1,7 +1,11 @@
 package de.funky_clan.mc;
 
+//~--- non-JDK imports --------------------------------------------------------
+
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.ui.MainPanel;
+
+//~--- JDK imports ------------------------------------------------------------
 
 import javax.swing.*;
 
@@ -11,26 +15,28 @@ import javax.swing.*;
 public class Main extends JFrame {
     private MainPanel mainPanel;
 
-    public Main(Configuration configuration) {
-        mainPanel = new MainPanel(configuration);
-
-        setTitle("Minecraft Architect for v1.2.02");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(mainPanel);
+    public Main( Configuration configuration ) {
+        mainPanel = new MainPanel( configuration );
+        setTitle( "Minecraft Architect for v1.2.02" );
+        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        add( mainPanel );
         pack();
     }
 
     public void start() {
-        this.setVisible(true);
+        this.setVisible( true );
     }
 
-    public static void main(String[] args) {
+    public static void main( String[] args ) {
         String configFilename = "kolloseum.rb";
-        if( args.length>0 ) {
+
+        if( args.length > 0 ) {
             configFilename = args[0];
         }
-        Configuration conf = Configuration.createFromRuby(configFilename);
-        Main main = new Main(conf);
+
+        Configuration conf = Configuration.createFromRuby( configFilename );
+        Main          main = new Main( conf );
+
         main.start();
     }
 }
