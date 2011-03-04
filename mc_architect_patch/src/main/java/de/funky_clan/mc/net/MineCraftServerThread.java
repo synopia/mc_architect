@@ -39,7 +39,7 @@ public class MineCraftServerThread extends ServerThread {
     private int xCoord()
     {
         int x = (int)game.g.aF;
-        if(game.g.aF < 0.0D)
+        if(game.g.aI < 0.0D)
             x--;
         return x;
     }
@@ -47,7 +47,7 @@ public class MineCraftServerThread extends ServerThread {
     private int yCoord()
     {
         int y = (int)game.g.aH;
-        if(game.g.aH < 0.0D)
+        if(game.g.aK < 0.0D)
             y--;
         return y;
     }
@@ -58,7 +58,7 @@ public class MineCraftServerThread extends ServerThread {
     }
 
     private float radius() {
-        return game.g.aL;
+        return game.g.aO;
     }
 
     @Override

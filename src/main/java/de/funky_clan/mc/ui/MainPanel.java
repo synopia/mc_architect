@@ -40,9 +40,9 @@ public class MainPanel extends JPanel {
         clientThread = new ClientThread();
         clientThread.start();
         this.configuration = configuration;
-        playerX            = -configuration.getOriginX();
-        playerY            = configuration.getOriginY();
-        playerZ            = configuration.getOriginZ();
+        playerX            = -configuration.getOriginX() + configuration.getModel().getSizeX()/2;
+        playerY            = configuration.getOriginY()  + configuration.getModel().getSizeY()/2;
+        playerZ            = configuration.getOriginZ()  + configuration.getModel().getSizeZ()/2;
 
         Model model = configuration.getModel();
 

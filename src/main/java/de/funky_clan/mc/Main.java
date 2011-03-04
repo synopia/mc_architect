@@ -13,10 +13,9 @@ import javax.swing.*;
  * @author synopia
  */
 public class Main extends JFrame {
-    private MainPanel mainPanel;
 
     public Main( Configuration configuration ) {
-        mainPanel = new MainPanel( configuration );
+        MainPanel mainPanel=new MainPanel( configuration );
         setTitle( "Minecraft Architect for v1.2.02" );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         add( mainPanel );
