@@ -6,7 +6,7 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Slice;
-import de.funky_clan.mc.net.ClientThread;
+import de.funky_clan.mc.net.MinecraftMitmThread;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -21,9 +21,9 @@ import javax.swing.*;
  * @author synopia
  */
 public class MainPanel extends JPanel {
-    private ClientThread     clientThread;
+    private MinecraftMitmThread mitmThread;
     private Configuration    configuration;
-    private Action           connection;
+    private JTextField       host;
     private float            playerDir;
     private PlayerInfoLabels playerInfo;
     private int              playerX;
@@ -37,8 +37,29 @@ public class MainPanel extends JPanel {
 
     public MainPanel( final Configuration configuration ) {
         super( new BorderLayout() );
-        clientThread = new ClientThread();
-        clientThread.start();
+        mitmThread = new MinecraftMitmThread(12345, new MinecraftMitmThread.PlayerPositionHandler() {
+            @Override
+            public void onConnect() {
+                host.setEditable(false);
+                mitmThread.setTargetHost( host.getText() );
+                mitmThread.setTargetPort(25565);
+            }
+
+            @Override
+            public void onDisconnect() {
+                host.setEditable(true);
+            }
+
+            @Override
+            public void onPlayerPosition(double x, double y, double z, float yaw, float pitch) {
+                playerX   = (int)x;
+                playerY   = (int)y;
+                playerZ   = (int)z;
+                playerDir = (int)yaw;
+                updatePlayerPos( playerX, playerY, playerZ + zShift, playerDir );
+            }
+        });
+        mitmThread.start();
         this.configuration = configuration;
         playerX            = -configuration.getOriginX() + configuration.getModel().getSizeX()/2;
         playerY            = configuration.getOriginY()  + configuration.getModel().getSizeY()/2;
@@ -66,27 +87,6 @@ public class MainPanel extends JPanel {
         add( rootSplitPane, BorderLayout.CENTER );
         add( info, BorderLayout.NORTH );
         add( imageBar, BorderLayout.SOUTH );
-    }
-
-    public void connect() {
-        clientThread.connect( "localhost", 12345, new ClientThread.DataListener() {
-            @Override
-            public void onConnect() {
-                connection.putValue( Action.NAME, "Disconnect" );
-            }
-            @Override
-            public void onDisconnect() {
-                connection.putValue( Action.NAME, "Connect" );
-            }
-            @Override
-            public void onPlayerPosition( final int x, final int y, final int z, final float radius ) {
-                playerX   = x;
-                playerY   = y;
-                playerZ   = z;
-                playerDir = radius;
-                updatePlayerPos( x, y, z + zShift, radius );
-            }
-        } );
     }
 
     private void updatePlayerPos( final int x, final int y, final int z, final float radius ) {
@@ -157,16 +157,12 @@ public class MainPanel extends JPanel {
 
     private JToolBar buildInfoToolBar() {
         playerInfo = new PlayerInfoLabels( configuration.getModel() );
-        connection = new AbstractAction( "Connect" ) {
-            @Override
-            public void actionPerformed( ActionEvent e ) {
-                connect();
-            }
-        };
+        host = new JTextField();
+        host.setText("mc.funky-clan.de");
 
         JToolBar info = new JToolBar();
 
-        info.add( connection );
+        info.add( host );
         info.addSeparator();
         info.add( playerInfo.getDirection() );
         info.addSeparator();
