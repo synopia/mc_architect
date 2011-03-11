@@ -56,8 +56,31 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.slf4j:slf4j-api</include>
+                                    <include>org.slf4j:slf4j-simple</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
+
+
     </build>
 
     <reporting>
