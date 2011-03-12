@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
  * @author synopia
  */
 public class SlicePanel extends ZoomPanel {
-    private RenderContext   context;
     private BackgroundImage image;
     private Model           model;
     private Player          player;
@@ -27,12 +26,11 @@ public class SlicePanel extends ZoomPanel {
     public SlicePanel( Model model, Configuration.Colors colors, final Slice slice ) {
         this.model = model;
         this.slice = slice;
-        setZoom( 2 * (float) slice.getWidth() / slice.getHeight() );
-        setFocusable( true );
+        setFocusable(true);
         setAutoscrolls( true );
         player  = new Player( slice.getType() == Slice.SliceType.Z );
-        context = new RenderContext( model );
         context.setColors( colors );
+        context.setWindowSize(50,50);
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
@@ -43,8 +41,8 @@ public class SlicePanel extends ZoomPanel {
                         selectedBlock.repaint( SlicePanel.this, context );
                     }
 
-                    int x = context.pixelToWorldX( e.getX() );
-                    int y = context.pixelToWorldY( e.getY() );
+                    int x = (int)context.screenToModelX(e.getX());
+                    int y = (int)context.screenToModelY(e.getY());
 
                     selectedBlock.setX( x );
                     selectedBlock.setY( y );
@@ -71,20 +69,21 @@ public class SlicePanel extends ZoomPanel {
     }
 
     private void scrollToPlayer( int wx, int wy ) {
-        Rectangle rect = new Rectangle( context.worldToPixelX( wx - context.getWidth() / 2 ),
-                                        context.worldToPixelY( wy - context.getHeight() / 2 ),
-                                        context.worldToPixelX( context.getWidth() ),
-                                        context.worldToPixelY( context.getHeight() ));
+        double windowX = context.getWindowX();
+        double windowY = context.getWindowY();
+        double windowWidth = context.getWindowWidth();
+        double windowHeight = context.getWindowHeight();
 
-        scrollRectToVisible( rect );
-    }
+        context.init( wx-windowWidth/2, wy-windowHeight/2, windowWidth, windowHeight, getWidth(), getHeight() );
+/*
+        context.init( context.modelToScreenX(wx - context.getWidth() / 2),
+                                        context.modelToScreenY(wy - context.getHeight() / 2),
+                                        context.modelToScreenX(context.getWidth()),
+                                        context.modelToScreenY(context.getHeight()), getWidth(), getHeight()
+        );
+*/
 
-    @Override
-    public void applyZoom( double zoom ) {
-        Dimension newSize = new Dimension( (int) ( slice.getWidth() * zoom ), (int) ( slice.getHeight() * zoom ));
-
-        setPreferredSize( newSize );
-        revalidate();
+        repaint();
     }
 
     @Override
@@ -121,21 +120,7 @@ public class SlicePanel extends ZoomPanel {
     }
 
     private void initContext( Graphics2D g ) {
-        context.setGraphics( g );
-
-        int windowWidth  = getParent().getWidth();
-        int windowHeight = getParent().getHeight();
-        int screenWidth  = getWidth();
-        int screenHeight = getHeight();
-
-        context.setScreenSize( screenWidth, screenHeight, slice.getWidth(), slice.getHeight() );
-        context.setWindowStart( -getX(), -getY() );
-        context.setWindowSize( windowWidth, windowHeight );
-    }
-
-    @Override
-    public Dimension getPreferredScrollableViewportSize() {
-        return new Dimension( slice.getWidth(), slice.getHeight() );
+        context.setGraphics(g);
     }
 
     public void setImage( BackgroundImage image ) {

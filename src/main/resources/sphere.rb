@@ -1,10 +1,9 @@
 size_x  = 187
 size_y  = 155
-mid_x   = size_x/2
-mid_y   = size_y/2
+mid_x   = 100+size_x/2
+mid_y   = 100+size_y/2
 
-@builder.origin -607-mid_y, -15-mid_x, 65
-@builder.create 187, 155, 30
+@builder.origin mid_x, 65, mid_y
 
 def sphere xm, ym, zm, r
   (-r..+r).each do |x|
@@ -36,4 +35,4 @@ end
 #helix mid_x, mid_y, 5, 7,3, 1, 1.5, 90
 #helix mid_x, mid_y, 5, 7,3, 1, 1.5, 270
 
-sphere mid_x, mid_y,15, 30
+sphere mid_x, 65, mid_y, 30

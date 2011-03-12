@@ -2,6 +2,8 @@ package de.funky_clan.mc.ui;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import de.funky_clan.mc.model.RenderContext;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,25 +16,27 @@ import javax.swing.*;
  *
  * @author synopia
  */
-public abstract class ZoomPanel extends JPanel implements Scrollable {
+public abstract class ZoomPanel extends JPanel {
     private double zoom = 1;
     Rectangle      lastZoomRect;
     private Point  start;
     Rectangle      zoomRect;
+    protected RenderContext context = new RenderContext();
 
     public ZoomPanel() {
-        addMouseMotionListener( new MouseAdapter() {
+        context.init(0,0, getWidth(), getHeight(), getWidth(), getHeight());
+        addMouseMotionListener(new MouseAdapter() {
             @Override
-            public void mouseDragged( MouseEvent e ) {
-                if( start != null ) {
-                    zoomMouseDragged( e );
+            public void mouseDragged(MouseEvent e) {
+                if (start != null) {
+                    zoomMouseDragged(e);
                 }
 
-                Rectangle r = new Rectangle( e.getX(), e.getY(), 1, 1 );
+                Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
 
-                scrollRectToVisible( r );
+                scrollRectToVisible(r);
             }
-        } );
+        });
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
@@ -54,18 +58,18 @@ public abstract class ZoomPanel extends JPanel implements Scrollable {
 
                 if( zoom * scale > 1 ) {
                     zoom *= scale;
-                    applyZoom( zoom );
+                    context.zoom( zoom, zoom );
+                    repaint();  // todo
                 }
             }
         } );
     }
 
-    /**
-     * This method is called whenever zoom factor changes. Implementations may resize and invalidate itself here.
-     *
-     * @param zoom factor, that should be zoom to (absolute). "1" is original size
-     */
-    public abstract void applyZoom( double zoom );
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        context.setScreenSize(width, height);
+    }
 
     /**
      * Overwrite this method, to define when zooming.
@@ -111,43 +115,20 @@ public abstract class ZoomPanel extends JPanel implements Scrollable {
         if( (start != null) && !start.equals( end )) {
             e.consume();
 
-            double selectedWidth  = Math.abs( end.getX() - start.getX() );
-            double selectedHeight = Math.abs( end.getY() - start.getY() );
-
-            if( (selectedHeight < 5) || (selectedWidth < 5) ) {
-                return;
-            }
-
-            double scale;
-
-            if( getParent().getWidth() > getParent().getHeight() ) {
-                scale = getParent().getWidth() / selectedWidth;
-            } else {
-                scale = getParent().getHeight() / selectedHeight;
-            }
-
-            zoom *= scale;
-            setZoom( zoom );
-
-            final int x = ( (int) ( start.x * scale ));
-            final int y = ( (int) ( start.y * scale ));
-
-            setPosition( x, y );
+            applyWindow( start.x, start.y, end.x-start.x, end.y-start.y );
         }
     }
 
-    public void setZoom( double zoom ) {
-        this.zoom = zoom;
-        applyZoom( zoom );
-    }
+    public void applyWindow( int x, int y, int width, int height ) {
+        double windowX = context.screenToModelX( x );
+        double windowY = context.screenToModelY( y );
+        double windowWidth = context.screenToModelX( width );
+        double windowHeight = context.screenToModelY( height );
 
-    protected void setPosition( final int x, final int y ) {
-        EventQueue.invokeLater( new Runnable() {
-            @Override
-            public void run() {
-                ( (JViewport) getParent() ).setViewPosition( new Point( x, y ));
-            }
-        } );
+        context.init( windowX, windowY, windowWidth, windowHeight, getWidth(), getHeight() );
+
+        repaint(); // todo
+
     }
 
     protected void zoomMouseDragged( MouseEvent e ) {
@@ -165,25 +146,5 @@ public abstract class ZoomPanel extends JPanel implements Scrollable {
                      : e.getY();
 
         repaintZoomRect( new Rectangle( x, y, w, h ));
-    }
-
-    @Override
-    public int getScrollableUnitIncrement( Rectangle visibleRect, int orientation, int direction ) {
-        return 1;
-    }
-
-    @Override
-    public int getScrollableBlockIncrement( Rectangle visibleRect, int orientation, int direction ) {
-        return 1;
-    }
-
-    @Override
-    public boolean getScrollableTracksViewportWidth() {
-        return false;
-    }
-
-    @Override
-    public boolean getScrollableTracksViewportHeight() {
-        return false;
     }
 }

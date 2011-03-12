@@ -1,11 +1,12 @@
 package de.funky_clan.mc.net;
 
+import de.funky_clan.mc.net.protocol.ClientProtocol9;
+import de.funky_clan.mc.net.protocol.Protocol9;
+import de.funky_clan.mc.net.protocol.ServerProtocol9;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,47 +19,53 @@ public class MitmThread extends Thread {
     private Filter request;
     private ServerSocket socket;
 
-    public interface ConnectionHandler {
-        void onConnect();
-        void onDisconnect();
-        Handler createRequestHandler();
-        Handler createResponseHandler();
-    }
+    private class MitmInputStream extends InputStream {
+        private InputStream source;
+        private OutputStream target;
+        private MitmInputStream(InputStream in, OutputStream target) {
+            this.source = in;
+            this.target = target;
+        }
 
-    public interface Handler {
-        void onData( byte[] buffer, int length );
+        @Override
+        public int read() throws IOException {
+            int read = source.read();
+            target.write(read);
+            return read;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int read = source.read(b, off, len);
+            target.write(b, off, read);
+            return read;
+        }
+
+        @Override
+        public int available() throws IOException {
+            return source.available();
+        }
+
     }
 
     private class Filter extends Thread {
         private InputStream input;
+        private DataInputStream dataInput;
         private OutputStream output;
-        private Handler handler;
+        private Protocol9 protocol;
 
-        private Filter(InputStream input, OutputStream output) {
-            this.input = input;
+        private Filter(InputStream input, OutputStream output, Protocol9 protocol) {
+            this.input = new MitmInputStream(input, output);
+            this.dataInput = new DataInputStream( this.input );
             this.output = output;
-        }
-
-        private Filter(InputStream input, OutputStream output, Handler handler) {
-            this.input = input;
-            this.output = output;
-            this.handler = handler;
+            this.protocol = protocol;
         }
 
         @Override
         public void run() {
-            byte []buffer = new byte[4096];
-
             try {
                 while( !interrupted() ) {
-                    int read = input.read(buffer);
-                    if( read == -1 ) {
-                        break;
-                    }
-                    if( handler!=null ) {
-                        handler.onData(buffer, read);
-                    }
-                    output.write( buffer, 0, read );
+                    protocol.decode(dataInput);
                     output.flush();
                 }
             } catch (IOException e) {
@@ -70,7 +77,8 @@ public class MitmThread extends Thread {
     private String            targetHost;
     private int               targetPort;
     private int               sourcePort;
-    private ConnectionHandler connectionHandler;
+    private ClientProtocol9.ClientHandler clientHandler;
+    private ServerProtocol9.ServerHandler serverHandler;
     private boolean            connected;
     private Logger logger = LoggerFactory.getLogger(MitmThread.class);
 
@@ -78,15 +86,10 @@ public class MitmThread extends Thread {
         this.sourcePort = sourcePort;
     }
 
-    public MitmThread(int sourcePort, ConnectionHandler connectionHandler) {
+    public MitmThread(int sourcePort, ClientProtocol9.ClientHandler clientHandler, ServerProtocol9.ServerHandler serverHandler) {
         this.sourcePort = sourcePort;
-        this.connectionHandler = connectionHandler;
-    }
-
-    public MitmThread(String targetHost, int targetPort, int sourcePort) {
-        this.targetHost = targetHost;
-        this.targetPort = targetPort;
-        this.sourcePort = sourcePort;
+        this.clientHandler = clientHandler;
+        this.serverHandler = serverHandler;
     }
 
     @Override
@@ -103,7 +106,6 @@ public class MitmThread extends Thread {
 
                 Socket sourceSocket = socket.accept();
                 logger.info("MITM Server: Client connected");
-                connectionHandler.onConnect();
 
                 logger.info("MITM Server: connecting to server " + targetHost + " : "+targetPort);
                 targetSocket = new Socket( targetHost, targetPort );
@@ -114,8 +116,8 @@ public class MitmThread extends Thread {
                 OutputStream toTarget = targetSocket.getOutputStream();
                 InputStream fromTarget = targetSocket.getInputStream();
 
-                request = new Filter(fromSource, toTarget, connectionHandler.createRequestHandler() );
-                response = new Filter(fromTarget, toSource, connectionHandler.createResponseHandler() );
+                request = new Filter(fromSource, toTarget, new ClientProtocol9(clientHandler) );
+                response = new Filter(fromTarget, toSource, new ServerProtocol9(serverHandler) );
 
                 logger.info("MITM Server: starting streaming threads");
                 request.start();
@@ -130,7 +132,6 @@ public class MitmThread extends Thread {
                 shutdownFilter(response);
                 shutdownSocket(targetSocket);
                 connected = false;
-                connectionHandler.onDisconnect();
             }
         }
     }
@@ -152,10 +153,6 @@ public class MitmThread extends Thread {
             } catch (InterruptedException e) {
             }
         }
-    }
-
-    public void setConnectionHandler(ConnectionHandler connectionHandler) {
-        this.connectionHandler = connectionHandler;
     }
 
     public void setTargetHost(String targetHost) {

@@ -64,13 +64,13 @@ public class Graphics {
     }
 
     public void hLine( int x, int y, int width, int type ) {
-        for( int level = 0; level < model.getSizeZ(); level++ ) {
+        for( int level = 0; level < 50; level++ ) {
             hLine( x, y, width, level, type );
         }
     }
 
     public void vLine( int x, int y, int height, int type ) {
-        for( int level = 0; level < model.getSizeZ(); level++ ) {
+        for( int level = 0; level < 50; level++ ) {
             vLine( x, y, height, level, type );
         }
     }

@@ -6,13 +6,16 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Slice;
-import de.funky_clan.mc.net.MinecraftMitmThread;
+import de.funky_clan.mc.net.MitmThread;
+import de.funky_clan.mc.net.protocol.ClientProtocol9;
+import de.funky_clan.mc.net.protocol.ServerProtocol9;
 
 //~--- JDK imports ------------------------------------------------------------
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -21,7 +24,7 @@ import javax.swing.*;
  * @author synopia
  */
 public class MainPanel extends JPanel {
-    private MinecraftMitmThread mitmThread;
+    private MitmThread mitmThread;
     private Configuration    configuration;
     private JTextField       host;
     private float            playerDir;
@@ -37,39 +40,57 @@ public class MainPanel extends JPanel {
 
     public MainPanel( final Configuration configuration ) {
         super( new BorderLayout() );
-        mitmThread = new MinecraftMitmThread(12345, new MinecraftMitmThread.PlayerPositionHandler() {
+        mitmThread = new MitmThread(12345, new ClientProtocol9.ClientHandler() {
             @Override
-            public void onConnect() {
-                host.setEditable(false);
-                mitmThread.setTargetHost( host.getText() );
-                mitmThread.setTargetPort(25565);
-            }
-
-            @Override
-            public void onDisconnect() {
-                host.setEditable(true);
-            }
-
-            @Override
-            public void onPlayerPosition(double x, double y, double z, float yaw, float pitch) {
+            public void onPlayerUpdate(double x, double y, double z, float yaw, float pitch) {
                 playerX   = (int)x;
                 playerY   = (int)y;
                 playerZ   = (int)z;
                 playerDir = (int)yaw;
                 updatePlayerPos( playerX, playerY, playerZ + zShift, playerDir );
             }
+
+            @Override
+            public void onConnect() {
+                host.setEditable(false);
+            }
+
+            @Override
+            public void onDisconnect() {
+                host.setEditable(true);
+            }
+        }, new ServerProtocol9.ServerHandler() {
+            @Override
+            public void onChunkUpdate(int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data) {
+                configuration.getModel().setBlock(sx, sy, sz, sizeX, sizeY, sizeZ, data );
+                repaint();
+            }
+
+            @Override
+            public void onConnect() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onDisconnect() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
         });
-        mitmThread.start();
+
         this.configuration = configuration;
-        playerX            = -configuration.getOriginX() + configuration.getModel().getSizeX()/2;
-        playerY            = configuration.getOriginY()  + configuration.getModel().getSizeY()/2;
-        playerZ            = configuration.getOriginZ()  + configuration.getModel().getSizeZ()/2;
+        playerX            = configuration.getOriginX();
+        playerY            = configuration.getOriginY();
+        playerZ            = configuration.getOriginZ();
 
         Model model = configuration.getModel();
 
         topDown = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.Z ));
         sideX   = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.X ));
         sideY   = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.Y ));
+
+        topDown.setPreferredSize(new Dimension(800,600));
+        sideX.setPreferredSize(new Dimension(400,300));
+        sideY.setPreferredSize(new Dimension(400,300));
 
         JSplitPane rootSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
         JSplitPane southSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
@@ -87,12 +108,14 @@ public class MainPanel extends JPanel {
         add( rootSplitPane, BorderLayout.CENTER );
         add( info, BorderLayout.NORTH );
         add( imageBar, BorderLayout.SOUTH );
+
+        mitmThread.start();
     }
 
     private void updatePlayerPos( final int x, final int y, final int z, final float radius ) {
-        final int relX = y - configuration.getOriginY();
-        final int relY = -x - configuration.getOriginX();
-        final int relZ = z - configuration.getOriginZ();
+        final int relX = x ;
+        final int relY = y ;
+        final int relZ = z ;
 
         SwingUtilities.invokeLater( new Runnable() {
             @Override
@@ -108,7 +131,7 @@ public class MainPanel extends JPanel {
     public void setZShift( int zShift ) {
         this.zShift = zShift;
         zShiftLabel.setText( "z shift: " + zShift );
-        updatePlayerPos( playerX, playerY, playerZ + zShift, playerDir );
+        updatePlayerPos( playerX, playerY + zShift, playerZ, playerDir );
     }
 
     private JToolBar buildImageToolBar() {
@@ -158,7 +181,17 @@ public class MainPanel extends JPanel {
     private JToolBar buildInfoToolBar() {
         playerInfo = new PlayerInfoLabels( configuration.getModel() );
         host = new JTextField();
-        host.setText("mc.funky-clan.de");
+        host.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mitmThread.setTargetHost( host.getText() );
+                mitmThread.setTargetPort(25565);
+            }
+        });
+        host.setText("localhost");
+        mitmThread.setTargetHost( host.getText() );
+        mitmThread.setTargetPort(25565);
+//        host.setText("mc.funky-clan.de");
 
         JToolBar info = new JToolBar();
 

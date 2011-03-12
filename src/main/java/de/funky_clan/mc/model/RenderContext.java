@@ -16,18 +16,17 @@ import java.awt.*;
 public class RenderContext {
     private Configuration.Colors colors;
     private Graphics2D           g;
-    private Model                model;
-    private float                pixelSizeX;
-    private float                pixelSizeY;
+    private double               pixelSizeX;
+    private double               pixelSizeY;
     private int                  screenHeight;
     private int                  screenWidth;
-    private int                  windowHeight;
-    private int                  windowWidth;
-    private int                  windowX;
-    private int                  windowY;
 
-    public RenderContext( Model model ) {
-        this.model = model;
+    private double               windowHeight;
+    private double               windowWidth;
+    private double               windowX;
+    private double               windowY;
+
+    public RenderContext( ) {
     }
 
     public void setGraphics( Graphics2D g ) {
@@ -40,8 +39,8 @@ public class RenderContext {
      * @param x x value of coordinate in pixels
      * @return x value of coordinate in world-x (no range check!)
      */
-    public int pixelToWorldX( int x ) {
-        return(int) ( x / pixelSizeX );
+    public double screenToModelX(int x) {
+        return x / pixelSizeX + windowX;
     }
 
     /**
@@ -50,8 +49,8 @@ public class RenderContext {
      * @param y y value of coordinate in pixels
      * @return y value of coordinate in world-y (no range check!)
      */
-    public int pixelToWorldY( int y ) {
-        return(int) ( y / pixelSizeY );
+    public double screenToModelY(int y) {
+        return  y / pixelSizeY + windowY;
     }
 
     /**
@@ -60,8 +59,8 @@ public class RenderContext {
      * @param x x value of world coordinate
      * @return x value of coordinate in pixels (top left corner of block)
      */
-    public int worldToPixelX( int x ) {
-        return(int) ( x * pixelSizeX );
+    public int modelToScreenX(double x) {
+        return(int) ( (x-windowX) * pixelSizeX );
     }
 
     /**
@@ -70,8 +69,8 @@ public class RenderContext {
      * @param y y value of world coordinate
      * @return y value of coordinate in pixels (top left corner of block)
      */
-    public int worldToPixelY( int y ) {
-        return(int) ( y * pixelSizeY );
+    public int modelToScreenY(double y) {
+        return(int) ( (y-windowY) * pixelSizeY );
     }
 
     /**
@@ -80,7 +79,7 @@ public class RenderContext {
      * @param x coordinate
      * @param y coordinate
      */
-    public void setWindowStart( int x, int y ) {
+    public void setWindowStart( double x, double y ) {
         windowX = x;
         windowY = y;
     }
@@ -91,23 +90,36 @@ public class RenderContext {
      * @param width  of window
      * @param height of window
      */
-    public void setWindowSize( int width, int height ) {
+    public void setWindowSize( double width, double  height ) {
         windowWidth  = width;
         windowHeight = height;
+        calculateSizes();
     }
 
     /**
      * Scaled size, where content is drawn to
      *
-     * @param width  of screen
-     * @param height of screen
-     * @param modelWidth  of model
-     * @param modelHeight of model
      */
-    public void setScreenSize( int width, int height, int modelWidth, int modelHeight ) {
-        screenWidth  = width;
-        screenHeight = height;
-        setPixelSize( (float) width / modelWidth, (float) height / modelHeight );
+    public void init(double windowX, double windowY, double windowWidth, double windowHeight, int screenWidth, int screenHeight) {
+        this.windowX = windowX;
+        this.windowY = windowY;
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        calculateSizes();
+    }
+
+    private void calculateSizes() {
+        if( windowWidth>0 && windowHeight>0 ) {
+            setPixelSize(screenWidth / windowWidth, screenHeight / windowHeight);
+        } else {
+            setPixelSize(0,0);
+        }
+    }
+
+    public void zoom( double zoomX, double zoomY ) {
+        init(windowX, windowY, windowWidth * zoomX, windowHeight * zoomY, screenWidth, screenHeight);
     }
 
     /**
@@ -128,36 +140,32 @@ public class RenderContext {
         return g;
     }
 
-    public Model getModel() {
-        return model;
-    }
-
     /**
      * @return top left corner of viewport window in model space
      */
     public int getStartX() {
-        return pixelToWorldX( windowX );
+        return (int)windowX;
     }
 
     /**
      * @return top left corner of viewport window in model space
      */
     public int getStartY() {
-        return pixelToWorldY( windowY );
+        return (int)windowY;
     }
 
     /**
      * @return width of viewport window in model space
      */
     public int getWidth() {
-        return pixelToWorldX( windowWidth );
+        return (int)windowWidth;
     }
 
     /**
      * @return width of viewport window in model space
      */
     public int getHeight() {
-        return pixelToWorldY( windowHeight );
+        return (int)windowHeight;
     }
 
     /**
@@ -174,32 +182,32 @@ public class RenderContext {
         return getStartY() + getHeight();
     }
 
-    public int getWindowX() {
+    public double getWindowX() {
         return windowX;
     }
 
-    public int getWindowY() {
+    public double getWindowY() {
         return windowY;
     }
 
-    public int getWindowWidth() {
+    public double getWindowWidth() {
         return windowWidth;
     }
 
-    public int getWindowHeight() {
+    public double getWindowHeight() {
         return windowHeight;
     }
 
-    protected void setPixelSize( float x, float y ) {
+    protected void setPixelSize( double x, double y ) {
         pixelSizeX = x;
         pixelSizeY = y;
     }
 
-    public float getPixelSizeX() {
+    public double getPixelSizeX() {
         return pixelSizeX;
     }
 
-    public float getPixelSizeY() {
+    public double getPixelSizeY() {
         return pixelSizeY;
     }
 
@@ -209,5 +217,17 @@ public class RenderContext {
 
     public void setColors( Configuration.Colors colors ) {
         this.colors = colors;
+    }
+
+    public void setScreenSize(int width, int height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+
+        calculateSizes();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("window = %.2f, %.2f; %.2f, %.2f - screen = %d, %d", windowX, windowY, windowWidth, windowHeight, screenWidth, screenHeight);
     }
 }

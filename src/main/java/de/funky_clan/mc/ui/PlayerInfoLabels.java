@@ -33,8 +33,7 @@ public class PlayerInfoLabels {
         direction.setText( "Direction: " + formatDirection( angle ));
         absoluteWorld.setText( "Absolute World: " + formatCoord( x, y, z ));
         absoluteModel.setText( "Absolute Model: " + formatCoord( relX, relY, relZ ));
-        relativeMid.setText( "Relative to mid: "
-                             + formatCoord( relX - model.getSizeX() / 2, relY - model.getSizeY() / 2, relZ ));
+        relativeMid.setText( "");
     }
 
     public JLabel getDirection() {

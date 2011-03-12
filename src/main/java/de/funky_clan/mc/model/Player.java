@@ -35,7 +35,7 @@ public class Player extends SelectedBlock {
     }
 
     public void setDirection( int direction ) {
-        this.direction = direction;
+        this.direction = direction+90;
     }
 
     @Override
@@ -52,10 +52,10 @@ public class Player extends SelectedBlock {
 
             g.setColor( color );
 
-            int sx = c.worldToPixelX( getX() );
-            int sy = c.worldToPixelY( getY() );
-            int w  = c.worldToPixelX( 1 );
-            int h  = c.worldToPixelY( 1 );
+            int sx = c.modelToScreenX(getX());
+            int sy = c.modelToScreenY(getY());
+            int w  = c.modelToScreenX(getX()+1) - sx;
+            int h  = c.modelToScreenY(getY()+1) - sy;
             int mx = sx + w / 2;
             int my = sy + h / 2;
             int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
@@ -70,7 +70,7 @@ public class Player extends SelectedBlock {
     }
 
     public void repaint( JComponent component, RenderContext c ) {
-        component.repaint( c.worldToPixelX( getX() - 15 ), c.worldToPixelX( getY() - 15 ), c.worldToPixelX( 30 ),
-                           c.worldToPixelY( 30 ));
+        component.repaint( c.modelToScreenX(getX() - 15), c.modelToScreenX(getY() - 15), c.modelToScreenX(30),
+                           c.modelToScreenY(30));
     }
 }

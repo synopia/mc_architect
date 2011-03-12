@@ -8,12 +8,10 @@ import java.awt.*;
  * @author synopia
  */
 public class Slice implements Renderable {
-    private int       height;
     private Model     model;
     private int       slice;
     private int       slices;
     private SliceType type;
-    private int       width;
 
     public enum SliceType {
         X,    // y-z
@@ -24,37 +22,13 @@ public class Slice implements Renderable {
     public Slice( Model model, SliceType type ) {
         this.model = model;
         this.type  = type;
-        setWidthAndHeight();
     }
 
     public void setSlice( int slice ) {
         this.slice = slice;
     }
 
-    private void setWidthAndHeight() {
-        switch( type ) {
-        case X:
-            this.width  = model.getSizeY();
-            this.height = model.getSizeZ();
-            this.slices = model.getSizeX();
 
-            break;
-
-        case Y:
-            this.width  = model.getSizeX();
-            this.height = model.getSizeZ();
-            this.slices = model.getSizeY();
-
-            break;
-
-        case Z:
-            this.width  = model.getSizeX();
-            this.height = model.getSizeY();
-            this.slices = model.getSizeZ();
-
-            break;
-        }
-    }
 
     public int getSlices() {
         return slices;
@@ -68,22 +42,22 @@ public class Slice implements Renderable {
         switch( type ) {
         case X:
             mapX = slice;
-            mapZ = height - y;
-            mapY = x;
+            mapZ = x;
+            mapY = y;
 
             break;
 
         case Y:
-            mapY = slice;
-            mapZ = height - y;
+            mapY = y;
+            mapZ = slice;
             mapX = x;
 
             break;
 
         case Z:
-            mapZ = slice;
+            mapZ = y;
             mapX = x;
-            mapY = y;
+            mapY = slice;
 
             break;
         }
@@ -98,23 +72,23 @@ public class Slice implements Renderable {
 
         switch( getType() ) {
         case X:
-            wx = y;
-            wy = model.getSizeZ() - z;
+            wx = z;
+            wy = y;
             wz = x;
 
             break;
 
         case Y:
             wx = x;
-            wy = model.getSizeZ() - z;
-            wz = y;
+            wy = y;
+            wz = z;
 
             break;
 
         case Z:
             wx = x;
-            wy = y;
-            wz = z;
+            wy = z;
+            wz = y;
 
             break;
         }
@@ -142,23 +116,15 @@ public class Slice implements Renderable {
                 if( pixel > 0 ) {
                     g.setColor( context.getColors().getBlockColor() );
 
-                    int next_x = context.worldToPixelX( x + 1 );
-                    int next_y = context.worldToPixelY( y + 1 );
-                    int curr_x = context.worldToPixelX( x );
-                    int curr_y = context.worldToPixelY( y );
+                    int next_x = context.modelToScreenX(x + 1);
+                    int next_y = context.modelToScreenY(y + 1);
+                    int curr_x = context.modelToScreenX(x);
+                    int curr_y = context.modelToScreenY(y);
 
-                    g.fillRect( curr_x, curr_y, next_x - curr_x - 1, next_y - curr_y - 1 );
+                    g.fillRect( curr_x, curr_y, Math.max(next_x - curr_x - 1, 1), Math.max(next_y - curr_y - 1,1) );
                 }
             }
         }
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 
     public SliceType getType() {
