@@ -47,17 +47,18 @@ X                                               X
 X                                               X
 EOL
 
+java_import "de.funky_clan.mc.model.SliceType"
 
 profile = profile.split("\n").reverse
 
+mid_x = 607
+mid_y = 64
+mid_z = -14
+
 size_x  = 187
-size_y  = 155
-mid_x   = size_x/2
-mid_y   = size_y/2
+size_z  = 155
 
-@builder.origin -607-mid_y, -15-mid_x, 65
-
-@builder.create 187, 155, profile.size
+@builder.origin mid_x, mid_z, mid_y, SliceType::Z
 
 @builder.image  4,  7, "level1.png"
 @builder.image  8, 15, "level2.png"
@@ -68,9 +69,9 @@ level = 0
 profile.each do |line|
   line.chars.each_with_index do |c, r|
     next unless c=="X"
-    @builder.ellipse level, mid_x, mid_y, mid_x-r-1, mid_y-r-1
+    @builder.ellipse level, 0, 0, size_z/2-r-1, size_x/2-r-1
   end
   level += 1
 end
 
-@builder.axis mid_x, mid_y
+#@builder.axis mid_x, mid_y

@@ -28,7 +28,7 @@ public class SlicePanel extends ZoomPanel {
         this.slice = slice;
         setFocusable(true);
         setAutoscrolls( true );
-        player  = new Player( slice.getType() == Slice.SliceType.Z );
+        player  = new Player( slice.getType() == SliceType.Z );
         context.setColors( colors );
         context.setWindowSize(50,50);
         addMouseListener( new MouseAdapter() {

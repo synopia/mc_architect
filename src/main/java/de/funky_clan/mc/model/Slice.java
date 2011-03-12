@@ -13,12 +13,6 @@ public class Slice implements Renderable {
     private int       slices;
     private SliceType type;
 
-    public enum SliceType {
-        X,    // y-z
-        Y,    // x-z
-        Z,    // x-y
-    }
-
     public Slice( Model model, SliceType type ) {
         this.model = model;
         this.type  = type;
@@ -98,8 +92,12 @@ public class Slice implements Renderable {
 
     public int getPixel( int x, int y ) {
         int[] map = mapSliceToWorld( x, y, slice );
-
         return model.getPixel( map[0], map[1], map[2] );
+    }
+
+    public void setPixel( int x, int y, int slice, int value ) {
+        int[] map = mapSliceToWorld( x, y, slice );
+        model.setPixel(map[0], map[1], map[2], value);
     }
 
     public void render( RenderContext context ) {
@@ -116,12 +114,12 @@ public class Slice implements Renderable {
                 if( pixel > 0 ) {
                     g.setColor( context.getColors().getBlockColor() );
 
-                    int next_x = context.modelToScreenX(x + 1);
-                    int next_y = context.modelToScreenY(y + 1);
                     int curr_x = context.modelToScreenX(x);
                     int curr_y = context.modelToScreenY(y);
+                    int width = context.screenUnitX(x);
+                    int height = context.screenUnitY(y);
 
-                    g.fillRect( curr_x, curr_y, Math.max(next_x - curr_x - 1, 1), Math.max(next_y - curr_y - 1,1) );
+                    g.fillRect( context.getScreenWidth()-curr_x, context.getScreenHeight()-curr_y, width, height );
                 }
             }
         }

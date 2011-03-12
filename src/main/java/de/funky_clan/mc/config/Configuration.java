@@ -2,11 +2,9 @@ package de.funky_clan.mc.config;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import de.funky_clan.mc.model.BackgroundImage;
-import de.funky_clan.mc.model.Graphics;
-import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.model.Slice;
+import de.funky_clan.mc.model.*;
 
+import de.funky_clan.mc.model.Graphics;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -25,11 +23,10 @@ public class Configuration {
     private Model                            model;
     private int                              originX;
     private int                              originY;
-    private int                              originZ;
+    private int                              originSlice;
 
     public Configuration() {
         model    = new Model();
-        graphics = new Graphics( model );
     }
 
     public Model getModel() {
@@ -54,10 +51,11 @@ public class Configuration {
         return configuration;
     }
 
-    public Configuration origin( int x, int y, int z ) {
+    public Configuration origin( int x, int y, int z, SliceType type ) {
+        graphics = new Graphics( new Slice(model, type) );
         originX = x;
         originY = y;
-        originZ = z;
+        originSlice = z;
 
         return this;
     }
@@ -71,7 +69,7 @@ public class Configuration {
     }
 
     public Configuration ellipse( int slice, int x, int y, int width, int height ) {
-        graphics.ellipse( slice, x, y, width, height, 1 );
+        graphics.ellipse( slice+originSlice, x+originX, y+originY, width, height, 1 );
 
         return this;
     }
@@ -98,7 +96,7 @@ public class Configuration {
             images.put( filename, image );
         }
 
-        model.addImage( Slice.SliceType.Z, slice, image );
+        model.addImage( SliceType.Z, slice, image );
 
         return this;
     }
@@ -110,8 +108,8 @@ public class Configuration {
         return this;
     }
 
-    public Configuration setPixel( int x, int y, int z, int value ) {
-        graphics.setPixel( x, y, z, value );
+    public Configuration setPixel( int x, int y, int slice, int value ) {
+        graphics.setPixel( x+originX, y+originY, slice+ originSlice, value );
 
         return this;
     }
@@ -124,8 +122,8 @@ public class Configuration {
         return originY;
     }
 
-    public int getOriginZ() {
-        return originZ;
+    public int getOriginSlice() {
+        return originSlice;
     }
 
     public class Colors {

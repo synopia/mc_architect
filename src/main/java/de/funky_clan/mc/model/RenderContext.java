@@ -70,7 +70,21 @@ public class RenderContext {
      * @return y value of coordinate in pixels (top left corner of block)
      */
     public int modelToScreenY(double y) {
-        return(int) ( (y-windowY) * pixelSizeY );
+        return (int) ( (y-windowY) * pixelSizeY );
+    }
+
+    public int screenUnitX(int x) {
+        return screenUnitX( x, x+1 );
+    }
+    public int screenUnitY(int y) {
+        return screenUnitY( y, y+1 );
+    }
+
+    public int screenUnitX(int x1, int x2) {
+        return Math.max( 1, Math.abs(modelToScreenX(x1)-modelToScreenX(x2))-1 );
+    }
+    public int screenUnitY(int y1, int y2) {
+        return Math.max( 1, Math.abs(modelToScreenY(y1) - modelToScreenY(y2)-1 ) );
     }
 
     /**
@@ -119,6 +133,7 @@ public class RenderContext {
     }
 
     public void zoom( double zoomX, double zoomY ) {
+        System.out.println(zoomX);
         init(windowX, windowY, windowWidth * zoomX, windowHeight * zoomY, screenWidth, screenHeight);
     }
 

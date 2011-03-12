@@ -6,10 +6,10 @@ package de.funky_clan.mc.model;
  * @author synopia
  */
 public class Graphics {
-    private Model model;
+    private Slice slice;
 
-    public Graphics( Model model ) {
-        this.model = model;
+    public Graphics( Slice slice ) {
+        this.slice = slice;
     }
 
     public void ellipse( int level, int xm, int ym, int width, int height, int type ) {
@@ -47,8 +47,8 @@ public class Graphics {
         }
     }
 
-    public void setPixel( int x, int y, int z, int value ) {
-        model.setPixel( x, y, z, value );
+    public void setPixel( int x, int y, int slice, int value ) {
+        this.slice.setPixel(x, y, slice, value);
     }
 
     public void hLine( int x, int y, int width, int level, int type ) {

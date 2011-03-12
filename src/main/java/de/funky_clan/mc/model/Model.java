@@ -88,11 +88,11 @@ public class Model {
         return chunk;
     }
 
-    public void addImage( Slice.SliceType type, int slice, BackgroundImage image ) {
+    public void addImage( SliceType type, int slice, BackgroundImage image ) {
         zSliceImages.put( slice, image );
     }
 
-    public BackgroundImage getImage( Slice.SliceType type, int slice ) {
+    public BackgroundImage getImage( SliceType type, int slice ) {
         BackgroundImage result;
 
         switch( type ) {

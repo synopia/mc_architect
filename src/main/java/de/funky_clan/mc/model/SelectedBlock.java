@@ -48,8 +48,8 @@ public class SelectedBlock implements Renderable {
         Graphics2D g  = c.getGraphics();
         int        sx = c.modelToScreenX(x);
         int        sy = c.modelToScreenY(y);
-        int        w  = c.modelToScreenX(x+1)-sx;
-        int        h  = c.modelToScreenY(y+1)-sy;
+        int        w  = c.screenUnitX(x);
+        int        h  = c.screenUnitY(y);
 
         if( color == null ) {
             g.setColor( c.getColors().getSelectedBlockColor() );
@@ -64,8 +64,8 @@ public class SelectedBlock implements Renderable {
 
     // todo move this to Renderable
     public void repaint( JComponent component, RenderContext c ) {
-        component.repaint( c.modelToScreenX(getX() - 2), c.modelToScreenX(getY() - 2), c.modelToScreenX(5),
-                           c.modelToScreenY(5));
+        component.repaint( c.modelToScreenX(getX() - 2), c.modelToScreenX(getY() - 2), c.screenUnitX(getX()-2, getX()+2),
+                           c.screenUnitY(getY()-2, getY()+2));
     }
 
     public Color getColor() {

@@ -6,6 +6,7 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Slice;
+import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.MitmThread;
 import de.funky_clan.mc.net.protocol.ClientProtocol9;
 import de.funky_clan.mc.net.protocol.ServerProtocol9;
@@ -62,7 +63,7 @@ public class MainPanel extends JPanel {
         }, new ServerProtocol9.ServerHandler() {
             @Override
             public void onChunkUpdate(int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data) {
-                configuration.getModel().setBlock(sx, sy, sz, sizeX, sizeY, sizeZ, data );
+                configuration.getModel().setBlock(sx, sy, sz, sizeX, sizeY, sizeZ, data);
                 repaint();
             }
 
@@ -80,13 +81,13 @@ public class MainPanel extends JPanel {
         this.configuration = configuration;
         playerX            = configuration.getOriginX();
         playerY            = configuration.getOriginY();
-        playerZ            = configuration.getOriginZ();
+        playerZ            = configuration.getOriginSlice();
 
         Model model = configuration.getModel();
 
-        topDown = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.Z ));
-        sideX   = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.X ));
-        sideY   = new SlicePanel( model, configuration.createColors(), new Slice( model, Slice.SliceType.Y ));
+        topDown = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.Z ));
+        sideX   = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.X ));
+        sideY   = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.Y ));
 
         topDown.setPreferredSize(new Dimension(800,600));
         sideX.setPreferredSize(new Dimension(400,300));

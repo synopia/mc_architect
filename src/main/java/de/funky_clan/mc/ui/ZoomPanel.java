@@ -17,7 +17,6 @@ import javax.swing.*;
  * @author synopia
  */
 public abstract class ZoomPanel extends JPanel {
-    private double zoom = 1;
     Rectangle      lastZoomRect;
     private Point  start;
     Rectangle      zoomRect;
@@ -55,12 +54,8 @@ public abstract class ZoomPanel extends JPanel {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e ) {
                 double scale = 1 + e.getWheelRotation() * 0.05;
-
-                if( zoom * scale > 1 ) {
-                    zoom *= scale;
-                    context.zoom( zoom, zoom );
-                    repaint();  // todo
-                }
+                context.zoom( scale, scale );
+                repaint();
             }
         } );
     }
@@ -122,8 +117,8 @@ public abstract class ZoomPanel extends JPanel {
     public void applyWindow( int x, int y, int width, int height ) {
         double windowX = context.screenToModelX( x );
         double windowY = context.screenToModelY( y );
-        double windowWidth = context.screenToModelX( width );
-        double windowHeight = context.screenToModelY( height );
+        double windowWidth = context.screenToModelX( x+width )-windowX;
+        double windowHeight = context.screenToModelY( y+height )-windowY;
 
         context.init( windowX, windowY, windowWidth, windowHeight, getWidth(), getHeight() );
 
@@ -139,11 +134,11 @@ public abstract class ZoomPanel extends JPanel {
         int w      = Math.abs( width );
         int h      = Math.abs( height );
         int x      = (width < 0)
-                     ? start.x
-                     : e.getX();
+                ? start.x
+                : e.getX();
         int y      = (height < 0)
-                     ? start.y
-                     : e.getY();
+                ? start.y
+                : e.getY();
 
         repaintZoomRect( new Rectangle( x, y, w, h ));
     }
