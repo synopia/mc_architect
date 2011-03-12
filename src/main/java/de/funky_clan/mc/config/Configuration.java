@@ -24,6 +24,9 @@ public class Configuration {
     private int                              originX;
     private int                              originY;
     private int                              originSlice;
+    private int midX;
+    private int midY;
+    private int midZ;
 
     public Configuration() {
         model    = new Model();
@@ -52,10 +55,16 @@ public class Configuration {
     }
 
     public Configuration origin( int x, int y, int z, SliceType type ) {
-        graphics = new Graphics( new Slice(model, type) );
+        Slice slice = new Slice(model, type);
+        graphics = new Graphics(slice);
         originX = x;
         originY = y;
         originSlice = z;
+
+        int[] map = slice.mapSliceToWorld(x, y, z);
+        midX = map[0];
+        midY = map[1];
+        midZ = map[2];
 
         return this;
     }
@@ -92,11 +101,11 @@ public class Configuration {
         BackgroundImage image = images.get( filename );
 
         if( image == null ) {
-            image = new BackgroundImage( filename );
+            image = new BackgroundImage( filename,originX, originY );
             images.put( filename, image );
         }
 
-        model.addImage( SliceType.Z, slice, image );
+        model.addImage( SliceType.Z, slice+originSlice, image );
 
         return this;
     }
@@ -124,6 +133,18 @@ public class Configuration {
 
     public int getOriginSlice() {
         return originSlice;
+    }
+
+    public int getMidX() {
+        return midX;
+    }
+
+    public int getMidY() {
+        return midY;
+    }
+
+    public int getMidZ() {
+        return midZ;
     }
 
     public class Colors {

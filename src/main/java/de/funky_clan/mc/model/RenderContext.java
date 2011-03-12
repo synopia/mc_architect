@@ -133,7 +133,6 @@ public class RenderContext {
     }
 
     public void zoom( double zoomX, double zoomY ) {
-        System.out.println(zoomX);
         init(windowX, windowY, windowWidth * zoomX, windowHeight * zoomY, screenWidth, screenHeight);
     }
 

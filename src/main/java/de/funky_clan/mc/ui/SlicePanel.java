@@ -34,15 +34,15 @@ public class SlicePanel extends ZoomPanel {
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
-                if( !e.isConsumed() ) {
+                if( !e.isConsumed() && e.getButton()==MouseEvent.BUTTON1 ) {
                     if( selectedBlock == null ) {
                         selectedBlock = new SelectedBlock();
                     } else {
                         selectedBlock.repaint( SlicePanel.this, context );
                     }
 
-                    int x = (int)context.screenToModelX(e.getX());
-                    int y = (int)context.screenToModelY(e.getY());
+                    int x = (int)context.screenToModelX(context.getScreenWidth()-e.getX());
+                    int y = (int)context.screenToModelY(context.getScreenHeight()-e.getY());
 
                     selectedBlock.setX( x );
                     selectedBlock.setY( y );
@@ -75,14 +75,6 @@ public class SlicePanel extends ZoomPanel {
         double windowHeight = context.getWindowHeight();
 
         context.init( wx-windowWidth/2, wy-windowHeight/2, windowWidth, windowHeight, getWidth(), getHeight() );
-/*
-        context.init( context.modelToScreenX(wx - context.getWidth() / 2),
-                                        context.modelToScreenY(wy - context.getHeight() / 2),
-                                        context.modelToScreenX(context.getWidth()),
-                                        context.modelToScreenY(context.getHeight()), getWidth(), getHeight()
-        );
-*/
-
         repaint();
     }
 
@@ -96,13 +88,12 @@ public class SlicePanel extends ZoomPanel {
             image = model.getImage( slice.getType(), sliceNo );
         }
 
+        g.setColor( context.getColors().getBackgroundColor() );
+        g.fillRect( 0, 0, getWidth(), getHeight() );
+
         if( image != null ) {
             image.render( context );
-        } else {
-            g.setColor( context.getColors().getBackgroundColor() );
-            g.fillRect( 0, 0, getWidth(), getHeight() );
         }
-
         if( slice != null ) {
             slice.setSlice( sliceNo );
             slice.render( context );

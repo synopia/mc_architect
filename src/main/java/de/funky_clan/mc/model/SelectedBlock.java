@@ -2,6 +2,9 @@ package de.funky_clan.mc.model;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 
 import javax.swing.*;
@@ -14,6 +17,7 @@ public class SelectedBlock implements Renderable {
     private int   thickness;
     private int   x;
     private int   y;
+    private final Logger log = LoggerFactory.getLogger(SelectedBlock.class);
 
     public SelectedBlock() {
         thickness = 2;
@@ -58,14 +62,17 @@ public class SelectedBlock implements Renderable {
         }
 
         for( int i = 0; i < thickness; i++ ) {
-            g.drawRect( sx - i - 1, sy - i - 1, w + 2 * i, h + 2 * i );
+            g.drawRect( c.getScreenWidth()-(sx + i + 1), c.getScreenHeight()-(sy + i + 1), w + 2 * i, h + 2 * i );
         }
     }
 
     // todo move this to Renderable
     public void repaint( JComponent component, RenderContext c ) {
-        component.repaint( c.modelToScreenX(getX() - 2), c.modelToScreenX(getY() - 2), c.screenUnitX(getX()-2, getX()+2),
-                           c.screenUnitY(getY()-2, getY()+2));
+        int x = c.getScreenWidth() - c.modelToScreenX(getX() + 2);
+        int y = c.getScreenHeight() - c.modelToScreenY(getY() + 2);
+        int w = c.screenUnitX(getX() - 2, getX() + 2);
+        int h = c.screenUnitY(getY() - 2, getY() + 2);
+        component.repaint(x, y, w, h);
     }
 
     public Color getColor() {

@@ -22,8 +22,6 @@ public class Slice implements Renderable {
         this.slice = slice;
     }
 
-
-
     public int getSlices() {
         return slices;
     }

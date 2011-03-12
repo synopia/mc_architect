@@ -79,9 +79,9 @@ public class MainPanel extends JPanel {
         });
 
         this.configuration = configuration;
-        playerX            = configuration.getOriginX();
-        playerY            = configuration.getOriginY();
-        playerZ            = configuration.getOriginSlice();
+        playerX            = configuration.getMidX();
+        playerY            = configuration.getMidY();
+        playerZ            = configuration.getMidZ();
 
         Model model = configuration.getModel();
 
@@ -114,16 +114,16 @@ public class MainPanel extends JPanel {
     }
 
     private void updatePlayerPos( final int x, final int y, final int z, final float radius ) {
-        final int relX = x ;
-        final int relY = y ;
-        final int relZ = z ;
+        final int relX = x - configuration.getMidX();
+        final int relY = y - configuration.getMidY();
+        final int relZ = z - configuration.getMidZ();
 
         SwingUtilities.invokeLater( new Runnable() {
             @Override
             public void run() {
-                topDown.updatePlayerPos( relX, relY, relZ, (int) ( radius ) % 360 );
-                sideX.updatePlayerPos( relX, relY, relZ, (int) ( radius ) % 360 );
-                sideY.updatePlayerPos( relX, relY, relZ, (int) ( radius ) % 360 );
+                topDown.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
+                sideX.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
+                sideY.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
                 playerInfo.updatePlayerPos( x, y, z, relX, relY, relZ, (int) ( radius ) % 360 );
             }
         } );

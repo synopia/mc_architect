@@ -56,16 +56,16 @@ public class Player extends SelectedBlock {
             int sy = c.modelToScreenY(getY());
             int w  = c.screenUnitX(getX());
             int h  = c.screenUnitY(getY());
-            int mx = sx + w / 2;
-            int my = sy + h / 2;
+            int mx = sx - w / 2;
+            int my = sy - h / 2;
             int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
             int y1 = my + (int) ( 10 * w * Math.sin(( direction - 30 ) / 180.0 * Math.PI ));
             int x2 = mx + (int) ( 10 * w * Math.cos(( direction + 30 ) / 180.0 * Math.PI ));
             int y2 = my + (int) ( 10 * w * Math.sin(( direction + 30 ) / 180.0 * Math.PI ));
 
-            g.drawLine( mx, my, x1, y1 );
-            g.drawLine( mx, my, x2, y2 );
-            g.drawLine( x1, y1, x2, y2 );
+            g.drawLine( c.getScreenWidth()-mx, c.getScreenHeight()-my, c.getScreenWidth()-x1, c.getScreenHeight()-y1 );
+            g.drawLine( c.getScreenWidth()-mx, c.getScreenHeight()-my, c.getScreenWidth()-x2, c.getScreenHeight()-y2 );
+            g.drawLine( c.getScreenWidth()-x1, c.getScreenHeight()-y1, c.getScreenWidth()-x2, c.getScreenHeight()-y2 );
         }
     }
 

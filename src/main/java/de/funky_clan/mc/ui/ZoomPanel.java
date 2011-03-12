@@ -27,13 +27,14 @@ public abstract class ZoomPanel extends JPanel {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (start != null) {
-                    zoomMouseDragged(e);
+                if( start == null ) {
+                    return;
                 }
-
-                Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
-
-                scrollRectToVisible(r);
+                if (isMouseZooming(e) ) {
+                    zoomMouseDragged(e);
+                } else if( isMouseDragging(e) ) {
+                    dragTo( e );
+                }
             }
         });
         addMouseListener( new MouseAdapter() {
@@ -45,8 +46,8 @@ public abstract class ZoomPanel extends JPanel {
             }
             @Override
             public void mousePressed( MouseEvent e ) {
-                if( isMouseZooming( e )) {
-                    zoomMousePressed( e );
+                if( isMouseZooming( e ) || isMouseDragging(e) ) {
+                    start = e.getPoint();
                 }
             }
         } );
@@ -54,7 +55,7 @@ public abstract class ZoomPanel extends JPanel {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e ) {
                 double scale = 1 + e.getWheelRotation() * 0.05;
-                context.zoom( scale, scale );
+                context.zoom(scale, scale);
                 repaint();
             }
         } );
@@ -73,7 +74,10 @@ public abstract class ZoomPanel extends JPanel {
      * @return true if the MouseEvent is a zooming event, false if not
      */
     public boolean isMouseZooming( MouseEvent e ) {
-        return e.getButton() == MouseEvent.BUTTON1;
+        return (e.getModifiers()&MouseEvent.BUTTON1_MASK) != 0;
+    }
+    public boolean isMouseDragging( MouseEvent e ) {
+        return (e.getModifiers()&MouseEvent.BUTTON3_MASK) != 0;
     }
 
     @Override
@@ -98,10 +102,6 @@ public abstract class ZoomPanel extends JPanel {
         lastZoomRect = zoomRect;
     }
 
-    protected void zoomMousePressed( MouseEvent e ) {
-        start = e.getPoint();
-    }
-
     protected void zoomMouseReleased( MouseEvent e ) {
         zoomRect = null;
 
@@ -114,7 +114,20 @@ public abstract class ZoomPanel extends JPanel {
         }
     }
 
+    protected void dragTo( MouseEvent e ) {
+        double dx = context.screenToModelX(e.getX())-context.screenToModelX(start.x);
+        double dy = context.screenToModelY(e.getY())-context.screenToModelY(start.y);
+        context.setWindowStart( context.getWindowX()+dx, context.getWindowY()+dy );
+
+        repaint();
+        start = e.getPoint();
+    }
+
+
     public void applyWindow( int x, int y, int width, int height ) {
+        if( width<10 || height<10 ) {
+            return;
+        }
         double windowX = context.screenToModelX( x );
         double windowY = context.screenToModelY( y );
         double windowWidth = context.screenToModelX( x+width )-windowX;
@@ -122,7 +135,7 @@ public abstract class ZoomPanel extends JPanel {
 
         context.init( windowX, windowY, windowWidth, windowHeight, getWidth(), getHeight() );
 
-        repaint(); // todo
+        repaint();
 
     }
 
