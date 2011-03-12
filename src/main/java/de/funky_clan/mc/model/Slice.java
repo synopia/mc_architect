@@ -110,7 +110,7 @@ public class Slice implements Renderable {
                 int pixel = getPixel( x, y );
 
                 if( pixel > 0 ) {
-                    g.setColor( context.getColors().getBlockColor() );
+                    g.setColor( context.getColors().getColorForBlock(pixel));
 
                     int curr_x = context.modelToScreenX(x);
                     int curr_y = context.modelToScreenY(y);
@@ -118,6 +118,11 @@ public class Slice implements Renderable {
                     int height = context.screenUnitY(y);
 
                     g.fillRect( context.getScreenWidth()-curr_x, context.getScreenHeight()-curr_y, width, height );
+
+                    if( pixel==14 || pixel==15 || pixel==16 || pixel==56 ) {
+                        g.setColor(Color.YELLOW);
+                        g.fillOval(context.getScreenWidth()-curr_x+2, context.getScreenHeight()-curr_y+2, width-4, height-4);
+                    }
                 }
             }
         }

@@ -18,8 +18,10 @@ public class Chunk {
     private int startZ;
 
     private Logger logger = LoggerFactory.getLogger(Chunk.class);
+    private Model model;
 
-    public Chunk(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
+    public Chunk(Model model, int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
+        this.model = model;
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;

@@ -81,10 +81,10 @@ public class RenderContext {
     }
 
     public int screenUnitX(int x1, int x2) {
-        return Math.max( 1, Math.abs(modelToScreenX(x1)-modelToScreenX(x2))-1 );
+        return Math.max( 1, Math.abs(modelToScreenX(x1)-modelToScreenX(x2)) ) + 1;
     }
     public int screenUnitY(int y1, int y2) {
-        return Math.max( 1, Math.abs(modelToScreenY(y1) - modelToScreenY(y2)-1 ) );
+        return Math.max( 1, Math.abs(modelToScreenY(y1) - modelToScreenY(y2) ) ) + 1;
     }
 
     /**
