@@ -176,7 +176,7 @@ public class MainPanel extends JPanel {
 
         mitmThread.start();
 
-        eventBus.fireEvent(new TargetServerChanged("localhost"));
+        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
 
     }
 
