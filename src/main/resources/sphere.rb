@@ -38,4 +38,4 @@ end
 #helix mid_x, mid_y, 5, 7,3, 1, 1.5, 90
 #helix mid_x, mid_y, 5, 7,3, 1, 1.5, 270
 
-#sphere 0, 0, 0, 30
+sphere 0, 0, 0, 30

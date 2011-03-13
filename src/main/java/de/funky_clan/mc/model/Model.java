@@ -47,29 +47,29 @@ public class Model {
                 int x = sx + (i>>11);
                 int y = i & 0x7f;
                 int z = sz + ((i&0x780)>>7);
-                chunk.setPixelGlobal(x,y,z, data[i] );
+                chunk.setPixelGlobal(x,y,z, PixelType.BLOCK_ID, data[i] );
             }
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
                     for( int z=0; z<sizeZ; z++ ) {
                         int i = y + (z*sizeY) + x * sizeY * sizeZ;
-                        setPixel(sx + x, sy + y, sz + z, data[i]);
+                        setPixel(sx + x, sy + y, sz + z, data[i], PixelType.BLOCK_ID);
                     }
                 }
             }
         }
     }
 
-    public void setPixel( int x, int y, int z, int value ) {
-        getOrCreateChunk(x, y, z).setPixelGlobal(x, y, z, value);
+    public void setPixel(int x, int y, int z, int value, PixelType type) {
+        getOrCreateChunk(x, y, z).setPixelGlobal(x, y, z, type, value);
     }
 
-    public int getPixel( int x, int y, int z ) {
+    public int getPixel(int x, int y, int z, PixelType type) {
         int chunkX = x>>4;
         int chunkZ = z>>4;
 
-        return getChunk(chunkX, chunkZ).getPixelGlobal(x, y, z);
+        return getChunk(chunkX, chunkZ).getPixelGlobal(x, y, z, type);
     }
 
     private void removeChunk( int chunkX, int chunkZ ) {

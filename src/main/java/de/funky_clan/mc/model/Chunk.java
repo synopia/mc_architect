@@ -1,6 +1,5 @@
 package de.funky_clan.mc.model;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +20,16 @@ public class Chunk {
 
     public static Chunk EMPTY = new Chunk(0,0,0,1<<4, 1<<7, 1<<4) {
         @Override
-        public void setPixelLocal(int x, int y, int z, int value) { }
+        public void setPixelLocal(int x, int y, int z, PixelType type, int value) { }
 
         @Override
-        public int getPixelLocal(int x, int y, int z) { return -1; }
+        public int getPixelLocal(int x, int y, int z, PixelType type) { return -1; }
 
         @Override
-        public void setPixelGlobal(int x, int y, int z, int value) { }
+        public void setPixelGlobal(int x, int y, int z, PixelType type, int value) { }
 
         @Override
-        public int getPixelGlobal(int x, int y, int z) { return -1; }
+        public int getPixelGlobal(int x, int y, int z, PixelType type) { return -1; }
     };
 
     public Chunk(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
@@ -69,40 +68,40 @@ public class Chunk {
         return (x >= 0) && (y >= 0) && (z >= 0) && (x < sizeX) && (y < sizeY) && (z < sizeZ);
     }
 
-    public void setPixelLocal( int x, int y, int z, int value ) {
+    public void setPixelLocal(int x, int y, int z, PixelType type, int value) {
         if( isInRange( x, y, z )) {
-            map[z][y][x] = value;
+            map[z][y][x] = type.set(map[z][y][x], value);
         }
     }
 
-    public int getPixelLocal( int x, int y, int z ) {
+    public int getPixelLocal(int x, int y, int z, PixelType type) {
         int result = -1;
 
         if( isInRange( x, y, z )) {
-            result = map[z][y][x];
+            result = type.get(map[z][y][x]);
         }
 
         return result;
     }
 
-    public void setPixelGlobal( int x, int y, int z, int value ) {
+    public void setPixelGlobal(int x, int y, int z, PixelType type, int value) {
         x -= startX;
         y -= startY;
         z -= startZ;
 
         if( isInRange( x, y, z )) {
-            map[z][y][x] = value;
+            map[z][y][x] = type.set(map[z][y][x], value);
         }
     }
 
-    public int getPixelGlobal( int x, int y, int z ) {
+    public int getPixelGlobal(int x, int y, int z, PixelType type) {
         x -= startX;
         y -= startY;
         z -= startZ;
         int result = -1;
 
         if( isInRange( x, y, z )) {
-            result = map[z][y][x];
+            result = type.get(map[z][y][x]);
         }
 
         return result;

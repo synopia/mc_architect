@@ -16,7 +16,7 @@ public class Main extends JFrame {
 
     public Main( Configuration configuration ) {
         MainPanel mainPanel=new MainPanel( configuration );
-        setTitle( "Minecraft Architect for v1.2.02" );
+        setTitle( "Minecraft Architect for v1.3.01" );
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         add( mainPanel );
         pack();

@@ -18,6 +18,7 @@ public class MitmThread extends Thread {
     private Filter response;
     private Filter request;
     private ServerSocket socket;
+    private DataOutputStream toTarget;
 
     private class MitmInputStream extends InputStream {
         private InputStream source;
@@ -111,7 +112,7 @@ public class MitmThread extends Thread {
                 OutputStream toSource = sourceSocket.getOutputStream();
                 InputStream fromSource = sourceSocket.getInputStream();
 
-                OutputStream toTarget = targetSocket.getOutputStream();
+                toTarget = new DataOutputStream(targetSocket.getOutputStream());
                 InputStream fromTarget = targetSocket.getInputStream();
 
                 request = new Filter(fromSource, toTarget, new ClientProtocol9() );
@@ -131,6 +132,11 @@ public class MitmThread extends Thread {
             }
         }
         logger.info("MitmThread finished");
+    }
+
+
+    public DataOutputStream getToTarget() {
+        return toTarget;
     }
 
     private void shutdown(Socket targetSocket) {

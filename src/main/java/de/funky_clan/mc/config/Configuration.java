@@ -84,25 +84,25 @@ public class Configuration {
         return this;
     }
 
-    public Configuration image( String filename ) {
-        image(0, 0, filename);
+    public Configuration image( int x, int y,String filename ) {
+        image(0, 0,x, y, filename);
 
         return this;
     }
 
-    public Configuration image( int sliceFrom, int sliceTo, String filename ) {
+    public Configuration image( int sliceFrom, int sliceTo, int x, int y,String filename ) {
         for( int i = sliceFrom; i <= sliceTo; i++ ) {
-            image( i, filename );
+            image( i, x, y,filename );
         }
 
         return this;
     }
 
-    public Configuration image( int slice, String filename ) {
+    public Configuration image( int slice, int x, int y, String filename ) {
         BackgroundImage image = images.get( filename );
 
         if( image == null ) {
-            image = new BackgroundImage( filename,originX, originY );
+            image = new BackgroundImage( filename,x, y );
             images.put( filename, image );
         }
 

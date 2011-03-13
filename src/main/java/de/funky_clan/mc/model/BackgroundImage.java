@@ -5,7 +5,6 @@ package de.funky_clan.mc.model;
 import java.awt.*;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -21,12 +20,12 @@ public class BackgroundImage implements Renderable {
     private ImageIcon icon;
     private Image     image;
     private int       width;
-    private int midX;
-    private int midY;
+    private int startX;
+    private int startY;
 
-    public BackgroundImage(String filename, int midX, int midY) {
-        this.midX = midX;
-        this.midY = midY;
+    public BackgroundImage(String filename, int startX, int startY) {
+        this.startX = startX;
+        this.startY = startY;
         this.filename = filename;
 
         try {
@@ -46,15 +45,20 @@ public class BackgroundImage implements Renderable {
             int width  = c.getScreenWidth();
             int height = c.getScreenHeight();
 
-            int ex = c.getScreenWidth()-c.modelToScreenX(midX - this.width/2);
-            int ey = c.getScreenHeight()-c.modelToScreenY(midY - this.height/2);
-            int sx = c.getScreenWidth()-c.modelToScreenX(midX + this.width/2);
-            int sy = c.getScreenHeight()-c.modelToScreenY(midY + this.height/2);
+            int ex = c.getScreenWidth()-c.modelToScreenX(startX);
+            int ey = c.getScreenHeight()-c.modelToScreenY(startY);
+            int sx = c.getScreenWidth()-c.modelToScreenX(startX + this.width-1);
+            int sy = c.getScreenHeight()-c.modelToScreenY(startY + this.height);
+
+            ex += c.screenUnitX(startX)/2;
+            ey += c.screenUnitY(startY)/2;
+            sx -= c.screenUnitX(startX)/2;
+            sy -= c.screenUnitY(startY)/2;
 
             int x1 = 0;
             int y1 = 0;
-            int x2 = this.width;
-            int y2 = this.height;
+            int x2 = this.width-1;
+            int y2 = this.height-1;
 
             if( ex>=0 && ey>=0 && sx<width && sy<height ) {
                 if( sx<0 ) {
@@ -74,6 +78,8 @@ public class BackgroundImage implements Renderable {
                     ey = height-1;
                 }
                 c.getGraphics().drawImage( image, sx, sy, ex, ey, x1, y1, x2, y2, null );
+                c.getGraphics().setColor(Color.BLUE);
+                c.getGraphics().drawRect( sx, sy, ex-sx, ey-sy);
             }
 
         }
