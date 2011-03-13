@@ -43,13 +43,6 @@ public class Protocol9 extends Protocol {
         }
     }
 
-    public Protocol9() {
-    }
-
-    public Protocol9(ProtocolHandler handler) {
-        super(handler);
-    }
-
     @Override
     protected void load() {
         try {

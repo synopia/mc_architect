@@ -77,8 +77,6 @@ public class MitmThread extends Thread {
     private String            targetHost;
     private int               targetPort;
     private int               sourcePort;
-    private ClientProtocol9.ClientHandler clientHandler;
-    private ServerProtocol9.ServerHandler serverHandler;
     private boolean            connected;
     private Logger logger = LoggerFactory.getLogger(MitmThread.class);
 
@@ -86,26 +84,26 @@ public class MitmThread extends Thread {
         this.sourcePort = sourcePort;
     }
 
-    public MitmThread(int sourcePort, ClientProtocol9.ClientHandler clientHandler, ServerProtocol9.ServerHandler serverHandler) {
-        this.sourcePort = sourcePort;
-        this.clientHandler = clientHandler;
-        this.serverHandler = serverHandler;
-    }
-
     @Override
     public void run() {
         Socket targetSocket = null;
-        while( true ) {
-            try {
-                if( socket==null ) {
-                    socket = new ServerSocket( sourcePort );
-                    logger.info("MITM Server is listening at port " + sourcePort);
-                }
+        try {
+            if( socket==null ) {
+                socket = new ServerSocket( sourcePort );
+                logger.info("MITM Server is listening at port " + sourcePort);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            socket = null;
+        }
 
+        while( socket!=null ) {
+            try {
                 logger.info("MITM Server is waiting for client ");
 
                 Socket sourceSocket = socket.accept();
                 logger.info("MITM Server: Client connected");
+                shutdown(targetSocket);
 
                 logger.info("MITM Server: connecting to server " + targetHost + " : "+targetPort);
                 targetSocket = new Socket( targetHost, targetPort );
@@ -116,8 +114,8 @@ public class MitmThread extends Thread {
                 OutputStream toTarget = targetSocket.getOutputStream();
                 InputStream fromTarget = targetSocket.getInputStream();
 
-                request = new Filter(fromSource, toTarget, new ClientProtocol9(clientHandler) );
-                response = new Filter(fromTarget, toSource, new ServerProtocol9(serverHandler) );
+                request = new Filter(fromSource, toTarget, new ClientProtocol9() );
+                response = new Filter(fromTarget, toSource, new ServerProtocol9() );
 
                 logger.info("MITM Server: starting streaming threads");
                 request.start();
@@ -128,12 +126,17 @@ public class MitmThread extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
 
-                shutdownFilter(request);
-                shutdownFilter(response);
-                shutdownSocket(targetSocket);
+                shutdown(targetSocket);
                 connected = false;
             }
         }
+        logger.info("MitmThread finished");
+    }
+
+    private void shutdown(Socket targetSocket) {
+        shutdownFilter(request);
+        shutdownFilter(response);
+        shutdownSocket(targetSocket);
     }
 
     private void shutdownSocket(Socket targetSocket) {

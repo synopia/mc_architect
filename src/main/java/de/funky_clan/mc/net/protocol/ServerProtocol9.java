@@ -1,5 +1,8 @@
 package de.funky_clan.mc.net.protocol;
 
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,23 +17,9 @@ import java.util.zip.Inflater;
 public class ServerProtocol9 extends Protocol9 {
     private final Logger log = LoggerFactory.getLogger(ServerProtocol9.class);
 
-    public interface ServerHandler extends ProtocolHandler {
-        void onChunkUpdate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data );
-    }
-
     private Inflater inflater;
     private byte[] compressedData;
-    private byte[] data;
-    private ServerHandler handler;
-
-    public ServerProtocol9() {
-        this(null);
-    }
-
-    public ServerProtocol9(ServerHandler handler) {
-        super(handler);
-        this.handler = handler;
-    }
+    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     @Override
     protected void load() {
@@ -38,7 +27,6 @@ public class ServerProtocol9 extends Protocol9 {
 
         inflater = new Inflater();
         compressedData = new byte[1<<17];
-        data = new byte[1<<17];
 
         setDecoder(0x33, new MessageDecoder() {
             @Override
@@ -53,6 +41,7 @@ public class ServerProtocol9 extends Protocol9 {
                 int compressedSize = in.readInt();
                 in.readFully(compressedData, 0, compressedSize);
                 int uncompressedSize = (sizeX * sizeY * sizeZ * 5) / 2;
+                byte[] data = new byte[uncompressedSize];
                 inflater.reset();
                 inflater.setInput(compressedData);
                 try {
@@ -61,9 +50,7 @@ public class ServerProtocol9 extends Protocol9 {
                     throw new IOException("Bad compressed data format");
                 }
 
-                if( handler!=null ) {
-                    handler.onChunkUpdate( x, y, z, sizeX, sizeY, sizeZ, data );
-                }
+                eventBus.fireEvent( new ChunkUpdate(x,y,z,sizeX,sizeY,sizeZ,data ));
             }
         });
     }

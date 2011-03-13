@@ -3,7 +3,12 @@ package de.funky_clan.mc.ui;
 //~--- non-JDK imports --------------------------------------------------------
 
 import de.funky_clan.mc.config.Configuration;
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.model.*;
+import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
+import de.funky_clan.mc.ui.events.PlayerMoved;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -22,6 +27,7 @@ public class SlicePanel extends ZoomPanel {
     private SelectedBlock   selectedBlock;
     private Slice           slice;
     private int             sliceNo;
+    private EventBus        eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     public SlicePanel( Model model, Configuration.Colors colors, final Slice slice ) {
         this.model = model;
@@ -50,22 +56,31 @@ public class SlicePanel extends ZoomPanel {
                 }
             }
         } );
-    }
+        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+            @Override
+            public void handleEvent(PlayerMoved event) {
+                player.repaint( SlicePanel.this, context );
 
-    public void updatePlayerPos( int x, int y, int z, int angle ) {
-        player.repaint( SlicePanel.this, context );
+                int map[] = slice.mapWorldToSlice( (int) event.getX(), (int) event.getY(), (int) event.getZ() );
+                int wx    = map[0];
+                int wy    = map[1];
+                int wz    = map[2];
 
-        int map[] = slice.mapWorldToSlice( x, y, z );
-        int wx    = map[0];
-        int wy    = map[1];
-        int wz    = map[2];
+                player.setX( wx );
+                player.setY( wy );
+                player.setZ( wz );
+                player.setDirection( (int)event.getYaw() );
+                setSliceNo( wz );
+                scrollToPlayer( wx, wy );
 
-        player.setX( wx );
-        player.setY( wy );
-        player.setZ( wz );
-        player.setDirection( angle );
-        setSliceNo( wz );
-        scrollToPlayer( wx, wy );
+            }
+        });
+        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+            @Override
+            public void handleEvent(ChunkUpdate event) {
+                repaint();
+            }
+        });
     }
 
     private void scrollToPlayer( int wx, int wy ) {
@@ -95,7 +110,7 @@ public class SlicePanel extends ZoomPanel {
             image.render( context );
         }
         if( slice != null ) {
-            slice.setSlice( sliceNo );
+            slice.setSlice(sliceNo);
             slice.render( context );
         }
 

@@ -1,5 +1,8 @@
 package de.funky_clan.mc.net.protocol;
 
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.net.protocol.events.PlayerPositionUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,21 +20,7 @@ public class ClientProtocol9 extends Protocol9{
     private float yaw;
     private float pitch;
 
-    private ClientHandler handler;
-
-    public interface ClientHandler extends ProtocolHandler {
-        void onPlayerUpdate( double x, double y, double z, float yaw, float pitch );
-    }
-
-
-    public ClientProtocol9() {
-        this(null);
-    }
-
-    public ClientProtocol9(ClientHandler handler) {
-        super(handler);
-        this.handler = handler;
-    }
+    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     @Override
     protected void load() {
@@ -46,9 +35,7 @@ public class ClientProtocol9 extends Protocol9{
                 z = in.readDouble();
                 boolean onGround = in.readBoolean();
 
-                if( handler!=null ) {
-                    handler.onPlayerUpdate(x,y,z,yaw,pitch);
-                }
+                eventBus.fireEvent( new PlayerPositionUpdate(x,y,z,yaw,pitch));
             }
         });
 
@@ -59,9 +46,7 @@ public class ClientProtocol9 extends Protocol9{
                 pitch = in.readFloat();
                 boolean onGround = in.readBoolean();
 
-                if( handler!=null ) {
-                    handler.onPlayerUpdate(x,y,z,yaw,pitch);
-                }
+                eventBus.fireEvent( new PlayerPositionUpdate(x,y,z,yaw,pitch));
             }
         });
 
@@ -76,9 +61,7 @@ public class ClientProtocol9 extends Protocol9{
                 pitch = in.readFloat();
                 boolean onGround = in.readBoolean();
 
-                if( handler!=null ) {
-                    handler.onPlayerUpdate(x,y,z,yaw,pitch);
-                }
+                eventBus.fireEvent( new PlayerPositionUpdate(x,y,z,yaw,pitch));
             }
         });
     }

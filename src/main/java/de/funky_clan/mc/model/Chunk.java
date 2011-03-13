@@ -21,6 +21,7 @@ public class Chunk {
     private Model model;
 
     public Chunk(Model model, int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
+        logger.info("Creating chunk "+startX+", "+startY+", "+startZ);
         this.model = model;
         this.startX = startX;
         this.startY = startY;

@@ -2,9 +2,17 @@ package de.funky_clan.mc.model;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.file.RegionFileCache;
+import de.funky_clan.mc.model.events.RequestChunkData;
+import org.jnbt.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +24,13 @@ public class Model {
     private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
     private HashMap<Integer, HashMap<Integer, Chunk>> chunks = new HashMap<Integer, HashMap<Integer, Chunk>>();
     private final Logger log = LoggerFactory.getLogger(Model.class);
+    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     public Model() {
     }
 
     public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
-        log.info("start decoding chunk");
+        log.info("start decoding chunk "+sx+", "+sy+", "+sz);
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getChunkFor(sx, sy, sz);
             int len = 16*128*16;
@@ -50,6 +59,7 @@ public class Model {
     }
 
     public int getPixel( int x, int y, int z ) {
+/*
         int chunkX = x>>4;
         int chunkY = y>>7;
         int chunkZ = z>>4;
@@ -66,6 +76,9 @@ public class Model {
         } else {
             return 0;
         }
+
+*/
+        return getChunkFor(x,y,z).getPixelGlobal(x,y,z);
     }
 
     public Chunk getChunkFor( int x, int y, int z ) {
@@ -88,6 +101,8 @@ public class Model {
         } else {
             chunk = new Chunk(this, chunkX<<4, chunkY<<7, chunkZ<<4, 1<<4, 1<<7, 1<<4 );
             zChunks.put(chunkX, chunk);
+            eventBus.fireEvent(new RequestChunkData(chunkX, chunkZ) );
+
         }
 
         return chunk;

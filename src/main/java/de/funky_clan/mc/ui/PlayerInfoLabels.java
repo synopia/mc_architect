@@ -2,54 +2,67 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.ui.events.PlayerMoved;
+import de.funky_clan.mc.ui.events.TargetServerChanged;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import java.awt.*;
-
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author synopia
  */
 public class PlayerInfoLabels {
-    private JLabel absoluteModel;
-    private JLabel absoluteWorld;
+    private JLabel position;
     private JLabel direction;
     private Model  model;
-    private JLabel relativeMid;
+    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private JTextField host;
 
     public PlayerInfoLabels( Model model ) {
         super();
         this.model    = model;
         direction     = new JLabel();
-        absoluteWorld = new JLabel();
-        absoluteModel = new JLabel();
-        relativeMid   = new JLabel();
+        position      = new JLabel();
+
+        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+            @Override
+            public void handleEvent(PlayerMoved event) {
+                direction.setText("Direction: " + formatDirection((int) event.getYaw()));
+                position.setText("Position: " + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
+            }
+        });
+        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
+            @Override
+            public void handleEvent(TargetServerChanged event) {
+                host.setText( event.getReadableHost() );
+            }
+        });
     }
 
-    public void updatePlayerPos( int x, int y, int z, int relX, int relY, int relZ, int angle ) {
-        direction.setText( "Direction: " + formatDirection( angle ));
-        absoluteWorld.setText( "Absolute World: " + formatCoord( x, y, z ));
-        absoluteModel.setText( "Absolute Model: " + formatCoord( relX, relY, relZ ));
-        relativeMid.setText( "");
+    public JTextField getTargetConnection() {
+        host = new JTextField();
+        host.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eventBus.fireEvent(new TargetServerChanged(host.getText()));
+            }
+        });
+        return host;
     }
 
     public JLabel getDirection() {
         return direction;
     }
 
-    public JLabel getAbsoluteWorld() {
-        return absoluteWorld;
-    }
-
-    public JLabel getAbsoluteModel() {
-        return absoluteModel;
-    }
-
-    public JLabel getRelativeMid() {
-        return relativeMid;
+    public JLabel getPosition() {
+        return position;
     }
 
     public String formatDirection( int angle ) {

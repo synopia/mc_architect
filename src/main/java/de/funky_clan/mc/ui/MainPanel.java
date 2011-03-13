@@ -3,13 +3,25 @@ package de.funky_clan.mc.ui;
 //~--- non-JDK imports --------------------------------------------------------
 
 import de.funky_clan.mc.config.Configuration;
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.file.RegionFileCache;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Slice;
 import de.funky_clan.mc.model.SliceType;
+import de.funky_clan.mc.model.events.RequestChunkData;
+import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
+import de.funky_clan.mc.ui.events.PlayerMoved;
 import de.funky_clan.mc.net.MitmThread;
-import de.funky_clan.mc.net.protocol.ClientProtocol9;
-import de.funky_clan.mc.net.protocol.ServerProtocol9;
+import de.funky_clan.mc.net.protocol.events.ConnectionEstablished;
+import de.funky_clan.mc.net.protocol.events.ConnectionLost;
+import de.funky_clan.mc.net.protocol.events.PlayerPositionUpdate;
+import de.funky_clan.mc.ui.events.TargetServerChanged;
+import org.jnbt.ByteArrayTag;
+import org.jnbt.CompoundTag;
+import org.jnbt.NBTInputStream;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -17,6 +29,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -28,53 +43,80 @@ public class MainPanel extends JPanel {
     private MitmThread mitmThread;
     private Configuration    configuration;
     private JTextField       host;
-    private float            playerDir;
     private PlayerInfoLabels playerInfo;
-    private int              playerX;
-    private int              playerY;
-    private int              playerZ;
+    private double           playerX;
+    private double           playerY;
+    private double           playerZ;
+    private float            yaw;
+    private float            pitch;
     private SlicePanel       sideX;
     private SlicePanel       sideY;
     private SlicePanel       topDown;
     private int              zShift;
     private JLabel           zShiftLabel;
+    private EventBus         eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     public MainPanel( final Configuration configuration ) {
         super( new BorderLayout() );
-        mitmThread = new MitmThread(12345, new ClientProtocol9.ClientHandler() {
-            @Override
-            public void onPlayerUpdate(double x, double y, double z, float yaw, float pitch) {
-                playerX   = (int)x;
-                playerY   = (int)y;
-                playerZ   = (int)z;
-                playerDir = (int)yaw;
-                updatePlayerPos( playerX, playerY, playerZ + zShift, playerDir );
-            }
+        mitmThread = new MitmThread(12345);
 
+        eventBus.registerCallback(RequestChunkData.class, new EventHandler<RequestChunkData>() {
             @Override
-            public void onConnect() {
+            public void handleEvent(RequestChunkData event) {
+                DataInputStream inputStream = RegionFileCache.getChunkDataInputStream(new File("d:/games/minecraft/world"), event.getChunkX(), event.getChunkZ());
+                try {
+                    System.out.println("Loading chunk "+event.getChunkX()+", 0, "+event.getChunkZ());
+                    NBTInputStream nbt = new NBTInputStream(inputStream);
+                    CompoundTag root=(CompoundTag) nbt.readTag();
+                    CompoundTag level = (CompoundTag) root.getValue().get("Level");
+                    ByteArrayTag blocks = (ByteArrayTag) level.getValue().get("Blocks");
+
+                    eventBus.fireEvent(new ChunkUpdate(event.getChunkX() << 4, 0, event.getChunkZ()<<4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+            @Override
+            public void handleEvent(ChunkUpdate event) {
+                configuration.getModel().setBlock(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData());
+            }
+        });
+
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+            @Override
+            public void handleEvent(PlayerPositionUpdate event) {
+                playerX = event.getX();
+                playerY = event.getY();
+                playerZ = event.getZ();
+                yaw     = event.getYaw();
+                pitch   = event.getPitch();
+                firePlayerMoved();
+            }
+        });
+
+        eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
+            @Override
+            public void handleEvent(ConnectionEstablished event) {
                 host.setEditable(false);
             }
+        });
 
+        eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
-            public void onDisconnect() {
+            public void handleEvent(ConnectionLost event) {
                 host.setEditable(true);
             }
-        }, new ServerProtocol9.ServerHandler() {
-            @Override
-            public void onChunkUpdate(int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data) {
-                configuration.getModel().setBlock(sx, sy, sz, sizeX, sizeY, sizeZ, data);
-                repaint();
-            }
+        });
 
+        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
             @Override
-            public void onConnect() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void onDisconnect() {
-                //To change body of implemented methods use File | Settings | File Templates.
+            public void handleEvent(TargetServerChanged event) {
+                mitmThread.setTargetHost( event.getHost() );
+                mitmThread.setTargetPort( event.getPort() );
             }
         });
 
@@ -103,7 +145,15 @@ public class MainPanel extends JPanel {
         southSplitPane.setLeftComponent( new JScrollPane( sideX ));
         southSplitPane.setRightComponent( new JScrollPane( sideY ));
 
-        JToolBar info     = buildInfoToolBar();
+        JPanel info     = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        JToolBar bar1 = buildInfoToolBar1();
+        JToolBar bar2 = buildInfoToolBar2();
+        bar1.setAlignmentX(LEFT_ALIGNMENT);
+        bar2.setAlignmentX(LEFT_ALIGNMENT);
+        info.add(bar2);
+        info.add(bar1);
+
         JToolBar imageBar = buildImageToolBar();
 
         add( rootSplitPane, BorderLayout.CENTER );
@@ -111,28 +161,19 @@ public class MainPanel extends JPanel {
         add( imageBar, BorderLayout.SOUTH );
 
         mitmThread.start();
+
+        eventBus.fireEvent(new TargetServerChanged("localhost"));
+
     }
 
-    private void updatePlayerPos( final int x, final int y, final int z, final float radius ) {
-        final int relX = x - configuration.getMidX();
-        final int relY = y - configuration.getMidY();
-        final int relZ = z - configuration.getMidZ();
-
-        SwingUtilities.invokeLater( new Runnable() {
-            @Override
-            public void run() {
-                topDown.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
-                sideX.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
-                sideY.updatePlayerPos( x, y, z, (int) ( radius ) % 360 );
-                playerInfo.updatePlayerPos( x, y, z, relX, relY, relZ, (int) ( radius ) % 360 );
-            }
-        } );
+    protected void firePlayerMoved() {
+        eventBus.fireEvent( new PlayerMoved(playerX, playerY, playerZ, yaw, pitch, zShift));
     }
 
     public void setZShift( int zShift ) {
         this.zShift = zShift;
-        zShiftLabel.setText( "z shift: " + zShift );
-        updatePlayerPos( playerX, playerY + zShift, playerZ, playerDir );
+        zShiftLabel.setText("z shift: " + zShift);
+        firePlayerMoved();
     }
 
     private JToolBar buildImageToolBar() {
@@ -179,34 +220,25 @@ public class MainPanel extends JPanel {
         return imageBar;
     }
 
-    private JToolBar buildInfoToolBar() {
+    private JToolBar buildInfoToolBar1() {
         playerInfo = new PlayerInfoLabels( configuration.getModel() );
-        host = new JTextField();
-        host.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mitmThread.setTargetHost( host.getText() );
-                mitmThread.setTargetPort(25565);
-            }
-        });
-        host.setText("localhost");
-        mitmThread.setTargetHost( host.getText() );
-        mitmThread.setTargetPort(25565);
-//        host.setText("mc.funky-clan.de");
 
         JToolBar info = new JToolBar();
 
-        info.add( host );
+        info.add(playerInfo.getTargetConnection());
         info.addSeparator();
-        info.add( playerInfo.getDirection() );
+        info.add(playerInfo.getDirection());
         info.addSeparator();
-        info.add( playerInfo.getAbsoluteWorld() );
-        info.addSeparator();
-        info.add( playerInfo.getAbsoluteModel() );
-        info.addSeparator();
-        info.add( playerInfo.getRelativeMid() );
+        info.add(playerInfo.getPosition());
         info.addSeparator();
 
+        return info;
+    }
+
+    private JToolBar buildInfoToolBar2() {
+        JToolBar info = new JToolBar();
+        info.add( new JLabel("Chunks: 0/0") );
+        info.addSeparator();
         return info;
     }
 }

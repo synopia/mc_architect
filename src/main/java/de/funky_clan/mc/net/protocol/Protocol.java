@@ -1,5 +1,9 @@
 package de.funky_clan.mc.net.protocol;
 
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventDispatcher;
+import de.funky_clan.mc.net.protocol.events.ConnectionEstablished;
+import de.funky_clan.mc.net.protocol.events.ConnectionLost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,25 +22,14 @@ import java.util.regex.Pattern;
 public abstract class Protocol {
     private final Logger log = LoggerFactory.getLogger(Protocol.class);
 
-    public interface ProtocolHandler {
-        void onConnect();
-        void onDisconnect();
-    }
-
     public interface MessageDecoder {
         void decode( DataInputStream in ) throws IOException;
     }
 
-    private Pattern messagePattern = Pattern.compile("\\((\\d+), '.*?'\\)");
     private HashMap<Integer, MessageDecoder> decoders = new HashMap<Integer, MessageDecoder>();
-    private ProtocolHandler handler;
+    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
-    protected Protocol() {
-        this(null);
-    }
-
-    public Protocol(ProtocolHandler handler) {
-        this.handler = handler;
+    public Protocol() {
         load();
     }
 
@@ -61,9 +54,7 @@ public abstract class Protocol {
                 long seed = in.readLong();
                 int dim = in.readByte();
 
-                if( handler!=null ) {
-                    handler.onConnect();
-                }
+                eventBus.fireEvent(new ConnectionEstablished());
             }
         });
 
@@ -71,9 +62,7 @@ public abstract class Protocol {
             @Override
             public void decode(DataInputStream in) throws IOException {
                 String reason = in.readUTF();
-                if( handler!=null ) {
-                    handler.onDisconnect();
-                }
+                eventBus.fireEvent( new ConnectionLost() );
             }
         });
     }
