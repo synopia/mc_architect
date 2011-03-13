@@ -118,11 +118,6 @@ public class Slice implements Renderable {
                     int height = context.screenUnitY(y);
 
                     g.fillRect( context.getScreenWidth()-curr_x, context.getScreenHeight()-curr_y, width, height );
-
-                    if( pixel==14 || pixel==15 || pixel==16 || pixel==56 ) {
-                        g.setColor(Color.YELLOW);
-                        g.fillOval(context.getScreenWidth()-curr_x+2, context.getScreenHeight()-curr_y+2, width-4, height-4);
-                    }
                 }
             }
         }

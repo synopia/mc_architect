@@ -40,7 +40,7 @@ public class EventBus {
         if( event!=null ) {
             callbacks.clear();
             getCallbacks(event, callbacks);
-            log.info("Calling "+callbacks.size()+" handlers for event "+event);
+//            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
             }

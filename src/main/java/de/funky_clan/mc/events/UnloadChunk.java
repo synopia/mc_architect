@@ -1,15 +1,15 @@
-package de.funky_clan.mc.model.events;
+package de.funky_clan.mc.events;
 
 import de.funky_clan.mc.eventbus.Event;
 
 /**
  * @author synopia
  */
-public class RequestChunkData implements Event {
+public class UnloadChunk implements Event {
     private int chunkX;
     private int chunkZ;
 
-    public RequestChunkData(int chunkX, int chunkZ) {
+    public UnloadChunk(int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
     }

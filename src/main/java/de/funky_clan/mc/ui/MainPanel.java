@@ -6,32 +6,22 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.file.RegionFileCache;
+import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Slice;
 import de.funky_clan.mc.model.SliceType;
-import de.funky_clan.mc.model.events.RequestChunkData;
-import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
-import de.funky_clan.mc.ui.events.PlayerMoved;
+import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.net.MitmThread;
-import de.funky_clan.mc.net.protocol.events.ConnectionEstablished;
-import de.funky_clan.mc.net.protocol.events.ConnectionLost;
-import de.funky_clan.mc.net.protocol.events.PlayerPositionUpdate;
-import de.funky_clan.mc.ui.events.TargetServerChanged;
-import org.jnbt.ByteArrayTag;
-import org.jnbt.CompoundTag;
-import org.jnbt.NBTInputStream;
+import de.funky_clan.mc.events.TargetServerChanged;
 
 //~--- JDK imports ------------------------------------------------------------
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -55,34 +45,30 @@ public class MainPanel extends JPanel {
     private int              zShift;
     private JLabel           zShiftLabel;
     private EventBus         eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private JLabel           chunksText;
+    private int              chunksLoaded;
+    private int              chunksUnloaded;
+    private JLabel memoryText;
 
     public MainPanel( final Configuration configuration ) {
         super( new BorderLayout() );
+//        new RegionFileService();
+
         mitmThread = new MitmThread(12345);
-
-        eventBus.registerCallback(RequestChunkData.class, new EventHandler<RequestChunkData>() {
-            @Override
-            public void handleEvent(RequestChunkData event) {
-                DataInputStream inputStream = RegionFileCache.getChunkDataInputStream(new File("d:/games/minecraft/world"), event.getChunkX(), event.getChunkZ());
-                try {
-                    System.out.println("Loading chunk "+event.getChunkX()+", 0, "+event.getChunkZ());
-                    NBTInputStream nbt = new NBTInputStream(inputStream);
-                    CompoundTag root=(CompoundTag) nbt.readTag();
-                    CompoundTag level = (CompoundTag) root.getValue().get("Level");
-                    ByteArrayTag blocks = (ByteArrayTag) level.getValue().get("Blocks");
-
-                    eventBus.fireEvent(new ChunkUpdate(event.getChunkX() << 4, 0, event.getChunkZ()<<4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
 
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
             public void handleEvent(ChunkUpdate event) {
-                configuration.getModel().setBlock(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData());
+                chunksLoaded ++;
+                updateStats();
+            }
+        });
+        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
+            @Override
+            public void handleEvent(UnloadChunk event) {
+                chunksUnloaded ++;
+                chunksLoaded --;
+                updateStats();
             }
         });
 
@@ -117,6 +103,32 @@ public class MainPanel extends JPanel {
             public void handleEvent(TargetServerChanged event) {
                 mitmThread.setTargetHost( event.getHost() );
                 mitmThread.setTargetPort( event.getPort() );
+            }
+        });
+
+        this.setFocusable(true);
+
+        this.addKeyListener( new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                        playerX++;
+                        firePlayerMoved();
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        playerX--;
+                        firePlayerMoved();
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        playerZ++;
+                        firePlayerMoved();
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        playerZ--;
+                        firePlayerMoved();
+                        break;
+                }
             }
         });
 
@@ -235,9 +247,21 @@ public class MainPanel extends JPanel {
         return info;
     }
 
+    protected void updateStats() {
+        chunksText.setText("Chunks: " + chunksLoaded + "/"+chunksUnloaded );
+        long max = Runtime.getRuntime().maxMemory();
+        long free = Runtime.getRuntime().freeMemory();
+        memoryText.setText("Mem: " + ((max-free)/1024/1024) + "/" + (max/1024/1024) );
+    }
+
     private JToolBar buildInfoToolBar2() {
         JToolBar info = new JToolBar();
-        info.add( new JLabel("Chunks: 0/0") );
+        chunksText = new JLabel("Chunks:");
+        info.add(chunksText);
+        info.addSeparator();
+
+        memoryText = new JLabel("Mem: 0/0");
+        info.add(memoryText);
         info.addSeparator();
         return info;
     }

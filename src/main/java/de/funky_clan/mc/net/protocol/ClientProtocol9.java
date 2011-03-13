@@ -2,7 +2,7 @@ package de.funky_clan.mc.net.protocol;
 
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
-import de.funky_clan.mc.net.protocol.events.PlayerPositionUpdate;
+import de.funky_clan.mc.events.PlayerPositionUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +32,10 @@ public class ClientProtocol9 extends Protocol9{
                 x = in.readDouble();
                 y = in.readDouble();
                 double stance = in.readDouble();
-                z = in.readDouble();
+                z = in.readDouble()-1;
                 boolean onGround = in.readBoolean();
 
-                eventBus.fireEvent( new PlayerPositionUpdate(x,y,z,yaw,pitch));
+                eventBus.fireEvent(new PlayerPositionUpdate(x, y, z, yaw, pitch));
             }
         });
 
@@ -56,7 +56,7 @@ public class ClientProtocol9 extends Protocol9{
                 x = in.readDouble();
                 y = in.readDouble();
                 double stance = in.readDouble();
-                z = in.readDouble();
+                z = in.readDouble()-1;
                 yaw = in.readFloat();
                 pitch = in.readFloat();
                 boolean onGround = in.readBoolean();

@@ -35,7 +35,7 @@ public class Player extends SelectedBlock {
     }
 
     public void setDirection( int direction ) {
-        this.direction = direction-90;
+        this.direction = direction+90;
     }
 
     @Override

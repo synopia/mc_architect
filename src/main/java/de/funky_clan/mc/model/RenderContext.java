@@ -50,7 +50,7 @@ public class RenderContext {
      * @return y value of coordinate in world-y (no range check!)
      */
     public double screenToModelY(int y) {
-        return  y / pixelSizeY + windowY;
+        return y / pixelSizeY + windowY;
     }
 
     /**

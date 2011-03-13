@@ -6,9 +6,9 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.model.*;
-import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
-import de.funky_clan.mc.ui.events.PlayerMoved;
+import de.funky_clan.mc.events.ChunkUpdate;
 
 //~--- JDK imports ------------------------------------------------------------
 

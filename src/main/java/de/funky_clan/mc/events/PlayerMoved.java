@@ -1,6 +1,6 @@
-package de.funky_clan.mc.ui.events;
+package de.funky_clan.mc.events;
 
-import de.funky_clan.mc.net.protocol.events.PlayerPositionUpdate;
+import de.funky_clan.mc.events.PlayerPositionUpdate;
 
 /**
  * @author synopia

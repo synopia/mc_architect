@@ -2,7 +2,8 @@ package de.funky_clan.mc.net.protocol;
 
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
-import de.funky_clan.mc.net.protocol.events.ChunkUpdate;
+import de.funky_clan.mc.events.ChunkUpdate;
+import de.funky_clan.mc.events.UnloadChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,18 @@ public class ServerProtocol9 extends Protocol9 {
         inflater = new Inflater();
         compressedData = new byte[1<<17];
 
+        setDecoder(0x32, new MessageDecoder() {
+            @Override
+            public void decode(DataInputStream in) throws IOException {
+                int x = in.readInt();
+                int y = in.readInt();
+                boolean mode = in.readBoolean();
+                if( !mode ) {
+                    eventBus.fireEvent(new UnloadChunk(x,y) );
+                }
+            }
+        });
+
         setDecoder(0x33, new MessageDecoder() {
             @Override
             public void decode(DataInputStream in) throws IOException {
@@ -50,7 +63,7 @@ public class ServerProtocol9 extends Protocol9 {
                     throw new IOException("Bad compressed data format");
                 }
 
-                eventBus.fireEvent( new ChunkUpdate(x,y,z,sizeX,sizeY,sizeZ,data ));
+                eventBus.fireEvent(new ChunkUpdate(x, y, z, sizeX, sizeY, sizeZ, data));
             }
         });
     }

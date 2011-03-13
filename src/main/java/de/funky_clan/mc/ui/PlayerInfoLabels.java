@@ -5,9 +5,9 @@ package de.funky_clan.mc.ui;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.ui.events.PlayerMoved;
-import de.funky_clan.mc.ui.events.TargetServerChanged;
+import de.funky_clan.mc.events.PlayerMoved;
 
 //~--- JDK imports ------------------------------------------------------------
 

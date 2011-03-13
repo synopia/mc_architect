@@ -167,8 +167,8 @@ public class Configuration {
             colorData[DataValues.SAND.getId()] = new Color(218,210,158,255);
             colorData[DataValues.GRAVEL.getId()] = new Color(136,126,126,255);
             colorData[DataValues.GOLDORE.getId()] = new Color(143,140,125,255);
-            colorData[DataValues.IRONORE.getId()] = new Color(136,130,127,255);
-            colorData[DataValues.COALORE.getId()] = new Color(115,115,115,255);
+            colorData[DataValues.IRONORE.getId()] = new Color(255,255,255,255);
+            colorData[DataValues.COALORE.getId()] = new Color(0,0,0,255);
             colorData[DataValues.LOG.getId()] = new Color(102,81,51,255);
             colorData[DataValues.LEAVES.getId()] = new Color(60,192,41,100);
             colorData[DataValues.GLASS.getId()] = new Color(255,255,255,64);
@@ -188,7 +188,7 @@ public class Configuration {
             colorData[DataValues.FIRE.getId()] = new Color(255,170,30,200);
             colorData[DataValues.WOODENSTAIRS.getId()] = new Color(157,128,79,255);
             colorData[DataValues.CHEST.getId()] = new Color(125,91,38,255);
-            colorData[DataValues.DIAMONDORE.getId()] = new Color(129,140,143,255);
+            colorData[DataValues.DIAMONDORE.getId()] = new Color(0,255,0,255);
             colorData[DataValues.DIAMONDBLOCK.getId()] = new Color(45,166,152,255);
             colorData[DataValues.WORKBENCH.getId()] = new Color(114,88,56,255);
             colorData[DataValues.CROPS.getId()] = new Color(146,192,0,255);

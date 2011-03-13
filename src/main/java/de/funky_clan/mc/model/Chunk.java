@@ -18,11 +18,23 @@ public class Chunk {
     private int startZ;
 
     private Logger logger = LoggerFactory.getLogger(Chunk.class);
-    private Model model;
 
-    public Chunk(Model model, int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
+    public static Chunk EMPTY = new Chunk(0,0,0,1<<4, 1<<7, 1<<4) {
+        @Override
+        public void setPixelLocal(int x, int y, int z, int value) { }
+
+        @Override
+        public int getPixelLocal(int x, int y, int z) { return -1; }
+
+        @Override
+        public void setPixelGlobal(int x, int y, int z, int value) { }
+
+        @Override
+        public int getPixelGlobal(int x, int y, int z) { return -1; }
+    };
+
+    public Chunk(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
         logger.info("Creating chunk "+startX+", "+startY+", "+startZ);
-        this.model = model;
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;

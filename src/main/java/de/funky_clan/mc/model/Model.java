@@ -4,18 +4,13 @@ package de.funky_clan.mc.model;
 
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
-import de.funky_clan.mc.file.RegionFileCache;
-import de.funky_clan.mc.model.events.RequestChunkData;
-import org.jnbt.*;
+import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.ChunkUpdate;
+import de.funky_clan.mc.events.UnloadChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author synopia
@@ -27,12 +22,26 @@ public class Model {
     private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
     public Model() {
+        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+            @Override
+            public void handleEvent(ChunkUpdate event) {
+                setBlock(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData());
+            }
+        });
+        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
+            @Override
+            public void handleEvent(UnloadChunk event) {
+                int chunkX = event.getChunkX();
+                int chunkZ = event.getChunkZ();
+                removeChunk(chunkX,chunkZ);
+
+            }
+        });
     }
 
     public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
-        log.info("start decoding chunk "+sx+", "+sy+", "+sz);
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
-            Chunk chunk = getChunkFor(sx, sy, sz);
+            Chunk chunk = getOrCreateChunk(sx, sy, sz);
             int len = 16*128*16;
             for (int i = 0; i < len; i++) {
                 int x = sx + (i>>11);
@@ -45,47 +54,56 @@ public class Model {
                 for( int y=0; y<sizeY; y++ ) {
                     for( int z=0; z<sizeZ; z++ ) {
                         int i = y + (z*sizeY) + x * sizeY * sizeZ;
-
                         setPixel(sx + x, sy + y, sz + z, data[i]);
                     }
                 }
             }
         }
-        log.info("finished decoding chunk");
     }
 
     public void setPixel( int x, int y, int z, int value ) {
-        getChunkFor(x, y, z).setPixelGlobal(x, y, z, value);
+        getOrCreateChunk(x, y, z).setPixelGlobal(x, y, z, value);
     }
 
     public int getPixel( int x, int y, int z ) {
-/*
         int chunkX = x>>4;
-        int chunkY = y>>7;
         int chunkZ = z>>4;
 
+        return getChunk(chunkX, chunkZ).getPixelGlobal(x, y, z);
+    }
+
+    private void removeChunk( int chunkX, int chunkZ ) {
+        HashMap<Integer, Chunk> zChunks;
+        if(chunks.containsKey(chunkZ)) {
+            zChunks = chunks.get(chunkZ);
+            if( zChunks.containsKey(chunkX) ) {
+                zChunks.remove(chunkX);
+            }
+        }
+    }
+
+    private Chunk getChunk(int chunkX, int chunkZ) {
         HashMap<Integer, Chunk> zChunks;
         if(chunks.containsKey(chunkZ)) {
             zChunks = chunks.get(chunkZ);
         } else {
-            return 0;
+            return Chunk.EMPTY;
         }
         if( zChunks.containsKey(chunkX) ) {
-            Chunk chunk = zChunks.get(chunkX);
-            return chunk.getPixelGlobal(x,y,z);
+            return zChunks.get(chunkX);
         } else {
-            return 0;
+            return Chunk.EMPTY;
         }
-
-*/
-        return getChunkFor(x,y,z).getPixelGlobal(x,y,z);
     }
 
-    public Chunk getChunkFor( int x, int y, int z ) {
+    public Chunk getOrCreateChunk(int x, int y, int z) {
         int chunkX = x>>4;
         int chunkY = y>>7;
         int chunkZ = z>>4;
+        return getOrCreateChunk(chunkX, chunkZ);
+    }
 
+    public Chunk getOrCreateChunk(int chunkX, int chunkZ) {
         Chunk chunk;
         HashMap<Integer, Chunk> zChunks;
 
@@ -99,10 +117,8 @@ public class Model {
         if( zChunks.containsKey(chunkX) ) {
             chunk = zChunks.get(chunkX);
         } else {
-            chunk = new Chunk(this, chunkX<<4, chunkY<<7, chunkZ<<4, 1<<4, 1<<7, 1<<4 );
+            chunk = new Chunk(chunkX<<4, 0, chunkZ<<4, 1<<4, 1<<7, 1<<4 );
             zChunks.put(chunkX, chunk);
-            eventBus.fireEvent(new RequestChunkData(chunkX, chunkZ) );
-
         }
 
         return chunk;
@@ -116,13 +132,13 @@ public class Model {
         BackgroundImage result;
 
         switch( type ) {
-        case Z:
-            result = zSliceImages.get( slice );
+            case Z:
+                result = zSliceImages.get( slice );
 
-            break;
+                break;
 
-        default:
-            result = null;
+            default:
+                result = null;
         }
 
         return result;

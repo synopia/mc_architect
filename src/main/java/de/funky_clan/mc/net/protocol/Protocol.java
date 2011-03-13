@@ -2,19 +2,13 @@ package de.funky_clan.mc.net.protocol;
 
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
-import de.funky_clan.mc.net.protocol.events.ConnectionEstablished;
-import de.funky_clan.mc.net.protocol.events.ConnectionLost;
+import de.funky_clan.mc.events.ConnectionEstablished;
+import de.funky_clan.mc.events.ConnectionLost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author synopia
@@ -62,7 +56,7 @@ public abstract class Protocol {
             @Override
             public void decode(DataInputStream in) throws IOException {
                 String reason = in.readUTF();
-                eventBus.fireEvent( new ConnectionLost() );
+                eventBus.fireEvent(new ConnectionLost());
             }
         });
     }

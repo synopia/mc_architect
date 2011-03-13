@@ -1,4 +1,4 @@
-package de.funky_clan.mc.net.protocol.events;
+package de.funky_clan.mc.events;
 
 import de.funky_clan.mc.eventbus.Event;
 
