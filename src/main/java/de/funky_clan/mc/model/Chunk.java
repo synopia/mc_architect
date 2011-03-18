@@ -1,5 +1,6 @@
 package de.funky_clan.mc.model;
 
+import de.funky_clan.mc.math.Point3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,73 +9,69 @@ import org.slf4j.LoggerFactory;
  */
 public class Chunk {
     private int                               map[][][];
-    private int                               sizeX;
-    private int                               sizeY;
-    private int                               sizeZ;
-
-    private int startX;
-    private int startY;
-    private int startZ;
+    private Point3i size;
+    private Point3i start;
 
     private Logger logger = LoggerFactory.getLogger(Chunk.class);
 
-    public static Chunk EMPTY = new Chunk(0,0,0,1<<4, 1<<7, 1<<4) {
-        @Override
-        public void setPixelLocal(int x, int y, int z, PixelType type, int value) { }
+    public static Chunk EMPTY = new Chunk(new Point3i(0,0,0), new Point3i(1<<4, 1<<7, 1<<4)) {
 
         @Override
-        public int getPixelLocal(int x, int y, int z, PixelType type) { return -1; }
+        public void setPixelLocal(Point3i pos, PixelType type, int value) {
+        }
 
         @Override
-        public void setPixelGlobal(int x, int y, int z, PixelType type, int value) { }
+        public int getPixelLocal(Point3i pos, PixelType type) {
+            return -1;
+        }
 
         @Override
-        public int getPixelGlobal(int x, int y, int z, PixelType type) { return -1; }
+        public void setPixelGlobal(Point3i pos, PixelType type, int value) {
+        }
+
+        @Override
+        public int getPixelGlobal(Point3i pos, PixelType type) {
+            return -1;
+        }
     };
 
-    public Chunk(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
-        logger.info("Creating chunk "+startX+", "+startY+", "+startZ);
-        this.startX = startX;
-        this.startY = startY;
-        this.startZ = startZ;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
+    public Chunk(Point3i start, Point3i size) {
+        logger.info("Creating chunk "+start.x()+", "+start.y()+", "+start.z());
+        this.start = start;
+        this.size = size;
 
-        map        = new int[sizeZ][][];
+        map        = new int[size.z()][][];
 
-        for( int z = 0; z < sizeZ; z++ ) {
-            map[z] = new int[sizeY][];
+        for( int z = 0; z < size.z(); z++ ) {
+            map[z] = new int[size.y()][];
 
-            for( int y = 0; y < sizeY; y++ ) {
-                map[z][y] = new int[sizeX];
+            for( int y = 0; y < size.y(); y++ ) {
+                map[z][y] = new int[size.x()];
             }
         }
     }
 
-    public int getSizeX() {
-        return sizeX;
-    }
-
-    public int getSizeY() {
-        return sizeY;
-    }
-
-    public int getSizeZ() {
-        return sizeZ;
+    public Point3i getSize() {
+        return size;
     }
 
     public boolean isInRange( int x, int y, int z ) {
-        return (x >= 0) && (y >= 0) && (z >= 0) && (x < sizeX) && (y < sizeY) && (z < sizeZ);
+        return (x >= 0) && (y >= 0) && (z >= 0) && (x < size.x()) && (y < size.y()) && (z < size.z());
     }
 
-    public void setPixelLocal(int x, int y, int z, PixelType type, int value) {
+    public void setPixelLocal(Point3i pos, PixelType type, int value) {
+        int x = pos.x();
+        int y = pos.y();
+        int z = pos.z();
         if( isInRange( x, y, z )) {
             map[z][y][x] = type.set(map[z][y][x], value);
         }
     }
 
-    public int getPixelLocal(int x, int y, int z, PixelType type) {
+    public int getPixelLocal(Point3i pos, PixelType type) {
+        int x = pos.x();
+        int y = pos.y();
+        int z = pos.z();
         int result = -1;
 
         if( isInRange( x, y, z )) {
@@ -84,27 +81,12 @@ public class Chunk {
         return result;
     }
 
-    public void setPixelGlobal(int x, int y, int z, PixelType type, int value) {
-        x -= startX;
-        y -= startY;
-        z -= startZ;
-
-        if( isInRange( x, y, z )) {
-            map[z][y][x] = type.set(map[z][y][x], value);
-        }
+    public void setPixelGlobal(Point3i pos, PixelType type, int value) {
+        setPixelLocal( pos.sub(start), type, value );
     }
 
-    public int getPixelGlobal(int x, int y, int z, PixelType type) {
-        x -= startX;
-        y -= startY;
-        z -= startZ;
-        int result = -1;
-
-        if( isInRange( x, y, z )) {
-            result = type.get(map[z][y][x]);
-        }
-
-        return result;
+    public int getPixelGlobal(Point3i pos, PixelType type) {
+        return getPixelLocal(pos.sub(start), type);
     }
 
 }

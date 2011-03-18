@@ -2,18 +2,21 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import de.funky_clan.mc.config.Configuration;
+import com.google.inject.Inject;
+import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.OreFound;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
-import de.funky_clan.mc.math.Point3i;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.ChunkUpdate;
+import de.funky_clan.mc.ui.renderer.BlockRenderer;
+import de.funky_clan.mc.ui.renderer.ImageRenderer;
+import de.funky_clan.mc.ui.renderer.PlayerRenderer;
+import de.funky_clan.mc.ui.renderer.SliceRenderer;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -30,28 +33,36 @@ import java.util.List;
  */
 public class SlicePanel extends ZoomPanel {
     private BackgroundImage image;
+    @Inject
     private Model           model;
+    @Inject
     private Player          player;
     private SelectedBlock   selectedBlock;
+    @Inject
     private Slice           slice;
     private int             sliceNo;
-    private EventBus        eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    @Inject
+    private EventBus        eventBus;
     private List<Ore>       ores = new ArrayList<Ore>();
-    Configuration.Colors colors;
+    @Inject
+    private Colors colors;
 
-    public SlicePanel( Model model, Configuration.Colors colors, final Slice slice ) {
-        this.model = model;
-        this.slice = slice;
-        this.colors = colors;
-    }
+
+    @Inject
+    private BlockRenderer<SelectedBlock> blockRenderer;
+    @Inject
+    private ImageRenderer imageRenderer;
+    @Inject
+    private PlayerRenderer playerRenderer;
+    @Inject
+    private SliceRenderer sliceRenderer;
 
     @Override
-    public void onInit() {
-        super.onInit();
+    public void init() {
+        super.init();
 
         setFocusable(true);
         setAutoscrolls( true );
-        player  = new Player( slice.getType() == SliceType.Z );
         final SliceRenderContext context = (SliceRenderContext) this.context;
         context.setColors( colors );
         context.setWindowSize(new Point2d(50,50));
@@ -119,19 +130,20 @@ public class SlicePanel extends ZoomPanel {
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect( 0, 0, getWidth(), getHeight() );
 
+        SliceRenderContext c = (SliceRenderContext) context;
         if( image != null ) {
-            image.render( context );
+            imageRenderer.render(image, c );
         }
         if( slice != null ) {
             slice.setSlice(sliceNo);
-            slice.render( context );
+            sliceRenderer.render(slice, c);
         }
         if( selectedBlock != null ) {
-            selectedBlock.render( (SliceRenderContext) context );
+            blockRenderer.render( selectedBlock, c );
         }
 
         if( player != null ) {
-            player.render( (SliceRenderContext) context );
+            playerRenderer.render(player, c);
         }
 
         super.paintComponent( g );
@@ -161,5 +173,10 @@ public class SlicePanel extends ZoomPanel {
     @Override
     protected RenderContext createRenderContext() {
         return new SliceRenderContext(slice);
+    }
+
+    public void setSliceType(SliceType type) {
+        slice.setType(type);
+        player.setDrawViewCone( type==SliceType.Z );
     }
 }

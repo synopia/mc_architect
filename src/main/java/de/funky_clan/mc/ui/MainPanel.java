@@ -2,9 +2,9 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.file.RegionFileService;
@@ -31,30 +31,33 @@ import javax.swing.*;
  */
 public class MainPanel extends JPanel {
     private MitmThread mitmThread;
+    @Inject
     private Configuration    configuration;
     private JTextField       host;
+    @Inject
     private PlayerInfoLabels playerInfo;
     private double           playerX;
     private double           playerY;
     private double           playerZ;
     private float            yaw;
     private float            pitch;
+    @Inject
     private SlicePanel       sideX;
+    @Inject
     private SlicePanel       sideY;
+    @Inject
     private SlicePanel       topDown;
     private int              zShift;
     private JLabel           zShiftLabel;
-    private EventBus         eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private EventBus         eventBus;
     private JLabel           chunksText;
     private int              chunksLoaded;
     private int              chunksUnloaded;
     private JLabel memoryText;
 
-    public MainPanel( final Configuration configuration ) {
-        super( new BorderLayout() );
-        new RegionFileService();
-
-        mitmThread = new MitmThread(12345);
+    @Inject
+    public MainPanel(final EventBus eventBus) {
+        this.eventBus = eventBus;
 
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
@@ -106,6 +109,18 @@ public class MainPanel extends JPanel {
             }
         });
 
+        eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
+            @Override
+            public void handleEvent(Initialize event) {
+                onInit();
+            }
+        });
+    }
+
+    protected void onInit() {
+        setLayout( new BorderLayout() );
+        mitmThread = new MitmThread(12345);
+
         this.setFocusable(true);
 
         this.addKeyListener( new KeyAdapter() {
@@ -132,16 +147,13 @@ public class MainPanel extends JPanel {
             }
         });
 
-        this.configuration = configuration;
         playerX            = configuration.getMidX();
         playerY            = configuration.getMidY();
         playerZ            = configuration.getMidZ();
 
-        Model model = configuration.getModel();
-
-        topDown = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.Z ));
-        sideX   = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.X ));
-        sideY   = new SlicePanel( model, configuration.createColors(), new Slice( model, SliceType.Y ));
+        topDown.setSliceType(SliceType.Z);
+        sideX.setSliceType(SliceType.X);
+        sideY.setSliceType(SliceType.Y);
 
         topDown.setPreferredSize(new Dimension(800,600));
         sideX.setPreferredSize(new Dimension(400,300));
@@ -177,7 +189,6 @@ public class MainPanel extends JPanel {
         add( imageBar, BorderLayout.SOUTH );
 
         mitmThread.start();
-        new OreDetector(model);
 
 //        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
         eventBus.fireEvent(new TargetServerChanged("localhost"));
@@ -238,8 +249,6 @@ public class MainPanel extends JPanel {
     }
 
     private JToolBar buildInfoToolBar1() {
-        playerInfo = new PlayerInfoLabels( configuration.getModel() );
-
         JToolBar info = new JToolBar();
 
         info.add(playerInfo.getTargetConnection());

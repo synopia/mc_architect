@@ -2,8 +2,8 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.model.Model;
@@ -21,13 +21,14 @@ import java.awt.event.ActionListener;
 public class PlayerInfoLabels {
     private JLabel position;
     private JLabel direction;
+    @Inject
     private Model  model;
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private EventBus eventBus;
     private JTextField host;
 
-    public PlayerInfoLabels( Model model ) {
-        super();
-        this.model    = model;
+    @Inject
+    public PlayerInfoLabels(final EventBus eventBus) {
+        this.eventBus = eventBus;
         direction     = new JLabel();
         position      = new JLabel();
 

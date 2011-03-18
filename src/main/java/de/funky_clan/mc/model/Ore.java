@@ -1,12 +1,11 @@
 package de.funky_clan.mc.model;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
+import de.funky_clan.mc.ui.renderer.Renderer;
 
 /**
  * @author synopia
  */
-public class Ore implements Renderable {
+public class Ore {
     private int startX;
     private int startY;
     private int startZ;
@@ -69,7 +68,6 @@ public class Ore implements Renderable {
         addOre( ore.getEndX(), ore.getEndY(), ore.getEndZ() );
     }
 
-    @Override
     public void render(RenderContext c) {
         // draw selected block with player color
         //Point2d startScreen = c.worldToScreen( startWorld );

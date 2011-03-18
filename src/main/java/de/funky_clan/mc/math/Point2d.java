@@ -4,22 +4,14 @@ package de.funky_clan.mc.math;
  * @author synopia
  */
 public class Point2d {
-    protected double x;
-    protected double y;
+    protected final double x;
+    protected final double y;
+
+    public Point2d( Point2d point ) {
+        this( point.x, point.y );
+    }
 
     public Point2d(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public Point2d() {
-    }
-
-    public void set( Point2d v ) {
-        set(v.x(), v.y());
-    }
-
-    public void set( double x, double y ) {
         this.x = x;
         this.y = y;
     }

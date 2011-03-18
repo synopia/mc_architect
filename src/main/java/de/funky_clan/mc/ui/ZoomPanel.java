@@ -31,10 +31,6 @@ public abstract class ZoomPanel extends JPanel {
 
     public void init() {
         context = createRenderContext();
-        onInit();
-    }
-
-    public void onInit() {
         context.init(new Point2d(0,0), new Point2d(getWidth(), getHeight()), new Point2i(getWidth(), getHeight()));
         addMouseMotionListener(new MouseAdapter() {
             @Override

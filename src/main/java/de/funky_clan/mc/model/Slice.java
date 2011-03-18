@@ -2,25 +2,27 @@ package de.funky_clan.mc.model;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
 import de.funky_clan.mc.math.Point3i;
+import de.funky_clan.mc.ui.renderer.Renderer;
 
 import java.awt.*;
 
 /**
  * @author synopia
  */
-public class Slice implements Renderable {
+public class Slice {
+    @Inject
     private Model     model;
     private int       slice;
     private SliceType type;
 
-    public Slice( Model model, SliceType type ) {
-        this.model = model;
-        this.type  = type;
+    public void setType(SliceType type) {
+        this.type = type;
     }
 
     public void setSlice( int slice ) {
@@ -28,16 +30,16 @@ public class Slice implements Renderable {
     }
 
     public Point3i sliceToWorld( Point3i slicedPos ) {
-        Point3i result = new Point3i();
+        Point3i result = null;
         switch (type) {
             case X:
-                result.set( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                result = new Point3i( slicedPos.z(), slicedPos.y(), slicedPos.x() );
                 break;
             case Y:
-                result.set( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                result = new Point3i( slicedPos.x(), slicedPos.y(), slicedPos.z() );
                 break;
             case Z:
-                result.set( slicedPos.x(), slicedPos.z(), slicedPos.y() );
+                result = new Point3i( slicedPos.x(), slicedPos.z(), slicedPos.y() );
                 break;
         }
         return result;
@@ -48,16 +50,16 @@ public class Slice implements Renderable {
     }
 
     public Point3d sliceToWorld( Point3d slicedPos ) {
-        Point3d result = new Point3d();
+        Point3d result = null;
         switch (type) {
             case X:
-                result.set( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                result = new Point3d( slicedPos.z(), slicedPos.y(), slicedPos.x() );
                 break;
             case Y:
-                result.set( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                result = new Point3d( slicedPos.x(), slicedPos.y(), slicedPos.z() );
                 break;
             case Z:
-                result.set( slicedPos.x(), slicedPos.z(), slicedPos.y() );
+                result = new Point3d( slicedPos.x(), slicedPos.z(), slicedPos.y() );
                 break;
         }
         return result;
@@ -67,50 +69,19 @@ public class Slice implements Renderable {
         return  sliceToWorld(worldPos);
     }
 
-    public int getPixel(int x, int y, PixelType type) {
-        Point3i map = sliceToWorld( new Point3i(x, y, slice) );
-        return model.getPixel( map.x(), map.y(), map.z(), type);
+    public void setPixel( Point2i slicePos, int slice, PixelType type, int value ) {
+        Point3i worldPos = sliceToWorld(new Point3i(slicePos.x(), slicePos.y(), slice));
+        model.setPixel(worldPos, type, value );
     }
-
-    public void setPixel(int x, int y, int slice, PixelType type, int value) {
-        Point3i map = sliceToWorld(new Point3i(x, y, slice));
-        model.setPixel(map.x(), map.y(), map.z(), value, type);
+    public int getPixel( Point2i slicePos, int slice, PixelType type ) {
+        Point3i worldPos = sliceToWorld(new Point3i(slicePos.x(), slicePos.y(), slice));
+        return model.getPixel(worldPos, type);
     }
-
-    public void render( RenderContext context ) {
-        Graphics2D g  = context.getGraphics();
-        int        sx = context.getWindowStart().x() - 1;
-        int        sy = context.getWindowStart().y() - 1;
-        int        ex = context.getWindowEnd().x() + 2;
-        int        ey = context.getWindowEnd().y() + 2;
-
-        for( int y = sy; y < ey; y++ ) {
-            for( int x = sx; x < ex; x++ ) {
-                int blockId = getPixel( x, y, PixelType.BLOCK_ID );
-                int blueprint = getPixel( x, y, PixelType.BLUEPRINT );
-
-                Color colorForBlock = null;
-
-                if( blockId > 0 ) {
-                    colorForBlock = context.getColors().getColorForBlock(blockId);
-                }
-                if( blueprint==1 ) {
-                    if( colorForBlock==null ) {
-                        colorForBlock = context.getColors().getColorForBlock(DataValues.AIR.getId());
-                    }
-                    colorForBlock = colorForBlock.darker().darker().darker();
-                }
-
-                if( colorForBlock!=null ) {
-                    g.setColor(colorForBlock);
-                    Point2d position = new Point2d(x, y);
-                    Point2i curr = context.worldToScreen(position);
-                    Point2i size = context.screenUnit(position);
-
-                    g.fillRect( curr.x(), curr.y(), size.x(), size.y());
-                }
-            }
-        }
+    public void setPixel( Point2i slicePos, PixelType type, int value ) {
+        setPixel(slicePos, slice, type, value);
+    }
+    public int getPixel( Point2i slicePos, PixelType type ) {
+        return getPixel(slicePos, slice, type );
     }
 
     public SliceType getType() {

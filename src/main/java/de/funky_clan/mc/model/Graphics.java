@@ -1,5 +1,7 @@
 package de.funky_clan.mc.model;
 
+import de.funky_clan.mc.math.Point2i;
+
 /**
  * Contains methods to "draw" into the model
  *
@@ -48,7 +50,7 @@ public class Graphics {
     }
 
     public void setPixel( int x, int y, int slice, int value ) {
-        this.slice.setPixel(x, y, slice, PixelType.BLUEPRINT, value);
+        this.slice.setPixel(new Point2i(x, y), slice, PixelType.BLUEPRINT, value);
     }
 
     public void hLine( int x, int y, int width, int level, int type ) {

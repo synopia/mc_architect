@@ -1,7 +1,7 @@
 package de.funky_clan.mc.net.protocol;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.UnloadChunk;
 import org.slf4j.Logger;
@@ -20,7 +20,8 @@ public class ServerProtocol9 extends Protocol9 {
 
     private Inflater inflater;
     private byte[] compressedData;
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    @Inject
+    private EventBus eventBus;
 
     @Override
     protected void load() {

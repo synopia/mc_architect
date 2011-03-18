@@ -1,7 +1,7 @@
 package de.funky_clan.mc.net.protocol;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.events.ConnectionEstablished;
 import de.funky_clan.mc.events.ConnectionLost;
 import org.slf4j.Logger;
@@ -21,7 +21,8 @@ public abstract class Protocol {
     }
 
     private HashMap<Integer, MessageDecoder> decoders = new HashMap<Integer, MessageDecoder>();
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    @Inject
+    private EventBus eventBus;
 
     public Protocol() {
         load();

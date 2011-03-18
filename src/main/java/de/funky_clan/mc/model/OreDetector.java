@@ -1,8 +1,8 @@
 package de.funky_clan.mc.model;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.OreFound;
@@ -14,7 +14,8 @@ import java.util.Arrays;
  * @author synopia
  */
 public class OreDetector {
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private EventBus eventBus;
+    @Inject
     private Model model;
     private ArrayList<Ore> ores = new ArrayList<Ore>();
     private boolean[] closedMap = new boolean[16*128*16];
@@ -23,8 +24,9 @@ public class OreDetector {
     private int startY;
     private int startZ;
 
-    public OreDetector(final Model model) {
-        this.model = model;
+    @Inject
+    public OreDetector(final EventBus eventBus) {
+        this.eventBus = eventBus;
 
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override

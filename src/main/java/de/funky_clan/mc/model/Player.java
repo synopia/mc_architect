@@ -16,7 +16,7 @@ public class Player extends SelectedBlock {
     private boolean drawViewCone;
     private int     z;
 
-    public Player( boolean drawViewCone ) {
+    public void setDrawViewCone(boolean drawViewCone) {
         this.drawViewCone = drawViewCone;
     }
 
@@ -40,39 +40,7 @@ public class Player extends SelectedBlock {
         this.direction = direction+90;
     }
 
-    @Override
-    public void render( SliceRenderContext c ) {
 
-        // draw selected block with player color
-        Color color = c.getColors().getPlayerBlockColor();
-
-        setColor( color );
-        super.render( c );
-
-        if( isDrawViewCone() ) {
-            Graphics2D g = c.getGraphics();
-
-            g.setColor( color );
-
-            Point2i start = c.worldToScreen(getPosition());
-            Point2i size = c.screenUnit(getPosition());
-
-            int sx = start.x();
-            int sy = start.y();
-            int w  = size.x();
-            int h  = size.y();
-            int mx = sx + w / 2;
-            int my = sy + h / 2;
-            int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
-            int y1 = my + (int) ( 10 * w * Math.sin(( direction - 30 ) / 180.0 * Math.PI ));
-            int x2 = mx + (int) ( 10 * w * Math.cos(( direction + 30 ) / 180.0 * Math.PI ));
-            int y2 = my + (int) ( 10 * w * Math.sin(( direction + 30 ) / 180.0 * Math.PI ));
-
-            g.drawLine( mx, my, x1, y1 );
-            g.drawLine( mx, my, x2, y2 );
-            g.drawLine( x1, y1, x2, y2 );
-        }
-    }
 
 /*
     todo verify

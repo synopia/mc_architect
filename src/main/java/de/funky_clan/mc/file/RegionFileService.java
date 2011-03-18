@@ -1,7 +1,7 @@
 package de.funky_clan.mc.file;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.PlayerMoved;
@@ -22,13 +22,16 @@ import java.util.List;
  */
 public class RegionFileService {
     private static final int SIZE = 10;
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private EventBus eventBus;
     private int playerX;
     private int playerZ;
     private ArrayList<String> loadedChunks = new ArrayList<String>();
     private Logger log = LoggerFactory.getLogger(RegionFileService.class);
 
-    public RegionFileService() {
+    @Inject
+    public RegionFileService(final EventBus eventBus) {
+        System.out.println("Region File Service started");
+        this.eventBus = eventBus;
         eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
             @Override
             public void handleEvent(PlayerMoved event) {
@@ -66,15 +69,17 @@ public class RegionFileService {
 
     public void load( int chunkX, int chunkZ ) {
         DataInputStream inputStream = RegionFileCache.getChunkDataInputStream(new File("d:/games/minecraft/world"), chunkX, chunkZ);
-        try {
-            NBTInputStream nbt = new NBTInputStream(inputStream);
-            CompoundTag root=(CompoundTag) nbt.readTag();
-            CompoundTag level = (CompoundTag) root.getValue().get("Level");
-            ByteArrayTag blocks = (ByteArrayTag) level.getValue().get("Blocks");
+        if( inputStream!=null ) {
+            try {
+                NBTInputStream nbt = new NBTInputStream(inputStream);
+                CompoundTag root=(CompoundTag) nbt.readTag();
+                CompoundTag level = (CompoundTag) root.getValue().get("Level");
+                ByteArrayTag blocks = (ByteArrayTag) level.getValue().get("Blocks");
 
-            eventBus.fireEvent(new ChunkUpdate(chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
-        } catch (IOException e) {
-            e.printStackTrace();
+                eventBus.fireEvent(new ChunkUpdate(chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

@@ -2,7 +2,7 @@ package de.funky_clan.mc.model;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import de.funky_clan.mc.config.Configuration;
+import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 
@@ -18,13 +18,13 @@ import java.awt.*;
  * @author synopia
  */
 public class RenderContext {
-    private Configuration.Colors colors;
+    private Colors colors;
     private Graphics2D           g;
-    private Point2d pixelSize = new Point2d();
-    private Point2i screenSize = new Point2i();
+    private Point2d pixelSize;
+    private Point2i screenSize;
 
-    private Point2d              windowSize = new Point2d();
-    private Point2d              windowPosition = new Point2d();
+    private Point2d              windowSize;
+    private Point2d              windowPosition;
 
     public RenderContext( ) {
     }
@@ -72,15 +72,15 @@ public class RenderContext {
     }
 
     public void setWindowPosition( Point2d windowPos ) {
-        windowPosition.set(windowPos);
+        windowPosition = windowPos;
     }
 
     public void setWindowSize( Point2d size ) {
-        windowSize.set(size);
+        windowSize = size;
     }
 
     public void setScreenSize(Point2i screenSize) {
-        this.screenSize.set(screenSize);
+        this.screenSize = screenSize;
     }
 
     public void init( Point2d windowPos, Point2d windowSize, Point2i screenSize ) {
@@ -93,17 +93,17 @@ public class RenderContext {
 
     private void calculateSizes() {
         if( windowSize.x()>0 && windowSize.y()>0 ) {
-            pixelSize.set(
+            pixelSize = new Point2d(
                     screenSize.x() / windowSize.x(),
                     screenSize.y() / windowSize.y()
             );
         } else {
-            pixelSize.set( 0, 0 );
+            pixelSize = new Point2d( 0, 0 );
         }
     }
 
     public void zoom( double zoomX, double zoomY ) {
-        windowSize.set(windowSize.x() * zoomX, windowSize.y() * zoomY);
+        windowSize = new Point2d(windowSize.x() * zoomX, windowSize.y() * zoomY);
         calculateSizes();
     }
 
@@ -138,11 +138,11 @@ public class RenderContext {
         );
     }
 
-    public Configuration.Colors getColors() {
+    public Colors getColors() {
         return colors;
     }
 
-    public void setColors( Configuration.Colors colors ) {
+    public void setColors( Colors colors ) {
         this.colors = colors;
     }
 

@@ -2,7 +2,15 @@ package de.funky_clan.mc;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import de.funky_clan.mc.config.ArchitectModule;
 import de.funky_clan.mc.config.Configuration;
+import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.Initialize;
+import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.ui.MainPanel;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -14,12 +22,28 @@ import javax.swing.*;
  */
 public class Main extends JFrame {
 
-    public Main( Configuration configuration ) {
-        MainPanel mainPanel=new MainPanel( configuration );
-        setTitle( "Minecraft Architect for v1.3.01" );
-        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        add( mainPanel );
-        pack();
+    @Inject
+    MainPanel mainPanel;
+    @Inject
+    EventBus eventBus;
+    @Inject
+    RegionFileService regionFileService;
+
+    public Main() {
+    }
+
+    public void init() {
+        setTitle("Minecraft Architect for v1.3.01");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(mainPanel);
+        eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
+            @Override
+            public void handleEvent(Initialize event) {
+                pack();
+            }
+        });
+        eventBus.fireEvent( new Initialize() );
+
     }
 
     public void start() {
@@ -27,15 +51,18 @@ public class Main extends JFrame {
     }
 
     public static void main( String[] args ) {
+        ArchitectModule module = new ArchitectModule();
+        Injector injector = Guice.createInjector(module);
+
         String configFilename = "kolloseum.rb";
 
         if( args.length > 0 ) {
             configFilename = args[0];
         }
 
-        Configuration conf = Configuration.createFromRuby( configFilename );
-        Main          main = new Main( conf );
-
+//        Configuration conf = Configuration.createFromRuby( configFilename );
+        Main          main = injector.getInstance(Main.class);
+        main.init();
         main.start();
     }
 }

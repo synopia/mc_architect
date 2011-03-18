@@ -4,23 +4,16 @@ package de.funky_clan.mc.math;
  * @author synopia
  */
 public class Point2i {
-    protected int x;
-    protected int y;
+    protected final int x;
+    protected final int y;
 
     public Point2i(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point2i() {
-    }
-
-    public void set( Point2i v ) {
-        set(v.x(), v.y());
-    }
-    public void set( int x, int y ) {
-        this.x = x;
-        this.y = y;
+    public Point2i(Point2i point) {
+        this( point.x, point.y );
     }
 
     public Point2i sub( Point2i v ) {
@@ -50,5 +43,9 @@ public class Point2i {
     }
     public int y() {
         return y;
+    }
+
+    public Point2d toPoint2d() {
+        return new Point2d(x,y);
     }
 }

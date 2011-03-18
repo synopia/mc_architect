@@ -1,7 +1,7 @@
 package de.funky_clan.mc.net.protocol;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.events.PlayerPositionUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,8 @@ public class ClientProtocol9 extends Protocol9{
     private float yaw;
     private float pitch;
 
-    private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    @Inject
+    private EventBus eventBus;
 
     @Override
     protected void load() {
