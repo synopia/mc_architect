@@ -10,29 +10,29 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import javax.swing.*;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2i;
 
 /**
  * @author synopia
  */
 public class BackgroundImage implements Renderable {
     private String    filename;
-    private int       height;
     private ImageIcon icon;
     private Image     image;
-    private int       width;
-    private int startX;
-    private int startY;
+    private Point2d start = new Point2d();
+    private Point2d size  = new Point2d();
 
     public BackgroundImage(String filename, int startX, int startY) {
-        this.startX = startX;
-        this.startY = startY;
+        this( filename, new Point2i(startX, startY) );
+    }
+    public BackgroundImage(String filename, Point2i start ) {
+        this.start.set( start.x, start.y );
         this.filename = filename;
 
         try {
             image  = rotate(ImageIO.read( getClass().getClassLoader().getResourceAsStream( filename )), Math.toRadians(90));
-            width  = image.getWidth( null );
-            height = image.getHeight( null );
-
+            size.set( image.getWidth( null ), image.getHeight( null ) );
         } catch( IOException e ) {
             e.printStackTrace();
             image = null;
@@ -42,39 +42,50 @@ public class BackgroundImage implements Renderable {
     @Override
     public void render( RenderContext c ) {
         if( image != null ) {
-            int width  = c.getScreenWidth();
-            int height = c.getScreenHeight();
+            Point2i screenSize = c.getScreenSize();
+            int width  = screenSize.x;
+            int height = screenSize.y;
 
-            int ex = c.getScreenWidth()-c.modelToScreenX(startX);
-            int ey = c.getScreenHeight()-c.modelToScreenY(startY);
-            int sx = c.getScreenWidth()-c.modelToScreenX(startX + this.width-1);
-            int sy = c.getScreenHeight()-c.modelToScreenY(startY + this.height);
+            Point2i to = c.worldToScreen(start);
+            to.negate();
+            to.add(screenSize);
 
-            ex += c.screenUnitX(startX)/2;
-            ey += c.screenUnitY(startY)/2;
-            sx -= c.screenUnitX(startX)/2;
-            sy -= c.screenUnitY(startY)/2;
+            Point2i from = c.worldToScreen( new Point2d(start.x + size.x-1, start.y + size.y) );
+            from.negate();
+            from.add(screenSize);
+            int ex = to.x;
+            int ey = to.y;
+            int sx = from.x;
+            int sy = from.y;
 
             int x1 = 0;
             int y1 = 0;
-            int x2 = this.width-1;
-            int y2 = this.height-1;
+            int x2 = (int) size.x-1;
+            int y2 = (int) size.y-1;
 
             if( ex>=0 && ey>=0 && sx<width && sy<height ) {
+                Point2d startDiff = c.screenToWorld(new Point2i(sx, sy));
+                startDiff.negate();
+                startDiff.add( new Point2d(0,0) );
+
+                Point2d endDiff = c.screenToWorld(new Point2i(screenSize.x, screenSize.y));
+                endDiff.negate();
+                endDiff.add( new Point2d(ex,ey));
+
                 if( sx<0 ) {
-                    x1 += Math.abs(c.screenToModelX(0)-c.screenToModelX(sx));
+                    x1 += Math.abs(startDiff.x);
                     sx = 0;
                 }
                 if( sy<0 ) {
-                    y1 += Math.abs(c.screenToModelY(0)-c.screenToModelY(sy));
+                    y1 += Math.abs(startDiff.y);
                     sy = 0;
                 }
                 if( ex>=width ) {
-                    x2 -= Math.abs(c.screenToModelX(ex)-c.screenToModelX(width));
+                    x2 -= Math.abs(endDiff.x);
                     ex = width-1;
                 }
                 if( ey>=height ) {
-                    y2 -= Math.abs(c.screenToModelY(ey)-c.screenToModelY(height));
+                    y2 -= Math.abs(endDiff.y);
                     ey = height-1;
                 }
                 c.getGraphics().drawImage( image, sx, sy, ex, ey, x1, y1, x2, y2, null );
@@ -94,11 +105,11 @@ public class BackgroundImage implements Renderable {
             int w;
             int h;
 
-            if( width > height ) {
+            if( size.x > size.y ) {
                 w = 64;
-                h = (int) ( 64.0 * height / width );
+                h = (int) ( 64.0 * size.y / size.x );
             } else {
-                w = (int) ( 64.0 * width / height );
+                w = (int) ( 64.0 * size.x / size.y );
                 h = 64;
             }
 

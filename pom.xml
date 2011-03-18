@@ -34,7 +34,23 @@
             <artifactId>minecraft-client</artifactId>
             <version>1.3.01</version>
         </dependency>
+        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>geotools</id>
+            <name>Geotools</name>
+           <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+    </repositories>
+
+
 
     <build>
         <plugins>

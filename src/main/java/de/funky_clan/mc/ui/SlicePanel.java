@@ -13,6 +13,8 @@ import de.funky_clan.mc.events.ChunkUpdate;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2i;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -40,7 +42,7 @@ public class SlicePanel extends ZoomPanel {
         setAutoscrolls( true );
         player  = new Player( slice.getType() == SliceType.Z );
         context.setColors( colors );
-        context.setWindowSize(50,50);
+        context.setWindowSize(new Point2d(50,50));
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
@@ -51,11 +53,9 @@ public class SlicePanel extends ZoomPanel {
                         selectedBlock.repaint( SlicePanel.this, context );
                     }
 
-                    int x = (int)context.screenToModelX(context.getScreenWidth()-e.getX());
-                    int y = (int)context.screenToModelY(context.getScreenHeight()-e.getY());
-
-                    selectedBlock.setX( x );
-                    selectedBlock.setY( y );
+                    Point2i pos = new Point2i(-e.getX(), -e.getY());
+                    pos.add(context.getScreenSize());
+                    selectedBlock.setPosition(context.screenToWorld(pos));
                     selectedBlock.repaint( SlicePanel.this, context );
                 }
             }
@@ -70,9 +70,8 @@ public class SlicePanel extends ZoomPanel {
                 int wy    = map[1];
                 int wz    = map[2];
 
-                player.setX( wx );
-                player.setY( wy );
-                player.setZ( wz );
+                player.setPosition( new Point2d(wx,wy) );
+                player.setZ(wz);
                 player.setDirection( (int)event.getYaw() );
                 setSliceNo( wz );
                 scrollToPlayer( wx, wy );
@@ -96,12 +95,13 @@ public class SlicePanel extends ZoomPanel {
     }
 
     private void scrollToPlayer( int wx, int wy ) {
-        double windowX = context.getWindowX();
-        double windowY = context.getWindowY();
-        double windowWidth = context.getWindowWidth();
-        double windowHeight = context.getWindowHeight();
+        Point2d windowSize = context.getWindowSize();
+        Point2d halfWindowSize = new Point2d(windowSize);
+        halfWindowSize.scale(-0.5);
 
-        context.init( wx-windowWidth/2, wy-windowHeight/2, windowWidth, windowHeight, getWidth(), getHeight() );
+        Point2d start = new Point2d(wx, wy);
+        start.add( halfWindowSize );
+        context.init( start, windowSize, context.getScreenSize() );
         repaint();
     }
 

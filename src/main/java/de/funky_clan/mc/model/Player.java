@@ -5,6 +5,7 @@ package de.funky_clan.mc.model;
 import java.awt.*;
 
 import javax.swing.*;
+import javax.vecmath.Point2i;
 
 /**
  * @author paul.fritsche@googlemail.com
@@ -52,10 +53,13 @@ public class Player extends SelectedBlock {
 
             g.setColor( color );
 
-            int sx = c.modelToScreenX(getX());
-            int sy = c.modelToScreenY(getY());
-            int w  = c.screenUnitX(getX());
-            int h  = c.screenUnitY(getY());
+            Point2i start = c.worldToScreen(getPosition());
+            Point2i size = c.screenUnit(getPosition());
+
+            int sx = start.x;
+            int sy = start.y;
+            int w  = size.x;
+            int h  = size.y;
             int mx = sx - w / 2;
             int my = sy - h / 2;
             int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
@@ -63,14 +67,19 @@ public class Player extends SelectedBlock {
             int x2 = mx + (int) ( 10 * w * Math.cos(( direction + 30 ) / 180.0 * Math.PI ));
             int y2 = my + (int) ( 10 * w * Math.sin(( direction + 30 ) / 180.0 * Math.PI ));
 
-            g.drawLine( c.getScreenWidth()-mx, c.getScreenHeight()-my, c.getScreenWidth()-x1, c.getScreenHeight()-y1 );
-            g.drawLine( c.getScreenWidth()-mx, c.getScreenHeight()-my, c.getScreenWidth()-x2, c.getScreenHeight()-y2 );
-            g.drawLine( c.getScreenWidth()-x1, c.getScreenHeight()-y1, c.getScreenWidth()-x2, c.getScreenHeight()-y2 );
+            g.drawLine( c.getScreenSize().x-mx, c.getScreenSize().y-my, c.getScreenSize().x-x1, c.getScreenSize().y-y1 );
+            g.drawLine( c.getScreenSize().x-mx, c.getScreenSize().y-my, c.getScreenSize().x-x2, c.getScreenSize().y-y2 );
+            g.drawLine( c.getScreenSize().x-x1, c.getScreenSize().y-y1, c.getScreenSize().x-x2, c.getScreenSize().y-y2 );
         }
     }
 
+/*
+    todo verify
     public void repaint( JComponent component, RenderContext c ) {
-        component.repaint( c.modelToScreenX(getX() - 15), c.modelToScreenX(getY() - 15), c.screenUnitX(getX()-15, getX()+15),
-                           c.screenUnitY(getY()-15, getY()+15));
+        component.repaint(
+                c.modelToScreenX(getX() - 15), c.modelToScreenX(getY() - 15),
+                c.screenUnitX(getX()-15, getX()+15), c.screenUnitY(getY()-15, getY()+15)
+        );
     }
+*/
 }

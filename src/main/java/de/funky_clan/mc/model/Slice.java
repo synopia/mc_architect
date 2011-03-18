@@ -4,6 +4,8 @@ package de.funky_clan.mc.model;
 
 import de.funky_clan.mc.config.DataValues;
 
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2i;
 import java.awt.*;
 
 /**
@@ -102,10 +104,10 @@ public class Slice implements Renderable {
 
     public void render( RenderContext context ) {
         Graphics2D g  = context.getGraphics();
-        int        sx = context.getStartX() - 1;
-        int        sy = context.getStartY() - 1;
-        int        ex = context.getEndX() + 2;
-        int        ey = context.getEndY() + 2;
+        int        sx = context.getWindowStart().x - 1;
+        int        sy = context.getWindowStart().y - 1;
+        int        ex = context.getWindowEnd().x + 2;
+        int        ey = context.getWindowEnd().y + 2;
 
         for( int y = sy; y < ey; y++ ) {
             for( int x = sx; x < ex; x++ ) {
@@ -126,12 +128,11 @@ public class Slice implements Renderable {
 
                 if( colorForBlock!=null ) {
                     g.setColor(colorForBlock);
-                    int curr_x = context.modelToScreenX(x);
-                    int curr_y = context.modelToScreenY(y);
-                    int width = context.screenUnitX(x);
-                    int height = context.screenUnitY(y);
+                    Point2d position = new Point2d(x, y);
+                    Point2i curr = context.worldToScreen(position);
+                    Point2i size = context.screenUnit(position);
 
-                    g.fillRect( context.getScreenWidth()-curr_x, context.getScreenHeight()-curr_y, width, height );
+                    g.fillRect( context.getScreenSize().x-curr.x, context.getScreenSize().y-curr.y, size.x, size.y );
                 }
             }
         }

@@ -6,6 +6,9 @@ import de.funky_clan.mc.config.Configuration;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import javax.vecmath.Point2d;
+import javax.vecmath.Point2i;
+import javax.vecmath.Vector2d;
 import java.awt.*;
 
 /**
@@ -16,15 +19,11 @@ import java.awt.*;
 public class RenderContext {
     private Configuration.Colors colors;
     private Graphics2D           g;
-    private double               pixelSizeX;
-    private double               pixelSizeY;
-    private int                  screenHeight;
-    private int                  screenWidth;
+    private Point2d              pixelSize = new Point2d();
+    private Point2i              screenSize = new Point2i();
 
-    private double               windowHeight;
-    private double               windowWidth;
-    private double               windowX;
-    private double               windowY;
+    private Point2d              windowSize = new Point2d();
+    private Point2d              windowPosition = new Point2d();
 
     public RenderContext( ) {
     }
@@ -34,195 +33,110 @@ public class RenderContext {
     }
 
     /**
-     * Converts pixel coordinate to world coordinate
-     *
-     * @param x x value of coordinate in pixels
-     * @return x value of coordinate in world-x (no range check!)
+     * Converts screen coordinate to world
+     * @param screenPos
+     * @return
      */
-    public double screenToModelX(int x) {
-        return x / pixelSizeX + windowX;
+    public Point2d screenToWorld( Point2i screenPos ) {
+        return new Point2d(
+                screenPos.x / pixelSize.x + windowPosition.x,
+                screenPos.y / pixelSize.y + windowPosition.y
+        );
     }
 
     /**
-     * Converts pixel coordinate to world coordinate
-     *
-     * @param y y value of coordinate in pixels
-     * @return y value of coordinate in world-y (no range check!)
+     * Converts world coordinate to screen
+     * @param worldPos
+     * @return
      */
-    public double screenToModelY(int y) {
-        return y / pixelSizeY + windowY;
+    public Point2i worldToScreen( Point2d worldPos ) {
+        return new Point2i(
+                (int) ( (worldPos.x-windowPosition.x) * pixelSize.x ),
+                (int) ( (worldPos.y-windowPosition.y) * pixelSize.y )
+        );
     }
 
-    /**
-     * Converts world coordinate to pixel.
-     *
-     * @param x x value of world coordinate
-     * @return x value of coordinate in pixels (top left corner of block)
-     */
-    public int modelToScreenX(double x) {
-        return(int) ( (x-windowX) * pixelSizeX );
+    public Point2i screenUnit( Point2d worldPos ) {
+        return screenUnit( worldPos, new Point2d(worldPos.x+1, worldPos.y+1) );
     }
 
-    /**
-     * Converts world coordinate to pixel.
-     *
-     * @param y y value of world coordinate
-     * @return y value of coordinate in pixels (top left corner of block)
-     */
-    public int modelToScreenY(double y) {
-        return (int) ( (y-windowY) * pixelSizeY );
+    public Point2i screenUnit( Point2d worldPosA, Point2d worldPosB ) {
+        Point2i a = worldToScreen(worldPosA);
+        Point2i b = worldToScreen(worldPosB);
+        b.negate();
+        b.add( a );
+
+        return new Point2i(
+                Math.max( 1, Math.abs(b.x) ) + 1,
+                Math.max( 1, Math.abs(b.y) ) + 1
+        );
     }
 
-    public int screenUnitX(int x) {
-        return screenUnitX( x, x+1 );
-    }
-    public int screenUnitY(int y) {
-        return screenUnitY( y, y+1 );
+    public void setWindowPosition( Point2d windowPos ) {
+        windowPosition.set(windowPos);
     }
 
-    public int screenUnitX(int x1, int x2) {
-        return Math.max( 1, Math.abs(modelToScreenX(x1)-modelToScreenX(x2)) ) + 1;
-    }
-    public int screenUnitY(int y1, int y2) {
-        return Math.max( 1, Math.abs(modelToScreenY(y1) - modelToScreenY(y2) ) ) + 1;
+    public void setWindowSize( Point2d size ) {
+        windowSize.set(size);
     }
 
-    /**
-     * Top left corner of viewport window
-     *
-     * @param x coordinate
-     * @param y coordinate
-     */
-    public void setWindowStart( double x, double y ) {
-        windowX = x;
-        windowY = y;
+    public void setScreenSize(Point2i screenSize) {
+        this.screenSize.set(screenSize);
     }
 
-    /**
-     * Size of viewport window
-     *
-     * @param width  of window
-     * @param height of window
-     */
-    public void setWindowSize( double width, double  height ) {
-        windowWidth  = width;
-        windowHeight = height;
+    public void init( Point2d windowPos, Point2d windowSize, Point2i screenSize ) {
+        setWindowPosition( windowPos );
+        setWindowSize( windowSize );
+        setScreenSize( screenSize );
         calculateSizes();
     }
 
-    /**
-     * Scaled size, where content is drawn to
-     *
-     */
-    public void init(double windowX, double windowY, double windowWidth, double windowHeight, int screenWidth, int screenHeight) {
-        this.windowX = windowX;
-        this.windowY = windowY;
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-        calculateSizes();
-    }
 
     private void calculateSizes() {
-        if( windowWidth>0 && windowHeight>0 ) {
-            setPixelSize(screenWidth / windowWidth, screenHeight / windowHeight);
+        if( windowSize.x>0 && windowSize.y>0 ) {
+            pixelSize.set(
+                    screenSize.x / windowSize.x,
+                    screenSize.y / windowSize.y
+            );
         } else {
-            setPixelSize(0,0);
+            pixelSize.set( 0, 0 );
         }
     }
 
     public void zoom( double zoomX, double zoomY ) {
-        init(windowX, windowY, windowWidth * zoomX, windowHeight * zoomY, screenWidth, screenHeight);
-    }
-
-    /**
-     * @return width of the screen (equals model's width if no zoom) in pixels
-     */
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    /**
-     * @return height of the screen (equals model's height if no zoom) in pixels
-     */
-    public int getScreenHeight() {
-        return screenHeight;
+        windowSize.set(windowSize.x * zoomX, windowSize.y * zoomY);
+        calculateSizes();
     }
 
     public Graphics2D getGraphics() {
         return g;
     }
 
-    /**
-     * @return top left corner of viewport window in model space
-     */
-    public int getStartX() {
-        return (int)windowX;
+    public Point2d getPixelSize() {
+        return pixelSize;
     }
 
-    /**
-     * @return top left corner of viewport window in model space
-     */
-    public int getStartY() {
-        return (int)windowY;
+    public Point2i getScreenSize() {
+        return screenSize;
     }
 
-    /**
-     * @return width of viewport window in model space
-     */
-    public int getWidth() {
-        return (int)windowWidth;
+    public Point2d getWindowSize() {
+        return windowSize;
     }
 
-    /**
-     * @return width of viewport window in model space
-     */
-    public int getHeight() {
-        return (int)windowHeight;
+    public Point2d getWindowPosition() {
+        return windowPosition;
     }
 
-    /**
-     * @return bottom right corner of viewport window in model space
-     */
-    public int getEndX() {
-        return getStartX() + getWidth();
+    public Point2i getWindowStart() {
+        return new Point2i((int)windowPosition.x, (int)windowPosition.y);
     }
 
-    /**
-     * @return bottom right corner of viewport window in model space
-     */
-    public int getEndY() {
-        return getStartY() + getHeight();
-    }
-
-    public double getWindowX() {
-        return windowX;
-    }
-
-    public double getWindowY() {
-        return windowY;
-    }
-
-    public double getWindowWidth() {
-        return windowWidth;
-    }
-
-    public double getWindowHeight() {
-        return windowHeight;
-    }
-
-    protected void setPixelSize( double x, double y ) {
-        pixelSizeX = x;
-        pixelSizeY = y;
-    }
-
-    public double getPixelSizeX() {
-        return pixelSizeX;
-    }
-
-    public double getPixelSizeY() {
-        return pixelSizeY;
+    public Point2i getWindowEnd() {
+        return new Point2i(
+                (int)(windowPosition.x+windowSize.x),
+                (int)(windowPosition.y+windowSize.y)
+        );
     }
 
     public Configuration.Colors getColors() {
@@ -233,15 +147,13 @@ public class RenderContext {
         this.colors = colors;
     }
 
-    public void setScreenSize(int width, int height) {
-        this.screenWidth = width;
-        this.screenHeight = height;
-
-        calculateSizes();
-    }
-
     @Override
     public String toString() {
-        return String.format("window = %.2f, %.2f; %.2f, %.2f - screen = %d, %d", windowX, windowY, windowWidth, windowHeight, screenWidth, screenHeight);
+        return String.format(
+                "window = %.2f, %.2f; %.2f, %.2f - screen = %d, %d",
+                windowPosition.x, windowPosition.y,
+                windowSize.x, windowSize.y,
+                screenSize.x, screenSize.y
+        );
     }
 }
