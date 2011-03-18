@@ -53,7 +53,7 @@ public class SelectedBlock implements Renderable {
         }
 
         for( int i = 0; i < thickness; i++ ) {
-            g.drawRect( c.getScreenSize().x-(start.x + i + 1), c.getScreenSize().y-(start.y + i + 1), size.x + 2 * i, size.y + 2 * i );
+            g.drawRect( start.x - i, start.y - i, size.x + 2 * i, size.y + 2 * i );
         }
     }
 

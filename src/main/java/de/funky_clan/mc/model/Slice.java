@@ -132,7 +132,7 @@ public class Slice implements Renderable {
                     Point2i curr = context.worldToScreen(position);
                     Point2i size = context.screenUnit(position);
 
-                    g.fillRect( context.getScreenSize().x-curr.x, context.getScreenSize().y-curr.y, size.x, size.y );
+                    g.fillRect( curr.x, curr.y, size.x, size.y );
                 }
             }
         }

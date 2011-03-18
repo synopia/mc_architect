@@ -12,7 +12,9 @@ import javax.vecmath.Vector2d;
 import java.awt.*;
 
 /**
- * Helps transforming coordinates between background screen, the actual visible window and the world model.
+ * Represents a viewport.
+ *
+ * A viewport
  *
  * @author synopia
  */

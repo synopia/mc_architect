@@ -19,6 +19,7 @@ import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class SlicePanel extends ZoomPanel {
                 int wy    = map[1];
                 int wz    = map[2];
 
-                player.setPosition( new Point2d(wx,wy) );
+                player.setPosition(new Point2d(wx, wy));
                 player.setZ(wz);
                 player.setDirection( (int)event.getYaw() );
                 setSliceNo( wz );
@@ -107,7 +108,7 @@ public class SlicePanel extends ZoomPanel {
 
     @Override
     protected void paintComponent( Graphics g ) {
-        initContext( (Graphics2D) g );
+        initContext((Graphics2D) g);
 
         BackgroundImage image = this.image;
 
@@ -137,6 +138,8 @@ public class SlicePanel extends ZoomPanel {
     }
 
     private void initContext( Graphics2D g ) {
+        AffineTransform instance = AffineTransform.getRotateInstance(Math.PI, getWidth() / 2, getHeight() / 2);
+        g.setTransform(instance);
         context.setGraphics(g);
     }
 
