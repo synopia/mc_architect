@@ -6,6 +6,7 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.OreFound;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.ChunkUpdate;
@@ -16,6 +17,8 @@ import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author synopia
@@ -28,6 +31,7 @@ public class SlicePanel extends ZoomPanel {
     private Slice           slice;
     private int             sliceNo;
     private EventBus        eventBus = EventDispatcher.getDispatcher().getModelEventBus();
+    private List<Ore>       ores = new ArrayList<Ore>();
 
     public SlicePanel( Model model, Configuration.Colors colors, final Slice slice ) {
         this.model = model;
@@ -72,12 +76,20 @@ public class SlicePanel extends ZoomPanel {
                 player.setDirection( (int)event.getYaw() );
                 setSliceNo( wz );
                 scrollToPlayer( wx, wy );
-
             }
         });
+
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
             public void handleEvent(ChunkUpdate event) {
+                repaint();
+            }
+        });
+
+        eventBus.registerCallback(OreFound.class, new EventHandler<OreFound>() {
+            @Override
+            public void handleEvent(OreFound event) {
+                ores.addAll(event.getOres());
                 repaint();
             }
         });
@@ -113,7 +125,6 @@ public class SlicePanel extends ZoomPanel {
             slice.setSlice(sliceNo);
             slice.render( context );
         }
-
         if( selectedBlock != null ) {
             selectedBlock.render( context );
         }

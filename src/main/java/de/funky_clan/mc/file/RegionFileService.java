@@ -21,6 +21,7 @@ import java.util.List;
  * @author synopia
  */
 public class RegionFileService {
+    private static final int SIZE = 10;
     private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
     private int playerX;
     private int playerZ;
@@ -45,8 +46,8 @@ public class RegionFileService {
 
         List<String> toRemove = new ArrayList<String>(loadedChunks);
 
-        for( int chunkX=playerChunkX; chunkX<=playerChunkX; chunkX++) {
-            for( int chunkZ=playerChunkZ; chunkZ<=playerChunkZ; chunkZ++) {
+        for( int chunkX=playerChunkX-SIZE; chunkX<=playerChunkX+SIZE; chunkX++) {
+            for( int chunkZ=playerChunkZ-SIZE; chunkZ<=playerChunkZ+SIZE; chunkZ++) {
                 String chunkName = getChunkName(chunkX, chunkZ );
                 if( loadedChunks.contains(chunkName) ) {
                     toRemove.remove(chunkName);

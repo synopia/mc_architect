@@ -7,10 +7,8 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
-import de.funky_clan.mc.model.BackgroundImage;
-import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.model.Slice;
-import de.funky_clan.mc.model.SliceType;
+import de.funky_clan.mc.file.RegionFileService;
+import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.net.MitmThread;
 import de.funky_clan.mc.events.TargetServerChanged;
@@ -54,7 +52,7 @@ public class MainPanel extends JPanel {
 
     public MainPanel( final Configuration configuration ) {
         super( new BorderLayout() );
-//        new RegionFileService();
+        new RegionFileService();
 
         mitmThread = new MitmThread(12345);
 
@@ -175,9 +173,10 @@ public class MainPanel extends JPanel {
         add( imageBar, BorderLayout.SOUTH );
 
         mitmThread.start();
+        new OreDetector(model);
 
-        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
-
+//        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
+        eventBus.fireEvent(new TargetServerChanged("localhost"));
     }
 
     protected void firePlayerMoved() {

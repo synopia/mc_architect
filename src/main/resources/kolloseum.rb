@@ -60,10 +60,10 @@ size_z  = 155
 
 @builder.origin mid_x, mid_z, mid_y, SliceType::Z
 
-@builder.image  4,  7, mid_x-size_z/2, mid_z-size_x/2, "level1.png"
-@builder.image  8, 15, mid_x-size_z/2, mid_z-size_x/2,"level2.png"
-@builder.image 16, 32, mid_x-size_z/2, mid_z-size_x/2,"level3.png"
-@builder.image 26, 41, mid_x-size_z/2, mid_z-size_x/2,"level4.png"
+#@builder.image  4,  7, mid_x-size_z/2, mid_z-size_x/2, "level1.png"
+#@builder.image  8, 15, mid_x-size_z/2, mid_z-size_x/2,"level2.png"
+#@builder.image 16, 32, mid_x-size_z/2, mid_z-size_x/2,"level3.png"
+#@builder.image 26, 41, mid_x-size_z/2, mid_z-size_x/2,"level4.png"
 
 level = 0
 profile.each do |line|

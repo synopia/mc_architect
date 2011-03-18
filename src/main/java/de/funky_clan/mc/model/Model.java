@@ -21,6 +21,10 @@ public class Model {
     private final Logger log = LoggerFactory.getLogger(Model.class);
     private EventBus eventBus = EventDispatcher.getDispatcher().getModelEventBus();
 
+    public interface BlockUpdateCallable {
+        void updateBlock( Chunk chunk, int x, int y, int z, int value );
+    }
+
     public Model() {
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
@@ -39,7 +43,11 @@ public class Model {
         });
     }
 
-    public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
+    public void interate( ChunkUpdate event, BlockUpdateCallable callable ) {
+        interate(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData(), callable);
+    }
+
+    public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data, BlockUpdateCallable callable ) {
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getOrCreateChunk(sx, sy, sz);
             int len = 16*128*16;
@@ -47,18 +55,29 @@ public class Model {
                 int x = sx + (i>>11);
                 int y = i & 0x7f;
                 int z = sz + ((i&0x780)>>7);
-                chunk.setPixelGlobal(x,y,z, PixelType.BLOCK_ID, data[i] );
+                callable.updateBlock(chunk, x, y, z, data[i]);
             }
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
                     for( int z=0; z<sizeZ; z++ ) {
                         int i = y + (z*sizeY) + x * sizeY * sizeZ;
-                        setPixel(sx + x, sy + y, sz + z, data[i], PixelType.BLOCK_ID);
+                        Chunk chunk = getOrCreateChunk(sx + x, sy + y, sz + z);
+                        callable.updateBlock(chunk, sx + x, sy + y, sz + z, data[i]);
                     }
                 }
             }
         }
+
+    }
+    public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
+        interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
+            @Override
+            public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
+                chunk.setPixelGlobal(x,y,z, PixelType.BLOCK_ID, value );
+            }
+        });
+
     }
 
     public void setPixel(int x, int y, int z, int value, PixelType type) {
