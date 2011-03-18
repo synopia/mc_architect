@@ -2,10 +2,11 @@ package de.funky_clan.mc.model;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import de.funky_clan.mc.math.Point2i;
+
 import java.awt.*;
 
 import javax.swing.*;
-import javax.vecmath.Point2i;
 
 /**
  * @author paul.fritsche@googlemail.com
@@ -40,7 +41,7 @@ public class Player extends SelectedBlock {
     }
 
     @Override
-    public void render( RenderContext c ) {
+    public void render( SliceRenderContext c ) {
 
         // draw selected block with player color
         Color color = c.getColors().getPlayerBlockColor();
@@ -56,10 +57,10 @@ public class Player extends SelectedBlock {
             Point2i start = c.worldToScreen(getPosition());
             Point2i size = c.screenUnit(getPosition());
 
-            int sx = start.x;
-            int sy = start.y;
-            int w  = size.x;
-            int h  = size.y;
+            int sx = start.x();
+            int sy = start.y();
+            int w  = size.x();
+            int h  = size.y();
             int mx = sx + w / 2;
             int my = sy + h / 2;
             int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));

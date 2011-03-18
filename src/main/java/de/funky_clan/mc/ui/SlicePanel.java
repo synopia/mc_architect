@@ -8,13 +8,15 @@ import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.OreFound;
 import de.funky_clan.mc.events.PlayerMoved;
+import de.funky_clan.mc.math.Point2d;
+import de.funky_clan.mc.math.Point2i;
+import de.funky_clan.mc.math.Point3d;
+import de.funky_clan.mc.math.Point3i;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.ChunkUpdate;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Point2i;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -35,13 +37,22 @@ public class SlicePanel extends ZoomPanel {
     private int             sliceNo;
     private EventBus        eventBus = EventDispatcher.getDispatcher().getModelEventBus();
     private List<Ore>       ores = new ArrayList<Ore>();
+    Configuration.Colors colors;
 
     public SlicePanel( Model model, Configuration.Colors colors, final Slice slice ) {
         this.model = model;
         this.slice = slice;
+        this.colors = colors;
+    }
+
+    @Override
+    public void onInit() {
+        super.onInit();
+
         setFocusable(true);
         setAutoscrolls( true );
         player  = new Player( slice.getType() == SliceType.Z );
+        final SliceRenderContext context = (SliceRenderContext) this.context;
         context.setColors( colors );
         context.setWindowSize(new Point2d(50,50));
         addMouseListener( new MouseAdapter() {
@@ -66,16 +77,9 @@ public class SlicePanel extends ZoomPanel {
             public void handleEvent(PlayerMoved event) {
                 player.repaint( SlicePanel.this, context );
 
-                int map[] = slice.mapWorldToSlice( (int) event.getX(), (int) event.getY(), (int) event.getZ() );
-                int wx    = map[0];
-                int wy    = map[1];
-                int wz    = map[2];
-
-                player.setPosition(new Point2d(wx, wy));
-                player.setZ(wz);
+                player.setPosition(new Point3d(event.getX(), event.getY(), event.getZ()));
                 player.setDirection( (int)event.getYaw() );
-                setSliceNo( wz );
-                scrollToPlayer( wx, wy );
+                scrollTo(player.getPosition());
             }
         });
 
@@ -95,15 +99,11 @@ public class SlicePanel extends ZoomPanel {
         });
     }
 
-    private void scrollToPlayer( int wx, int wy ) {
-        Point2d windowSize = context.getWindowSize();
-        Point2d halfWindowSize = new Point2d(windowSize);
-        halfWindowSize.scale(-0.5);
+    protected void scrollTo( Point3d position ) {
+        Point3d slicePos = slice.worldToSlice(position);
 
-        Point2d start = new Point2d(wx, wy);
-        start.add( halfWindowSize );
-        context.init( start, windowSize, context.getScreenSize() );
-        repaint();
+        setSliceNo((int) slicePos.z());
+        scrollTo(new Point2d(slicePos.x(), slicePos.y()));
     }
 
     @Override
@@ -127,11 +127,11 @@ public class SlicePanel extends ZoomPanel {
             slice.render( context );
         }
         if( selectedBlock != null ) {
-            selectedBlock.render( context );
+            selectedBlock.render( (SliceRenderContext) context );
         }
 
         if( player != null ) {
-            player.render( context );
+            player.render( (SliceRenderContext) context );
         }
 
         super.paintComponent( g );
@@ -156,5 +156,10 @@ public class SlicePanel extends ZoomPanel {
             sliceNo = wz;
             player.repaint( SlicePanel.this, context );
         }
+    }
+
+    @Override
+    protected RenderContext createRenderContext() {
+        return new SliceRenderContext(slice);
     }
 }

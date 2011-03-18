@@ -147,6 +147,10 @@ public class MainPanel extends JPanel {
         sideX.setPreferredSize(new Dimension(400,300));
         sideY.setPreferredSize(new Dimension(400,300));
 
+        topDown.init();
+        sideX.init();
+        sideY.init();
+
         JSplitPane rootSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
         JSplitPane southSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
 

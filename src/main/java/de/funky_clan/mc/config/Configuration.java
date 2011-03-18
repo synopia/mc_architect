@@ -2,6 +2,7 @@ package de.funky_clan.mc.config;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import de.funky_clan.mc.math.Point3i;
 import de.funky_clan.mc.model.*;
 
 import de.funky_clan.mc.model.Graphics;
@@ -62,10 +63,10 @@ public class Configuration {
         originY = y;
         originSlice = z;
 
-        int[] map = slice.mapSliceToWorld(x, y, z);
-        midX = map[0];
-        midY = map[1];
-        midZ = map[2];
+        Point3i map = slice.sliceToWorld(new Point3i(x, y, z));
+        midX = map.x();
+        midY = map.y();
+        midZ = map.z();
 
         return this;
     }

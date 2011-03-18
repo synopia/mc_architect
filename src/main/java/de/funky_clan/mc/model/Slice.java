@@ -3,9 +3,11 @@ package de.funky_clan.mc.model;
 //~--- JDK imports ------------------------------------------------------------
 
 import de.funky_clan.mc.config.DataValues;
+import de.funky_clan.mc.math.Point2d;
+import de.funky_clan.mc.math.Point2i;
+import de.funky_clan.mc.math.Point3d;
+import de.funky_clan.mc.math.Point3i;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Point2i;
 import java.awt.*;
 
 /**
@@ -14,7 +16,6 @@ import java.awt.*;
 public class Slice implements Renderable {
     private Model     model;
     private int       slice;
-    private int       slices;
     private SliceType type;
 
     public Slice( Model model, SliceType type ) {
@@ -26,88 +27,62 @@ public class Slice implements Renderable {
         this.slice = slice;
     }
 
-    public int getSlices() {
-        return slices;
+    public Point3i sliceToWorld( Point3i slicedPos ) {
+        Point3i result = new Point3i();
+        switch (type) {
+            case X:
+                result.set( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                break;
+            case Y:
+                result.set( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                break;
+            case Z:
+                result.set( slicedPos.x(), slicedPos.z(), slicedPos.y() );
+                break;
+        }
+        return result;
     }
 
-    public int[] mapSliceToWorld( int x, int y, int slice ) {
-        int mapX = -1,
-            mapY = -1,
-            mapZ = -1;
-
-        switch( type ) {
-        case X:
-            mapX = slice;
-            mapZ = x;
-            mapY = y;
-
-            break;
-
-        case Y:
-            mapY = y;
-            mapZ = slice;
-            mapX = x;
-
-            break;
-
-        case Z:
-            mapZ = y;
-            mapX = x;
-            mapY = slice;
-
-            break;
-        }
-
-        return new int[] {mapX, mapY, mapZ};
+    public Point3i worldToSlice( Point3i worldPos ) {
+        return  sliceToWorld(worldPos);
     }
 
-    public int[] mapWorldToSlice( int x, int y, int z ) {
-        int wx = -1,
-            wy = -1,
-            wz = -1;
-
-        switch( getType() ) {
-        case X:
-            wx = z;
-            wy = y;
-            wz = x;
-
-            break;
-
-        case Y:
-            wx = x;
-            wy = y;
-            wz = z;
-
-            break;
-
-        case Z:
-            wx = x;
-            wy = z;
-            wz = y;
-
-            break;
+    public Point3d sliceToWorld( Point3d slicedPos ) {
+        Point3d result = new Point3d();
+        switch (type) {
+            case X:
+                result.set( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                break;
+            case Y:
+                result.set( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                break;
+            case Z:
+                result.set( slicedPos.x(), slicedPos.z(), slicedPos.y() );
+                break;
         }
+        return result;
+    }
 
-        return new int[] {wx, wy, wz};
+    public Point3d worldToSlice( Point3d worldPos ) {
+        return  sliceToWorld(worldPos);
     }
 
     public int getPixel(int x, int y, PixelType type) {
-        int[] map = mapSliceToWorld( x, y, slice );
-        return model.getPixel( map[0], map[1], map[2], type);
+        Point3i map = sliceToWorld( new Point3i(x, y, slice) );
+        return model.getPixel( map.x(), map.y(), map.z(), type);
     }
 
     public void setPixel(int x, int y, int slice, PixelType type, int value) {
-        int[] map = mapSliceToWorld( x, y, slice );
-        model.setPixel(map[0], map[1], map[2], value, type);
+        Point3i map = sliceToWorld(new Point3i(x, y, slice));
+        model.setPixel(map.x(), map.y(), map.z(), value, type);
     }
 
     public void render( RenderContext context ) {
         Graphics2D g  = context.getGraphics();
-        int        sx = context.getWindowStart().x - 1;
-        int        sy = context.getWindowStart().y - 1;
-        int        ex = context.getWindowEnd().x + 2;
-        int        ey = context.getWindowEnd().y + 2;
+        int        sx = context.getWindowStart().x() - 1;
+        int        sy = context.getWindowStart().y() - 1;
+        int        ex = context.getWindowEnd().x() + 2;
+        int        ey = context.getWindowEnd().y() + 2;
 
         for( int y = sy; y < ey; y++ ) {
             for( int x = sx; x < ex; x++ ) {
@@ -132,7 +107,7 @@ public class Slice implements Renderable {
                     Point2i curr = context.worldToScreen(position);
                     Point2i size = context.screenUnit(position);
 
-                    g.fillRect( curr.x, curr.y, size.x, size.y );
+                    g.fillRect( curr.x(), curr.y(), size.x(), size.y());
                 }
             }
         }
