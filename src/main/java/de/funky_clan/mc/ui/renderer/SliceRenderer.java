@@ -28,9 +28,21 @@ public class SliceRenderer implements Renderer<Slice> {
                 int blueprint = slice.getPixel(position, PixelType.BLUEPRINT);
 
                 Color colorForBlock = null;
+                double alpha = 1;
+                if( blockId==0 ) {
+                    int currentSlice = slice.getSlice();
+                    for( int i=currentSlice-1; i>currentSlice-20; i--) {
+                        blockId = slice.getPixel(position, i, PixelType.BLOCK_ID );
+                        if( blockId!=0 ) {
+                            alpha = 1-(currentSlice-i)/20.;
+                            break;
+                        }
+                    }
+                }
 
                 if( blockId > 0 ) {
                     colorForBlock = c.getColors().getColorForBlock(blockId);
+                } else {
                 }
                 if( blueprint==1 ) {
                     if( colorForBlock==null ) {
@@ -40,6 +52,7 @@ public class SliceRenderer implements Renderer<Slice> {
                 }
 
                 if( colorForBlock!=null ) {
+                    colorForBlock = new Color((int)(alpha*colorForBlock.getRed()), (int)(alpha*colorForBlock.getGreen()), (int)(alpha*colorForBlock.getBlue()), colorForBlock.getAlpha() );
                     g.setColor(colorForBlock);
                     Point2i curr = c.sliceToScreen(position.toPoint2d());
                     Point2i size = c.screenUnit(position.toPoint2d());
