@@ -1,5 +1,6 @@
 package de.funky_clan.mc.ui.renderer;
 
+import com.sun.org.apache.xpath.internal.operations.Minus;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
 import de.funky_clan.mc.model.RenderContext;
@@ -23,11 +24,13 @@ public class BlockRenderer<B extends SelectedBlock> implements Renderer<B> {
                 start = start.sub(new Point2i(size.x()/2, size.y()/2) );
             }
 
+            Color color;
             if( object.getColor() == null ) {
-                g.setColor( c.getColors().getSelectedBlockColor() );
+                color = c.getColors().getSelectedBlockColor();
             } else {
-                g.setColor( object.getColor() );
+                color = object.getColor();
             }
+            g.setColor( c.fadeOut(position, color) );
 
             for( int i = 0; i < object.getThickness(); i++ ) {
                 g.drawRect( start.x() - i, start.y() - i, size.x() + 2 * i, size.y() + 2 * i );

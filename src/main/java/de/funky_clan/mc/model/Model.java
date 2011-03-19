@@ -5,6 +5,7 @@ package de.funky_clan.mc.model;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.BlockUpdate;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.UnloadChunk;
 import de.funky_clan.mc.math.Point2i;
@@ -30,6 +31,12 @@ public class Model {
     @Inject
     public Model(final EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
+            @Override
+            public void handleEvent(BlockUpdate event) {
+                setPixel(new Point3i(event.getX(), event.getY(), event.getZ()), PixelType.BLOCK_ID, event.getType() );
+            }
+        });
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
             public void handleEvent(ChunkUpdate event) {

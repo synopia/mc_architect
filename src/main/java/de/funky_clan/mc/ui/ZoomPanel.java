@@ -65,10 +65,12 @@ public abstract class ZoomPanel extends JPanel {
         addMouseWheelListener( new MouseWheelListener() {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e ) {
-                double scale = 1 + e.getWheelRotation() * 0.05;
-                Point2i delta = new Point2i(e.getX(), e.getY());
-                context.zoom(scale, scale, delta);
-                repaint();
+                if( e.isShiftDown() ) {
+                    double scale = 1 + e.getWheelRotation() * 0.05;
+                    Point2i delta = new Point2i(e.getX(), e.getY());
+                    context.zoom(scale, scale, delta);
+                    repaint();
+                }
             }
         } );
     }

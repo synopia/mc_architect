@@ -87,8 +87,13 @@ public class RenderContext {
         return slice.worldToSlice(worldPos);
     }
 
+    public double distToSlice( Point3d worldPos ) {
+        Point3d slicePos = worldToSlice(worldPos);
+        return slicePos.z() - slice.getSlice();
+    }
+
     public Point2i screenUnit( Point2d worldPos ) {
-        return screenUnit( worldPos, new Point2d(worldPos.x()+1, worldPos.y()+1) );
+        return screenUnit(worldPos, new Point2d(worldPos.x() + 1, worldPos.y() + 1));
     }
 
     public Point2i screenUnit( Point2d worldPosA, Point2d worldPosB ) {
@@ -169,6 +174,11 @@ public class RenderContext {
                 (int)(windowPosition.x()+windowSize.x()),
                 (int)(windowPosition.y()+windowSize.y())
         );
+    }
+
+    public Color fadeOut( Point3d worldPos, Color color ) {
+        double damp = Math.max(0, Math.min(1, (1 / Math.abs(distToSlice(worldPos)))));
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(255*damp));
     }
 
     public Colors getColors() {

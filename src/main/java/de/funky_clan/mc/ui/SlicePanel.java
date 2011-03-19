@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.BlockUpdate;
 import de.funky_clan.mc.events.OreFound;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.math.Point2d;
@@ -21,6 +22,7 @@ import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +82,18 @@ public class SlicePanel extends ZoomPanel {
                 }
             }
         } );
+        addMouseWheelListener(new MouseAdapter() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if( e.getWheelRotation()>0 ) {
+                    setSliceNo(sliceNo+1);
+                } else {
+                    setSliceNo(sliceNo-1);
+                }
+
+
+            }
+        });
         eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
             @Override
             public void handleEvent(PlayerMoved event) {
@@ -94,6 +108,13 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
             public void handleEvent(ChunkUpdate event) {
+                repaint();
+            }
+        });
+
+        eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
+            @Override
+            public void handleEvent(BlockUpdate event) {
                 repaint();
             }
         });

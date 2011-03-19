@@ -34,7 +34,7 @@ public class OreRenderer implements Renderer<List<Ore>>{
 
             Point3i size = ore.getEnd().sub(ore.getStart());
             if(Math.abs(slicePos.z()-c.getCurrentSlice())<5) {
-                c.getGraphics().setColor( colors.getSelectedBlockColor() );
+                c.getGraphics().setColor( c.fadeOut( ore.getStart().toPoint3d(), colors.getSelectedBlockColor()) );
                 c.getGraphics().drawRect(x,y,w,h);
             }
         }
