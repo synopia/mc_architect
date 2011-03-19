@@ -6,14 +6,11 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.BlockUpdate;
-import de.funky_clan.mc.events.OreFound;
-import de.funky_clan.mc.events.PlayerMoved;
+import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
 import de.funky_clan.mc.model.*;
-import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.ui.renderer.*;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -69,16 +66,6 @@ public class SlicePanel extends ZoomPanel {
             @Override
             public void mouseReleased( MouseEvent e ) {
                 if( !e.isConsumed() && e.getButton()==MouseEvent.BUTTON1 ) {
-                    if( selectedBlock == null ) {
-                        selectedBlock = new SelectedBlock();
-                    } else {
-                        selectedBlock.repaint( SlicePanel.this, context );
-                    }
-
-                    Point2i pos = new Point2i(-e.getX(), -e.getY());
-                    pos.add(context.getScreenSize());
-                    selectedBlock.setPosition(context.screenToWorld(pos));
-                    selectedBlock.repaint( SlicePanel.this, context );
                 }
             }
         } );
@@ -97,8 +84,6 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
             @Override
             public void handleEvent(PlayerMoved event) {
-                player.repaint( SlicePanel.this, context );
-
                 player.setPosition(new Point3d(event.getX(), event.getY(), event.getZ()));
                 player.setDirection( (int)event.getYaw() );
                 scrollTo(player.getPosition());
@@ -179,9 +164,6 @@ public class SlicePanel extends ZoomPanel {
         if( sliceNo != wz ) {
             sliceNo = wz;
             repaint();
-        } else {
-            sliceNo = wz;
-            player.repaint( SlicePanel.this, context );
         }
     }
 

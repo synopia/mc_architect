@@ -1,11 +1,14 @@
 package de.funky_clan.mc.config;
 
+import com.sun.org.apache.bcel.internal.generic.CPInstruction;
+
 import java.awt.*;
 
 /**
 * @author synopia
 */
 public class Colors {
+    public static final Color EMPTY = new Color(255,255,255,0);
     private Color[] colorData = new Color[255];
 
     public Colors() {
@@ -127,7 +130,7 @@ public class Colors {
     }
 
     public Color getColorForBlock( int id ) {
-        return colorData[id];
+        return colorData[id]!=null?colorData[id]:EMPTY;
     }
 
     public Color getBlockColor() {
@@ -146,4 +149,7 @@ public class Colors {
         return Color.BLUE;
     }
 
+    public void setColorForBlock(int rowIndex, Color aValue) {
+        colorData[rowIndex] = aValue;
+    }
 }

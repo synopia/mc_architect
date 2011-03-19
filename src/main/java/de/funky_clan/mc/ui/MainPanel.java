@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.*;
+import javax.swing.colorchooser.ColorChooserComponentFactory;
+import javax.swing.plaf.ColorChooserUI;
 
 /**
  * @author synopia
@@ -61,11 +63,18 @@ public class MainPanel extends JPanel {
     private JLabel           benchmarkText;
     @Inject
     private Benchmark benchmark;
+    @Inject
+    private ColorsPanel colorsPanel;
 
     @Inject
     public MainPanel(final EventBus eventBus) {
         this.eventBus = eventBus;
-
+        eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
+            @Override
+            public void handleEvent(ColorChanged event) {
+                repaint();
+            }
+        });
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
             @Override
             public void handleEvent(ChunkUpdate event) {
@@ -197,6 +206,7 @@ public class MainPanel extends JPanel {
         add( rootSplitPane, BorderLayout.CENTER );
         add( info, BorderLayout.NORTH );
         add( imageBar, BorderLayout.SOUTH );
+        add( colorsPanel, BorderLayout.EAST );
 
         mitmThread.setSourcePort(12345);
         mitmThread.start();

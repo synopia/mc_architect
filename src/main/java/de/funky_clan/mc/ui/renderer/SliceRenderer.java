@@ -24,43 +24,48 @@ public class SliceRenderer implements Renderer<Slice> {
         for( int y = sy; y < ey; y++ ) {
             for( int x = sx; x < ex; x++ ) {
                 Point2i position = new Point2i(x, y);
-                int blockId = slice.getPixel(position, PixelType.BLOCK_ID);
+                Point2d point2d = position.toPoint2d();
                 int blueprint = slice.getPixel(position, PixelType.BLUEPRINT);
 
-                Color colorForBlock = null;
-                double alpha = 1;
-                if( blockId==0 ) {
-                    int currentSlice = slice.getSlice();
-                    for( int i=currentSlice-1; i>currentSlice-20; i--) {
-                        blockId = slice.getPixel(position, i, PixelType.BLOCK_ID );
-                        if( blockId!=0 ) {
-                            alpha = 1-(currentSlice-i)/20.;
-                            break;
-                        }
+                int currentSlice = slice.getSlice();
+                int blockId;
+                double alphaFactor = 1;
+                do {
+                    blockId     = slice.getPixel(position, currentSlice, PixelType.BLOCK_ID );
+                    if( blockId==-1 ) {
+                        break;
                     }
-                }
+                    Color color = c.getColors().getColorForBlock(blockId);
+                    if( color.getAlpha()==255 ) {
+                        drawBlock(c, color, 1, alphaFactor, point2d);
+                        break;
+                    } else if( color.getAlpha()>0 ) {
+                        drawBlock(c, color, 1, alphaFactor, point2d);
+                        alphaFactor *= (255.-color.getAlpha())/255.;
+                    }
+                    currentSlice--;
+                } while( slice.getSlice()-currentSlice<20 );
 
-                if( blockId > 0 ) {
-                    colorForBlock = c.getColors().getColorForBlock(blockId);
-                } else {
-                }
-                if( blueprint==1 ) {
+/*                if( blueprint==1 ) {
                     if( colorForBlock==null ) {
                         colorForBlock = c.getColors().getColorForBlock(DataValues.AIR.getId());
                     }
                     colorForBlock = colorForBlock.darker().darker().darker();
                 }
-
-                if( colorForBlock!=null ) {
-                    colorForBlock = new Color((int)(alpha*colorForBlock.getRed()), (int)(alpha*colorForBlock.getGreen()), (int)(alpha*colorForBlock.getBlue()), colorForBlock.getAlpha() );
-                    g.setColor(colorForBlock);
-                    Point2i curr = c.sliceToScreen(position.toPoint2d());
-                    Point2i size = c.screenUnit(position.toPoint2d());
-
-                    g.fillRect( curr.x(), curr.y(), size.x(), size.y());
-                }
+*/
             }
         }
+    }
+
+    protected void drawBlock( RenderContext c, Color color, double darken, double alpha, Point2d position ) {
+        Graphics2D g  = c.getGraphics();
+
+        Color col = new Color((int)(darken*color.getRed()), (int)(darken*color.getGreen()), (int)(darken*color.getBlue()), (int)(alpha * color.getAlpha()) );
+        g.setColor(col);
+        Point2i curr = c.sliceToScreen(position);
+        Point2i size = c.screenUnit(position);
+
+        g.fillRect( curr.x(), curr.y(), size.x(), size.y());
 
     }
 }

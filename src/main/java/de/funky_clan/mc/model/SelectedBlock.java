@@ -54,17 +54,6 @@ public class SelectedBlock {
         return position;
     }
 
-    // todo move this to Renderer
-    public void repaint( JComponent component, RenderContext c ) {
-        if( position!=null ) {
-            Point2i from = c.sliceToScreen( new Point2d(position.x()-2, position.y()-2) );
-            Point2i to =   c.sliceToScreen( new Point2d(position.x()+2, position.y()+2));
-
-            // todo verify!
-            component.repaint(from.x(), from.y(), to.x()-from.x(), to.y()-from.y());
-        }
-    }
-
     public Color getColor() {
         return color;
     }
