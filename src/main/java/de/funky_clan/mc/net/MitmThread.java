@@ -1,5 +1,6 @@
 package de.funky_clan.mc.net;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.net.protocol.ClientProtocol9;
 import de.funky_clan.mc.net.protocol.Protocol9;
 import de.funky_clan.mc.net.protocol.ServerProtocol9;
@@ -19,6 +20,10 @@ public class MitmThread extends Thread {
     private Filter request;
     private ServerSocket socket;
     private DataOutputStream toTarget;
+    @Inject
+    private ClientProtocol9 clientProtocol;
+    @Inject
+    private ServerProtocol9 serverProtocol;
 
     private class MitmInputStream extends InputStream {
         private InputStream source;
@@ -81,10 +86,6 @@ public class MitmThread extends Thread {
     private boolean            connected;
     private Logger logger = LoggerFactory.getLogger(MitmThread.class);
 
-    public MitmThread(int sourcePort) {
-        this.sourcePort = sourcePort;
-    }
-
     @Override
     public void run() {
         Socket targetSocket = null;
@@ -115,8 +116,8 @@ public class MitmThread extends Thread {
                 toTarget = new DataOutputStream(targetSocket.getOutputStream());
                 InputStream fromTarget = targetSocket.getInputStream();
 
-                request = new Filter(fromSource, toTarget, new ClientProtocol9() );
-                response = new Filter(fromTarget, toSource, new ServerProtocol9() );
+                request = new Filter(fromSource, toTarget, clientProtocol);
+                response = new Filter(fromTarget, toSource, serverProtocol);
 
                 logger.info("MITM Server: starting streaming threads");
                 request.start();
@@ -174,5 +175,9 @@ public class MitmThread extends Thread {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    public void setSourcePort(int sourcePort) {
+        this.sourcePort = sourcePort;
     }
 }

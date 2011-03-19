@@ -30,6 +30,7 @@ import javax.swing.*;
  * @author synopia
  */
 public class MainPanel extends JPanel {
+    @Inject
     private MitmThread mitmThread;
     @Inject
     private Configuration    configuration;
@@ -119,7 +120,6 @@ public class MainPanel extends JPanel {
 
     protected void onInit() {
         setLayout( new BorderLayout() );
-        mitmThread = new MitmThread(12345);
 
         this.setFocusable(true);
 
@@ -188,6 +188,7 @@ public class MainPanel extends JPanel {
         add( info, BorderLayout.NORTH );
         add( imageBar, BorderLayout.SOUTH );
 
+        mitmThread.setSourcePort(12345);
         mitmThread.start();
 
 //        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));

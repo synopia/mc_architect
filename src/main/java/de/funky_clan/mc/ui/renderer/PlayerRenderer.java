@@ -3,17 +3,17 @@ package de.funky_clan.mc.ui.renderer;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
 import de.funky_clan.mc.model.Player;
+import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.SelectedBlock;
-import de.funky_clan.mc.model.SliceRenderContext;
 
 import java.awt.*;
 
 /**
  * @author synopia
  */
-public class PlayerRenderer extends BlockRenderer<Player> implements Renderer<Player, SliceRenderContext>{
+public class PlayerRenderer extends BlockRenderer<Player> {
     @Override
-    public void render(Player object, SliceRenderContext c) {
+    public void render(Player object, RenderContext c) {
         super.render( object, c );
 
         Point3d position = object.getPosition();
@@ -27,8 +27,8 @@ public class PlayerRenderer extends BlockRenderer<Player> implements Renderer<Pl
             int sy = start.y();
             int w  = size.x();
             int h  = size.y();
-            int mx = sx + w / 2;
-            int my = sy + h / 2;
+            int mx = sx;
+            int my = sy;
             int direction = object.getDirection();
             int x1 = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
             int y1 = my + (int) ( 10 * w * Math.sin(( direction - 30 ) / 180.0 * Math.PI ));

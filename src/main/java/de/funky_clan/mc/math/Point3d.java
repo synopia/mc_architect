@@ -5,6 +5,7 @@ package de.funky_clan.mc.math;
  */
 public final class Point3d extends Point2d {
     private final double z;
+    public static Point3d NULL = new Point3d(0,0,0);
 
     public Point3d(double x, double y, double z) {
         super(x, y);
@@ -49,4 +50,34 @@ public final class Point3d extends Point2d {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Point3d point3d = (Point3d) o;
+
+        if (Double.compare(point3d.z, z) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        temp = z != +0.0d ? Double.doubleToLongBits(z) : 0L;
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Point3d{" +
+                "x=" + x +
+                "y=" + y +
+                "z=" + z +
+                '}';
+    }
 }

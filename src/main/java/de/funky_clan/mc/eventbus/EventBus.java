@@ -19,9 +19,13 @@ public class EventBus {
     private BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
+    private long timeInHandling = 0;
+    private long timeStarted = 0;
+
     public EventBus() {
         Thread thread = new Thread(new Runnable() {
             public void run() {
+                timeStarted = System.nanoTime();
                 while (true) {
                     try {
                         handleNextEvent();
@@ -34,15 +38,22 @@ public class EventBus {
         thread.start();
     }
 
+    @SuppressWarnings("unchecked")
     public boolean handleNextEvent() throws InterruptedException {
         List<EventHandler> callbacks = new ArrayList<EventHandler>();
         Event event = events.take();
+
         if( event!=null ) {
+            long before = System.nanoTime();
             callbacks.clear();
             getCallbacks(event, callbacks);
 //            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
+            }
+            timeInHandling += System.nanoTime() - before;
+            if( timeInHandling > 1000000L ) {
+                System.out.println(((double)timeInHandling / (System.nanoTime()-timeStarted)));
             }
         }
         return events.size()>0;

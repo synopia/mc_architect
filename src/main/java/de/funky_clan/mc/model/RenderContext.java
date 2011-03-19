@@ -5,6 +5,8 @@ package de.funky_clan.mc.model;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
+import de.funky_clan.mc.math.Point3d;
+import de.funky_clan.mc.math.Point3i;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -20,13 +22,16 @@ import java.awt.*;
 public class RenderContext {
     private Colors colors;
     private Graphics2D           g;
+    private Slice slice;
+
     private Point2d pixelSize;
     private Point2i screenSize;
 
     private Point2d              windowSize;
     private Point2d              windowPosition;
 
-    public RenderContext( ) {
+    public RenderContext(Slice slice) {
+        this.slice = slice;
     }
 
     public void setGraphics( Graphics2D g ) {
@@ -38,7 +43,7 @@ public class RenderContext {
      * @param screenPos
      * @return
      */
-    public Point2d screenToWorld( Point2i screenPos ) {
+    public Point2d screenToSlice( Point2i screenPos ) {
         return new Point2d(
                 screenPos.x() / pixelSize.x() + windowPosition.x(),
                 screenPos.y() / pixelSize.y() + windowPosition.y()
@@ -50,11 +55,36 @@ public class RenderContext {
      * @param worldPos
      * @return
      */
-    public Point2i worldToScreen( Point2d worldPos ) {
+    public Point2i sliceToScreen( Point2d worldPos ) {
         return new Point2i(
                 (int) ( (worldPos.x()-windowPosition.x()) * pixelSize.x() ),
                 (int) ( (worldPos.y()-windowPosition.y()) * pixelSize.y() )
         );
+    }
+
+    public Point3d screenToWorld(Point2i screenPos) {
+        Point2d slicePos = screenToSlice(screenPos);
+        return slice.sliceToWorld(new Point3d(slicePos.x(), slicePos.y(), slice.getSlice()));
+    }
+
+    public Point2i worldToScreen(Point3d worldPos) {
+        Point3d slicePos = slice.worldToSlice(worldPos);
+        return sliceToScreen(new Point2d(slicePos.x(), slicePos.y()));
+    }
+
+    public Point3i sliceToWorld( Point3i slicedPos ) {
+        return slice.sliceToWorld(slicedPos);
+    }
+
+    public Point3i worldToSlice( Point3i worldPos ) {
+        return slice.worldToSlice(worldPos);
+    }
+
+    public Point3d sliceToWorld( Point3d slicedPos ) {
+        return slice.sliceToWorld(slicedPos);
+    }
+    public Point3d worldToSlice( Point3d worldPos ) {
+        return slice.worldToSlice(worldPos);
     }
 
     public Point2i screenUnit( Point2d worldPos ) {
@@ -62,8 +92,8 @@ public class RenderContext {
     }
 
     public Point2i screenUnit( Point2d worldPosA, Point2d worldPosB ) {
-        Point2i a = worldToScreen(worldPosA);
-        Point2i b = worldToScreen(worldPosB).sub(a);
+        Point2i a = sliceToScreen(worldPosA);
+        Point2i b = sliceToScreen(worldPosB).sub(a);
 
         return new Point2i(
                 Math.max( 1, Math.abs(b.x()) ) + 1,
@@ -102,9 +132,12 @@ public class RenderContext {
         }
     }
 
-    public void zoom( double zoomX, double zoomY ) {
+    public void zoom( double zoomX, double zoomY, Point2i mousePos ) {
+        Point2d mid = windowPosition.add(windowSize.scale(0.5, 0.5));
+        Point2d pos = screenToSlice(mousePos);
         windowSize = new Point2d(windowSize.x() * zoomX, windowSize.y() * zoomY);
         calculateSizes();
+        windowPosition = windowPosition.add(pos.sub(mid).scale(0.1, 0.1));
     }
 
     public Graphics2D getGraphics() {
@@ -154,5 +187,9 @@ public class RenderContext {
                 windowSize.x(), windowSize.y(),
                 screenSize.x(), screenSize.y()
         );
+    }
+
+    public int getCurrentSlice() {
+        return slice.getSlice();
     }
 }

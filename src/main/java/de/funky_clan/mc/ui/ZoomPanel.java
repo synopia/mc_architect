@@ -11,6 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 import javax.swing.*;
 
@@ -19,14 +21,15 @@ import javax.swing.*;
  * @author synopia
  */
 public abstract class ZoomPanel extends JPanel {
-    Rectangle      lastZoomRect;
-    private Point2i start;
-    Rectangle      zoomRect;
+    private Rectangle      lastZoomRect;
+    private Point start;
+    private Rectangle      zoomRect;
     protected RenderContext context;
 
     protected abstract RenderContext createRenderContext();
 
     public ZoomPanel() {
+
     }
 
     public void init() {
@@ -55,7 +58,7 @@ public abstract class ZoomPanel extends JPanel {
             @Override
             public void mousePressed( MouseEvent e ) {
                 if( isMouseZooming( e ) || isMouseDragging(e) ) {
-                    start = new Point2i(e.getX(), e.getY());
+                    start = e.getPoint();
                 }
             }
         } );
@@ -63,7 +66,8 @@ public abstract class ZoomPanel extends JPanel {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e ) {
                 double scale = 1 + e.getWheelRotation() * 0.05;
-                context.zoom(scale, scale);
+                Point2i delta = new Point2i(e.getX(), e.getY());
+                context.zoom(scale, scale, delta);
                 repaint();
             }
         } );
@@ -90,11 +94,22 @@ public abstract class ZoomPanel extends JPanel {
 
     @Override
     protected void paintComponent( Graphics g ) {
-        g.setXORMode( Color.WHITE );
+        Graphics2D graphics2D = (Graphics2D) g;
 
+        initContext(graphics2D);
+
+        paintContent(graphics2D);
+
+        graphics2D.setXORMode( Color.WHITE );
         if( zoomRect != null ) {
-            g.drawRect( zoomRect.x, zoomRect.y, zoomRect.width - 1, zoomRect.height - 1 );
+            graphics2D.drawRect( zoomRect.x, zoomRect.y, zoomRect.width - 1, zoomRect.height - 1 );
         }
+    }
+
+    protected abstract void paintContent(Graphics2D graphics2D);
+
+    protected void initContext( Graphics2D g ) {
+        context.setGraphics(g);
     }
 
     protected void repaintZoomRect( Rectangle rectangle ) {
@@ -105,8 +120,7 @@ public abstract class ZoomPanel extends JPanel {
         if( lastZoomRect != null ) {
             union = zoomRect.union( lastZoomRect );
         }
-
-        repaint( union );
+        repaint(union);
         lastZoomRect = zoomRect;
     }
 
@@ -118,25 +132,33 @@ public abstract class ZoomPanel extends JPanel {
         if( (start != null) && !start.equals( end )) {
             e.consume();
 
-            applyWindow( start.x(), start.y(), end.x-start.x(), end.y-start.y());
+            applyWindow( new Point2i(start), new Point2i(end).sub(new Point2i(start)) );
         }
     }
 
     protected void dragTo( MouseEvent e ) {
-        Point2d d = context.screenToWorld(start.sub(new Point2i(e.getX(),e.getY()))).add(context.getWindowPosition());
+        Point2d d = context.screenToSlice(new Point2i(start)).
+                sub(context.screenToSlice(new Point2i(e.getPoint()))).
+                add(context.getWindowPosition());
         context.setWindowPosition(d);
 
         repaint();
-        start = new Point2i(e.getX(), e.getY());
+        start = e.getPoint();
     }
 
 
-    public void applyWindow( int x, int y, int width, int height ) {
-        if( width<10 || height<10 ) {
+    public void applyWindow( Point2i start, Point2i size ) {
+        int x = (size.x()>0) ? start.x() : start.x()+size.x();
+        int y = (size.y()>0) ? start.y() : start.y()+size.y();
+        int w = Math.abs(size.x());
+        int h = Math.abs(size.y());
+
+        if( x<10 || y<10 ) {
             return;
         }
-        Point2d windowPos = context.screenToWorld(new Point2i(x, y));
-        Point2d windowSize = context.screenToWorld(new Point2i(x+width,y+height)).sub(windowPos);
+        Point2i realStart = new Point2i(x, y);
+        Point2d windowPos = context.screenToSlice(realStart);
+        Point2d windowSize = context.screenToSlice(realStart.add(new Point2i(w, h))).sub(windowPos);
 
         context.init( windowPos, windowSize, new Point2i(getWidth(), getHeight()) );
 
@@ -147,16 +169,18 @@ public abstract class ZoomPanel extends JPanel {
     protected void zoomMouseDragged( MouseEvent e ) {
         e.consume();
 
-        int width  = start.x() - e.getX();
-        int height = start.y() - e.getY();
+        Point mousePos = e.getPoint();
+        Point start    = this.start;
+        int width  = mousePos.x - start.x;
+        int height = mousePos.y - start.y;
         int w      = Math.abs( width );
         int h      = Math.abs( height );
-        int x      = (width < 0)
-                ? start.x()
-                : e.getX();
-        int y      = (height < 0)
-                ? start.y()
-                : e.getY();
+        int x      = (width > 0)
+                ? start.x
+                : mousePos.x;
+        int y      = (height > 0)
+                ? start.y
+                : mousePos.y;
 
         repaintZoomRect( new Rectangle( x, y, w, h ));
     }

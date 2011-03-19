@@ -2,23 +2,26 @@ package de.funky_clan.mc.ui.renderer;
 
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
+import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.SelectedBlock;
-import de.funky_clan.mc.model.SliceRenderContext;
 
 import java.awt.*;
 
 /**
  * @author synopia
  */
-public class BlockRenderer<B extends SelectedBlock> implements Renderer<B, SliceRenderContext> {
+public class BlockRenderer<B extends SelectedBlock> implements Renderer<B> {
     @Override
-    public void render(B object, SliceRenderContext c) {
+    public void render(B object, RenderContext c) {
         Graphics2D g  = c.getGraphics();
 
         Point3d position = object.getPosition();
         if( position!=null ) {
             Point2i start = c.worldToScreen(position);
             Point2i size  = c.screenUnit(position);
+            if( object.getType()==SelectedBlock.Type.CENTERED ) {
+                start = start.sub(new Point2i(size.x()/2, size.y()/2) );
+            }
 
             if( object.getColor() == null ) {
                 g.setColor( c.getColors().getSelectedBlockColor() );

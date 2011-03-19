@@ -33,7 +33,7 @@ public class ClientProtocol9 extends Protocol9{
                 x = in.readDouble();
                 y = in.readDouble();
                 double stance = in.readDouble();
-                z = in.readDouble()-1;
+                z = in.readDouble();
                 boolean onGround = in.readBoolean();
 
                 eventBus.fireEvent(new PlayerPositionUpdate(x, y, z, yaw, pitch));
@@ -57,7 +57,7 @@ public class ClientProtocol9 extends Protocol9{
                 x = in.readDouble();
                 y = in.readDouble();
                 double stance = in.readDouble();
-                z = in.readDouble()-1;
+                z = in.readDouble();
                 yaw = in.readFloat();
                 pitch = in.readFloat();
                 boolean onGround = in.readBoolean();

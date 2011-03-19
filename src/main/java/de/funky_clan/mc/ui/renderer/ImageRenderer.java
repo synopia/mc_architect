@@ -3,16 +3,16 @@ package de.funky_clan.mc.ui.renderer;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.model.BackgroundImage;
-import de.funky_clan.mc.model.SliceRenderContext;
+import de.funky_clan.mc.model.RenderContext;
 
 import java.awt.*;
 
 /**
  * @author synopia
  */
-public class ImageRenderer implements Renderer<BackgroundImage, SliceRenderContext> {
+public class ImageRenderer implements Renderer<BackgroundImage> {
     @Override
-    public void render(BackgroundImage object, SliceRenderContext c) {
+    public void render(BackgroundImage object, RenderContext c) {
         Image image = object.getImage();
         Point2d start = object.getStart();
         Point2d size = object.getSize();
@@ -22,8 +22,8 @@ public class ImageRenderer implements Renderer<BackgroundImage, SliceRenderConte
             int width  = screenSize.x();
             int height = screenSize.y();
 
-            Point2i from = c.worldToScreen(start);
-            Point2i to   = c.worldToScreen(new Point2d(start.x() + size.x() - 1, start.y() + size.y()));
+            Point2i from = c.sliceToScreen(start);
+            Point2i to   = c.sliceToScreen(new Point2d(start.x() + size.x() - 1, start.y() + size.y()));
 
             int sx = from.x();
             int sy = from.y();

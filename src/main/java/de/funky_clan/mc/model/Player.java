@@ -3,6 +3,7 @@ package de.funky_clan.mc.model;
 //~--- JDK imports ------------------------------------------------------------
 
 import de.funky_clan.mc.math.Point2i;
+import de.funky_clan.mc.math.Point3d;
 
 import java.awt.*;
 
@@ -30,6 +31,11 @@ public class Player extends SelectedBlock {
 
     public void setZ( int z ) {
         this.z = z;
+    }
+
+    @Override
+    public Type getType() {
+        return SelectedBlock.Type.CENTERED;
     }
 
     public int getDirection() {

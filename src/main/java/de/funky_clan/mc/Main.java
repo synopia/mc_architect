@@ -11,6 +11,7 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.Initialize;
 import de.funky_clan.mc.file.RegionFileService;
+import de.funky_clan.mc.model.OreDetector;
 import de.funky_clan.mc.ui.MainPanel;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -26,14 +27,16 @@ public class Main extends JFrame {
     MainPanel mainPanel;
     @Inject
     EventBus eventBus;
+//    @Inject
+//    RegionFileService regionFileService;
     @Inject
-    RegionFileService regionFileService;
+    OreDetector oreDetector;
 
     public Main() {
     }
 
     public void init() {
-        setTitle("Minecraft Architect for v1.3.01");
+        setTitle("Minecraft Architect for v" + Main.class.getPackage().getImplementationVersion());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(mainPanel);
         eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {

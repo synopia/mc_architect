@@ -13,10 +13,7 @@ import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Point3d;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.ChunkUpdate;
-import de.funky_clan.mc.ui.renderer.BlockRenderer;
-import de.funky_clan.mc.ui.renderer.ImageRenderer;
-import de.funky_clan.mc.ui.renderer.PlayerRenderer;
-import de.funky_clan.mc.ui.renderer.SliceRenderer;
+import de.funky_clan.mc.ui.renderer.*;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -43,10 +40,9 @@ public class SlicePanel extends ZoomPanel {
     private int             sliceNo;
     @Inject
     private EventBus        eventBus;
-    private List<Ore>       ores = new ArrayList<Ore>();
+    private final List<Ore> ores = new ArrayList<Ore>();
     @Inject
     private Colors colors;
-
 
     @Inject
     private BlockRenderer<SelectedBlock> blockRenderer;
@@ -56,6 +52,8 @@ public class SlicePanel extends ZoomPanel {
     private PlayerRenderer playerRenderer;
     @Inject
     private SliceRenderer sliceRenderer;
+    @Inject
+    private OreRenderer oreRenderer;
 
     @Override
     public void init() {
@@ -63,7 +61,6 @@ public class SlicePanel extends ZoomPanel {
 
         setFocusable(true);
         setAutoscrolls( true );
-        final SliceRenderContext context = (SliceRenderContext) this.context;
         context.setColors( colors );
         context.setWindowSize(new Point2d(50,50));
         addMouseListener( new MouseAdapter() {
@@ -104,7 +101,9 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(OreFound.class, new EventHandler<OreFound>() {
             @Override
             public void handleEvent(OreFound event) {
-                ores.addAll(event.getOres());
+                synchronized (ores) {
+                    ores.addAll(event.getOres());
+                }
                 repaint();
             }
         });
@@ -118,9 +117,7 @@ public class SlicePanel extends ZoomPanel {
     }
 
     @Override
-    protected void paintComponent( Graphics g ) {
-        initContext((Graphics2D) g);
-
+    protected void paintContent( Graphics2D g ) {
         BackgroundImage image = this.image;
 
         if( image == null ) {
@@ -130,30 +127,27 @@ public class SlicePanel extends ZoomPanel {
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect( 0, 0, getWidth(), getHeight() );
 
-        SliceRenderContext c = (SliceRenderContext) context;
         if( image != null ) {
-            imageRenderer.render(image, c );
+            imageRenderer.render(image, context );
         }
         if( slice != null ) {
             slice.setSlice(sliceNo);
-            sliceRenderer.render(slice, c);
+            sliceRenderer.render(slice, context);
         }
+
+        synchronized (ores) {
+            oreRenderer.render( ores, context);
+        }
+
         if( selectedBlock != null ) {
-            blockRenderer.render( selectedBlock, c );
+            blockRenderer.render( selectedBlock, context );
         }
 
         if( player != null ) {
-            playerRenderer.render(player, c);
+            playerRenderer.render(player, context);
         }
-
-        super.paintComponent( g );
     }
 
-    private void initContext( Graphics2D g ) {
-        AffineTransform instance = AffineTransform.getRotateInstance(Math.PI, getWidth() / 2, getHeight() / 2);
-        g.setTransform(instance);
-        context.setGraphics(g);
-    }
 
     public void setImage( BackgroundImage image ) {
         this.image = image;
@@ -172,7 +166,7 @@ public class SlicePanel extends ZoomPanel {
 
     @Override
     protected RenderContext createRenderContext() {
-        return new SliceRenderContext(slice);
+        return new RenderContext(slice);
     }
 
     public void setSliceType(SliceType type) {

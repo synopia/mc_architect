@@ -33,10 +33,10 @@ public class Slice {
         Point3i result = null;
         switch (type) {
             case X:
-                result = new Point3i( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                result = new Point3i( slicedPos.z(), -slicedPos.y(), slicedPos.x() );
                 break;
             case Y:
-                result = new Point3i( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                result = new Point3i( slicedPos.x(), -slicedPos.y(), slicedPos.z() );
                 break;
             case Z:
                 result = new Point3i( slicedPos.x(), slicedPos.z(), slicedPos.y() );
@@ -53,10 +53,10 @@ public class Slice {
         Point3d result = null;
         switch (type) {
             case X:
-                result = new Point3d( slicedPos.z(), slicedPos.y(), slicedPos.x() );
+                result = new Point3d( slicedPos.z(), -slicedPos.y(), slicedPos.x() );
                 break;
             case Y:
-                result = new Point3d( slicedPos.x(), slicedPos.y(), slicedPos.z() );
+                result = new Point3d( slicedPos.x(), -slicedPos.y(), slicedPos.z() );
                 break;
             case Z:
                 result = new Point3d( slicedPos.x(), slicedPos.z(), slicedPos.y() );
@@ -86,5 +86,9 @@ public class Slice {
 
     public SliceType getType() {
         return type;
+    }
+
+    public int getSlice() {
+        return slice;
     }
 }
