@@ -7,29 +7,20 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
-import de.funky_clan.mc.file.RegionFileService;
-import de.funky_clan.mc.model.*;
-import de.funky_clan.mc.events.PlayerMoved;
+import de.funky_clan.mc.model.BackgroundImage;
+import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.MitmThread;
-import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.util.Benchmark;
 
-//~--- JDK imports ------------------------------------------------------------
-
+import javax.swing.*;
 import java.awt.*;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 
-import javax.swing.*;
-import javax.swing.colorchooser.ColorChooserComponentFactory;
-import javax.swing.plaf.ColorChooserUI;
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  * @author synopia

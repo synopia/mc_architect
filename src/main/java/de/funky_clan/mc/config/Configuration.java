@@ -4,16 +4,14 @@ package de.funky_clan.mc.config;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import de.funky_clan.mc.math.Point3i;
+import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
-
-import de.funky_clan.mc.model.Graphics;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
-//~--- JDK imports ------------------------------------------------------------
-
 import java.util.HashMap;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  * @author synopia
@@ -30,9 +28,11 @@ public class Configuration {
     private int midY;
     private int midZ;
     private Slice slice;
+    private Position position = new Position();
 
     @Inject
     private Provider<Slice> sliceProvider;
+
 
     public Model getModel() {
         return model;
@@ -64,10 +64,11 @@ public class Configuration {
         originY = y;
         originSlice = z;
 
-        Point3i map = slice.sliceToWorld(new Point3i(x, y, z));
-        midX = map.x();
-        midY = map.y();
-        midZ = map.z();
+        position.setSlice(slice);
+        position.setSlice(x, y, z);
+        midX = (int) position.getWorldX();
+        midY = (int) position.getWorldY();
+        midZ = (int) position.getWorldZ();
 
         return this;
     }

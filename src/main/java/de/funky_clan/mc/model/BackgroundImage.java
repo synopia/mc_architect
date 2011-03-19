@@ -5,14 +5,11 @@ package de.funky_clan.mc.model;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import javax.swing.*;
 
 /**
  * @author synopia

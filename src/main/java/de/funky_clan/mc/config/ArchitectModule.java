@@ -2,14 +2,11 @@ package de.funky_clan.mc.config;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.model.SelectedBlock;
 import de.funky_clan.mc.ui.MainPanel;
-import de.funky_clan.mc.ui.SlicePanel;
 import de.funky_clan.mc.ui.renderer.BlockRenderer;
 import de.funky_clan.mc.ui.renderer.ImageRenderer;
 import de.funky_clan.mc.ui.renderer.PlayerRenderer;

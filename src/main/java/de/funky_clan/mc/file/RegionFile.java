@@ -59,7 +59,9 @@ package de.funky_clan.mc.file;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.zip.*;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class RegionFile {
 

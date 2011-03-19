@@ -1,10 +1,8 @@
 package de.funky_clan.mc.ui.renderer;
 
-import de.funky_clan.mc.math.Point2i;
-import de.funky_clan.mc.math.Point3d;
+import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.Player;
 import de.funky_clan.mc.model.RenderContext;
-import de.funky_clan.mc.model.SelectedBlock;
 
 import java.awt.*;
 
@@ -16,17 +14,17 @@ public class PlayerRenderer extends BlockRenderer<Player> {
     public void render(Player object, RenderContext c) {
         super.render( object, c );
 
-        Point3d position = object.getPosition();
-        if( position!=null && object.isDrawViewCone() ) {
+        Position position = c.getPosition();
+        position.setWorld(object.getPositionX(), object.getPositionY(), object.getPositionZ());
+
+        if( object.isDrawViewCone() ) {
             Graphics2D g = c.getGraphics();
 
-            Point2i start = c.worldToScreen(position);
-            Point2i size = c.screenUnit(position);
+            int sx = position.getScreenX();
+            int sy = position.getScreenY();
+            int w = c.screenUnitX(1);
+            int h = c.screenUnitY(1);
 
-            int sx = start.x();
-            int sy = start.y();
-            int w  = size.x();
-            int h  = size.y();
             int mx = sx;
             int my = sy;
             int direction = object.getDirection();

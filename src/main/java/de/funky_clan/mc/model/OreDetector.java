@@ -6,7 +6,6 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.OreFound;
-import de.funky_clan.mc.math.Point3i;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,11 +52,9 @@ public class OreDetector {
 
                         if(DataValues.IRONORE.getId()==data[i] ) {
                             if( !closedMap[i] ) {
-                                Point3i globalPos = new Point3i(startX + x, startY + y, startZ + z);
-
-                                Ore ore = findOre(globalPos);
+                                Ore ore = findOre(startX + x, startY + y, startZ + z);
                                 if( ore==null ) {
-                                    ore = new Ore(globalPos);
+                                    ore = new Ore(startX + x, startY + y, startZ + z);
                                 }
 
                                 ore = followOre(x,y,z,DataValues.IRONORE.getId(), ore);
@@ -74,9 +71,9 @@ public class OreDetector {
 
     }
 
-    public Ore findOre( Point3i pos ) {
+    public Ore findOre( int x, int y, int z) {
         for (Ore ore : ores) {
-            if( ore.contains(pos) ) {
+            if( ore.contains(x, y, z) ) {
                 return ore;
             }
         }
@@ -86,17 +83,16 @@ public class OreDetector {
     protected Ore followOre( int x, int y, int z, int value, Ore ore ) {
         Ore result = ore;
         Ore otherChunk = null;
-        Point3i globalPos = new Point3i(startX + x, startY + y, startZ + z);
         if( x<0 || y<0 || z<0 || x>15 || y>127 || z>15 ) {
-            int pixel = model.getPixel(globalPos, PixelType.BLOCK_ID);
+            int pixel = model.getPixel(startX + x, startY + y, startZ + z, PixelType.BLOCK_ID);
             if( pixel==value ) {
-                otherChunk = findOre( globalPos );
+                otherChunk = findOre( startX + x, startY + y, startZ + z );
                 if( otherChunk !=null ) {
                     result = otherChunk ;
                     result.addOre( ore );
 
                 } else {
-                    ore.addOre(globalPos);
+                    ore.addOre(startX + x, startY + y, startZ + z);
                     result = ore;
                 }
             }
@@ -110,7 +106,7 @@ public class OreDetector {
         if( data[index]!=value ) {
             return ore;
         } else {
-            result.addOre(globalPos);
+            result.addOre(startX + x, startY + y, startZ + z);
         }
 
         result = followOre( x+1, y, z, value, result );

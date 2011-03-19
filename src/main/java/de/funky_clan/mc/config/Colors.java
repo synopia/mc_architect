@@ -1,7 +1,5 @@
 package de.funky_clan.mc.config;
 
-import com.sun.org.apache.bcel.internal.generic.CPInstruction;
-
 import java.awt.*;
 
 /**

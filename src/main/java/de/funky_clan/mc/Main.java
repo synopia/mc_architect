@@ -6,17 +6,15 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import de.funky_clan.mc.config.ArchitectModule;
-import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.Initialize;
-import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.model.OreDetector;
 import de.funky_clan.mc.ui.MainPanel;
 
-//~--- JDK imports ------------------------------------------------------------
-
 import javax.swing.*;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  * @author synopia

@@ -3,14 +3,12 @@ package de.funky_clan.mc.model;
 //~--- non-JDK imports --------------------------------------------------------
 
 import de.funky_clan.mc.config.Colors;
-import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
-import de.funky_clan.mc.math.Point3d;
-import de.funky_clan.mc.math.Point3i;
-
-//~--- JDK imports ------------------------------------------------------------
+import de.funky_clan.mc.math.Position;
 
 import java.awt.*;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  * Represents a viewport.
@@ -24,161 +22,146 @@ public class RenderContext {
     private Graphics2D           g;
     private Slice slice;
 
-    private Point2d pixelSize;
-    private Point2i screenSize;
+    private double pixelSizeX;
+    private double pixelSizeY;
+    private int screenSizeX;
+    private int screenSizeY;
 
-    private Point2d              windowSize;
-    private Point2d              windowPosition;
+    private double windowSizeX;
+    private double windowSizeY;
+    private double windowPositionX;
+    private double windowPositionY;
+
+    private Position position;
 
     public RenderContext(Slice slice) {
         this.slice = slice;
+        position = new Position();
+        position.setSlice( slice );
+        position.setRenderContext( this );
     }
 
     public void setGraphics( Graphics2D g ) {
         this.g = g;
     }
 
-    /**
-     * Converts screen coordinate to world
-     * @param screenPos
-     * @return
-     */
-    public Point2d screenToSlice( Point2i screenPos ) {
-        return new Point2d(
-                screenPos.x() / pixelSize.x() + windowPosition.x(),
-                screenPos.y() / pixelSize.y() + windowPosition.y()
-        );
+    public double screenToSliceX( int screenPosX ) {
+        return screenPosX / pixelSizeX + windowPositionX;
+    }
+    public double screenToSliceY( int screenPosY ) {
+        return screenPosY / pixelSizeY + windowPositionY;
     }
 
-    /**
-     * Converts world coordinate to screen
-     * @param worldPos
-     * @return
-     */
-    public Point2i sliceToScreen( Point2d worldPos ) {
-        return new Point2i(
-                (int) ( (worldPos.x()-windowPosition.x()) * pixelSize.x() ),
-                (int) ( (worldPos.y()-windowPosition.y()) * pixelSize.y() )
-        );
+    public int sliceToScreenX( double sliceX ) {
+        return (int) ( (sliceX-windowPositionX) * pixelSizeX );
+    }
+    public int sliceToScreenY( double sliceY ) {
+        return (int) ( (sliceY-windowPositionY) * pixelSizeY );
     }
 
-    public Point3d screenToWorld(Point2i screenPos) {
-        Point2d slicePos = screenToSlice(screenPos);
-        return slice.sliceToWorld(new Point3d(slicePos.x(), slicePos.y(), slice.getSlice()));
+
+    public int screenUnitX( double a ) {
+        int dx = (int) (a*pixelSizeX);
+        return Math.max( 1, Math.abs(dx) ) + 1;
+    }
+    public int screenUnitY( double a ) {
+        int dy = (int) (a*pixelSizeY);
+        return Math.max( 1, Math.abs(dy) ) + 1;
     }
 
-    public Point2i worldToScreen(Point3d worldPos) {
-        Point3d slicePos = slice.worldToSlice(worldPos);
-        return sliceToScreen(new Point2d(slicePos.x(), slicePos.y()));
+    public void setWindowPosition( double windowPositionX, double windowPositionY ) {
+        this.windowPositionX = windowPositionX;
+        this.windowPositionY = windowPositionY;
     }
 
-    public Point3i sliceToWorld( Point3i slicedPos ) {
-        return slice.sliceToWorld(slicedPos);
+    public void setWindowSize( double windowSizeX, double windowSizeY ) {
+        this.windowSizeX = windowSizeX;
+        this.windowSizeY = windowSizeY;
     }
 
-    public Point3i worldToSlice( Point3i worldPos ) {
-        return slice.worldToSlice(worldPos);
+    public void setScreenSize( int screenSizeX, int screenSizeY) {
+        this.screenSizeX = screenSizeX;
+        this.screenSizeY = screenSizeY;
     }
 
-    public Point3d sliceToWorld( Point3d slicedPos ) {
-        return slice.sliceToWorld(slicedPos);
-    }
-    public Point3d worldToSlice( Point3d worldPos ) {
-        return slice.worldToSlice(worldPos);
-    }
-
-    public double distToSlice( Point3d worldPos ) {
-        Point3d slicePos = worldToSlice(worldPos);
-        return slicePos.z() - slice.getSlice();
-    }
-
-    public Point2i screenUnit( Point2d worldPos ) {
-        return screenUnit(worldPos, new Point2d(worldPos.x() + 1, worldPos.y() + 1));
-    }
-
-    public Point2i screenUnit( Point2d worldPosA, Point2d worldPosB ) {
-        Point2i a = sliceToScreen(worldPosA);
-        Point2i b = sliceToScreen(worldPosB).sub(a);
-
-        return new Point2i(
-                Math.max( 1, Math.abs(b.x()) ) + 1,
-                Math.max( 1, Math.abs(b.y()) ) + 1
-        );
-    }
-
-    public void setWindowPosition( Point2d windowPos ) {
-        windowPosition = windowPos;
-    }
-
-    public void setWindowSize( Point2d size ) {
-        windowSize = size;
-    }
-
-    public void setScreenSize(Point2i screenSize) {
-        this.screenSize = screenSize;
-    }
-
-    public void init( Point2d windowPos, Point2d windowSize, Point2i screenSize ) {
-        setWindowPosition( windowPos );
-        setWindowSize( windowSize );
-        setScreenSize( screenSize );
+    public void init(  double windowPositionX, double windowPositionY , double windowSizeX, double windowSizeY , int screenSizeX, int screenSizeY ) {
+        setWindowPosition(windowPositionX, windowPositionY);
+        setWindowSize(windowSizeX, windowSizeY);
+        setScreenSize(screenSizeX, screenSizeY);
         calculateSizes();
     }
 
-
     private void calculateSizes() {
-        if( windowSize.x()>0 && windowSize.y()>0 ) {
-            pixelSize = new Point2d(
-                    screenSize.x() / windowSize.x(),
-                    screenSize.y() / windowSize.y()
-            );
+        if( windowSizeX>0 && windowSizeY>0 ) {
+            pixelSizeX = screenSizeX / windowSizeX;
+            pixelSizeY = screenSizeY / windowSizeY;
         } else {
-            pixelSize = new Point2d( 0, 0 );
+            pixelSizeX = 0;
+            pixelSizeY = 0;
         }
     }
 
-    public void zoom( double zoomX, double zoomY, Point2i mousePos ) {
-        Point2d mid = windowPosition.add(windowSize.scale(0.5, 0.5));
-        Point2d pos = screenToSlice(mousePos);
-        windowSize = new Point2d(windowSize.x() * zoomX, windowSize.y() * zoomY);
+    public void zoom( double zoomX, double zoomY, Point mousePos ) {
+        double midX = windowPositionX + windowSizeX / 2.;
+        double midY = windowPositionY + windowSizeY / 2.;
+        double posX = screenToSliceX(mousePos.x);
+        double posY = screenToSliceY(mousePos.y);
+
+        windowSizeX *= zoomX;
+        windowSizeY *= zoomY;
         calculateSizes();
-        windowPosition = windowPosition.add(pos.sub(mid).scale(0.1, 0.1));
+        windowPositionX += (posX-midX)*0.1;
+        windowPositionY += (posY-midY)*0.1;
     }
 
     public Graphics2D getGraphics() {
         return g;
     }
 
-    public Point2d getPixelSize() {
-        return pixelSize;
+    public double getPixelSizeX() {
+        return pixelSizeX;
     }
 
-    public Point2i getScreenSize() {
-        return screenSize;
+    public double getPixelSizeY() {
+        return pixelSizeY;
     }
 
-    public Point2d getWindowSize() {
-        return windowSize;
+    public int getScreenSizeX() {
+        return screenSizeX;
     }
 
-    public Point2d getWindowPosition() {
-        return windowPosition;
+    public int getScreenSizeY() {
+        return screenSizeY;
     }
 
-    public Point2i getWindowStart() {
-        return new Point2i((int)windowPosition.x(), (int)windowPosition.y());
+    public double getWindowSizeX() {
+        return windowSizeX;
     }
 
-    public Point2i getWindowEnd() {
-        return new Point2i(
-                (int)(windowPosition.x()+windowSize.x()),
-                (int)(windowPosition.y()+windowSize.y())
-        );
+    public double getWindowSizeY() {
+        return windowSizeY;
     }
 
-    public Color fadeOut( Point3d worldPos, Color color ) {
-        double damp = Math.max(0, Math.min(1, (1 / Math.abs(distToSlice(worldPos)))));
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(255*damp));
+    public double getWindowPositionX() {
+        return windowPositionX;
+    }
+
+    public double getWindowPositionY() {
+        return windowPositionY;
+    }
+
+    public int getWindowStartX() {
+        return (int)windowPositionX;
+    }
+    public int getWindowStartY() {
+        return (int)windowPositionY;
+    }
+
+    public int getWindowEndX() {
+        return (int)(windowPositionX+windowSizeX);
+    }
+    public int getWindowEndY() {
+        return (int)(windowPositionY+windowSizeY);
     }
 
     public Colors getColors() {
@@ -193,13 +176,17 @@ public class RenderContext {
     public String toString() {
         return String.format(
                 "window = %.2f, %.2f; %.2f, %.2f - screen = %d, %d",
-                windowPosition.x(), windowPosition.y(),
-                windowSize.x(), windowSize.y(),
-                screenSize.x(), screenSize.y()
+                windowPositionX, windowPositionY,
+                windowSizeX, windowSizeY,
+                screenSizeX, screenSizeY
         );
     }
 
     public int getCurrentSlice() {
         return slice.getSlice();
+    }
+
+    public Position getPosition() {
+        return position;
     }
 }

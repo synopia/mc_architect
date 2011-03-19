@@ -1,7 +1,6 @@
 package de.funky_clan.mc.ui.renderer;
 
 import de.funky_clan.mc.math.Point2d;
-import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.RenderContext;
 
@@ -18,6 +17,7 @@ public class ImageRenderer implements Renderer<BackgroundImage> {
         Point2d size = object.getSize();
 
         if( image != null ) {
+/*
             Point2i screenSize = c.getScreenSize();
             int width  = screenSize.x();
             int height = screenSize.y();
@@ -59,6 +59,7 @@ public class ImageRenderer implements Renderer<BackgroundImage> {
                 c.getGraphics().setColor(Color.BLUE);
                 c.getGraphics().drawRect( sx, sy, ex-sx, ey-sy);
             }
+*/
 
         }
 

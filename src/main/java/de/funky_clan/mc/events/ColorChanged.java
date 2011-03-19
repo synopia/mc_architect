@@ -1,6 +1,5 @@
 package de.funky_clan.mc.events;
 
-import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.Event;
 
 import java.awt.*;

@@ -3,20 +3,16 @@ package de.funky_clan.mc.ui;
 //~--- JDK imports ------------------------------------------------------------
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.util.Benchmark;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
-import javax.swing.*;
 
 /**
  *
@@ -38,7 +34,7 @@ public abstract class ZoomPanel extends JPanel {
 
     public void init() {
         context = createRenderContext();
-        context.init(new Point2d(0,0), new Point2d(getWidth(), getHeight()), new Point2i(getWidth(), getHeight()));
+        context.init(0,0,getWidth(), getHeight(), getWidth(), getHeight());
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -71,8 +67,7 @@ public abstract class ZoomPanel extends JPanel {
             public void mouseWheelMoved( MouseWheelEvent e ) {
                 if( e.isShiftDown() ) {
                     double scale = 1 + e.getWheelRotation() * 0.05;
-                    Point2i delta = new Point2i(e.getX(), e.getY());
-                    context.zoom(scale, scale, delta);
+                    context.zoom(scale, scale, e.getPoint());
                     repaint();
                 }
             }
@@ -82,7 +77,7 @@ public abstract class ZoomPanel extends JPanel {
     @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
-        context.setScreenSize(new Point2i(width, height));
+        context.setScreenSize(width, height);
     }
 
     /**
@@ -140,35 +135,34 @@ public abstract class ZoomPanel extends JPanel {
         if( (start != null) && !start.equals( end )) {
             e.consume();
 
-            applyWindow( new Point2i(start), new Point2i(end).sub(new Point2i(start)) );
+            applyWindow( start.x, start.y, end.x-start.x, end.y-start.y );
         }
     }
 
     protected void dragTo( MouseEvent e ) {
-        Point2d d = context.screenToSlice(new Point2i(start)).
-                sub(context.screenToSlice(new Point2i(e.getPoint()))).
-                add(context.getWindowPosition());
-        context.setWindowPosition(d);
+        double windowPosX = context.screenToSliceX(start.x)-context.screenToSliceX(e.getX()) + context.getWindowPositionX();
+        double windowPosY = context.screenToSliceY(start.y)-context.screenToSliceY(e.getY()) + context.getWindowPositionY();
+
+        context.setWindowPosition(windowPosX, windowPosY);
 
         repaint();
         start = e.getPoint();
     }
 
 
-    public void applyWindow( Point2i start, Point2i size ) {
-        int x = (size.x()>0) ? start.x() : start.x()+size.x();
-        int y = (size.y()>0) ? start.y() : start.y()+size.y();
-        int w = Math.abs(size.x());
-        int h = Math.abs(size.y());
+    public void applyWindow( int startX, int startY, int width, int height ) {
+        int x = (width>0)  ? startX : startX+width;
+        int y = (height>0) ? startY : startY+height;
+        int w = Math.abs(width);
+        int h = Math.abs(height);
 
         if( x<10 || y<10 ) {
             return;
         }
-        Point2i realStart = new Point2i(x, y);
-        Point2d windowPos = context.screenToSlice(realStart);
-        Point2d windowSize = context.screenToSlice(realStart.add(new Point2i(w, h))).sub(windowPos);
 
-        context.init( windowPos, windowSize, new Point2i(getWidth(), getHeight()) );
+        double windowPositionX = context.screenToSliceX(x);
+        double windowPositionY = context.screenToSliceY(y);
+        context.init(windowPositionX, windowPositionY, context.screenToSliceX(x+w)-windowPositionX, context.screenToSliceY(y+h)-windowPositionY, getWidth(), getHeight());
 
         repaint();
 
@@ -193,9 +187,10 @@ public abstract class ZoomPanel extends JPanel {
         repaintZoomRect( new Rectangle( x, y, w, h ));
     }
 
-    protected void scrollTo(Point2d slicePos) {
-        Point2d start = slicePos.addScaled( -.5, context.getWindowSize());
-        context.init( start, context.getWindowSize(), context.getScreenSize() );
+    protected void scrollTo(double x, double y) {
+        double startX = x - context.getWindowSizeX()/2;
+        double startY = y - context.getWindowSizeY()/2;
+        context.init( startX, startY, context.getWindowSizeX(), context.getWindowSizeY(), context.getScreenSizeX(), context.getScreenSizeY() );
         repaint();
     }
 }

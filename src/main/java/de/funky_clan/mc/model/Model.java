@@ -8,8 +8,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.BlockUpdate;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.UnloadChunk;
-import de.funky_clan.mc.math.Point2i;
-import de.funky_clan.mc.math.Point3i;
+import de.funky_clan.mc.math.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,7 @@ public class Model {
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
-                setPixel(new Point3i(event.getX(), event.getY(), event.getZ()), PixelType.BLOCK_ID, event.getType() );
+                setPixel(event.getX(), event.getY(), event.getZ(), PixelType.BLOCK_ID, event.getType() );
             }
         });
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
@@ -85,20 +84,20 @@ public class Model {
         interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
             @Override
             public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
-                chunk.setPixelGlobal(new Point3i(x,y,z), PixelType.BLOCK_ID, value );
+                chunk.setPixelGlobal(x,y,z, PixelType.BLOCK_ID, value );
             }
         });
 
     }
 
-    public void setPixel( Point3i pos, PixelType type, int value ) {
-        getOrCreateChunk(pos).setPixelGlobal(pos, type, value);
+    public void setPixel( int x, int y, int z, PixelType type, int value ) {
+        getOrCreateChunk(x,y,z).setPixelGlobal(x,y,z, type, value);
     }
-    public int getPixel( Point3i pos, PixelType type ) {
-        int chunkX = pos.x()>>4;
-        int chunkZ = pos.z()>>4;
+    public int getPixel( int x, int y, int z, PixelType type ) {
+        int chunkX = x>>4;
+        int chunkZ = z>>4;
 
-        return getChunk(chunkX, chunkZ).getPixelGlobal(pos, type);
+        return getChunk(chunkX, chunkZ).getPixelGlobal(x,y,z, type);
     }
 
     private void removeChunk( int chunkX, int chunkZ ) {
@@ -125,8 +124,8 @@ public class Model {
         }
     }
 
-    public Chunk getOrCreateChunk(Point3i pos) {
-        return getOrCreateChunk(pos.x(), pos.y(), pos.z());
+    public Chunk getOrCreateChunk(Position pos) {
+        return getOrCreateChunk((int) pos.getWorldX(), (int)pos.getWorldY(), (int)pos.getWorldZ() );
     }
     public Chunk getOrCreateChunk(int x, int y, int z) {
         int chunkX = x>>4;
@@ -148,7 +147,7 @@ public class Model {
         if( zChunks.containsKey(chunkX) ) {
             chunk = zChunks.get(chunkX);
         } else {
-            chunk = new Chunk( new Point3i(chunkX<<4, 0, chunkZ<<4), new Point3i(1<<4, 1<<7, 1<<4) );
+            chunk = new Chunk( chunkX<<4, 0, chunkZ<<4, 1<<4, 1<<7, 1<<4 );
             zChunks.put(chunkX, chunk);
         }
 

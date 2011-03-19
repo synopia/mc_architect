@@ -1,7 +1,5 @@
 package de.funky_clan.mc.events;
 
-import de.funky_clan.mc.events.PlayerPositionUpdate;
-
 /**
  * @author synopia
  */

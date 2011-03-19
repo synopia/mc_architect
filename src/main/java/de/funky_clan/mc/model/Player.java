@@ -2,13 +2,6 @@ package de.funky_clan.mc.model;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import de.funky_clan.mc.math.Point2i;
-import de.funky_clan.mc.math.Point3d;
-
-import java.awt.*;
-
-import javax.swing.*;
-
 /**
  * @author paul.fritsche@googlemail.com
  */

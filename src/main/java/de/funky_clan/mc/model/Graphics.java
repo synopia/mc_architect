@@ -1,6 +1,6 @@
 package de.funky_clan.mc.model;
 
-import de.funky_clan.mc.math.Point2i;
+import de.funky_clan.mc.math.Position;
 
 /**
  * Contains methods to "draw" into the model
@@ -9,9 +9,11 @@ import de.funky_clan.mc.math.Point2i;
  */
 public class Graphics {
     private Slice slice;
+    private Position position = new Position();
 
     public Graphics( Slice slice ) {
         this.slice = slice;
+        position.setSlice(slice);
     }
 
     public void ellipse( int level, int xm, int ym, int width, int height, int type ) {
@@ -50,7 +52,8 @@ public class Graphics {
     }
 
     public void setPixel( int x, int y, int slice, int value ) {
-        this.slice.setPixel(new Point2i(x, y), slice, PixelType.BLUEPRINT, value);
+        position.setSlice(x,y,slice);
+        this.slice.setPixel(position, PixelType.BLUEPRINT, value);
     }
 
     public void hLine( int x, int y, int width, int level, int type ) {

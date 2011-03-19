@@ -1,59 +1,69 @@
 package de.funky_clan.mc.model;
 
-import de.funky_clan.mc.math.Point3i;
-import de.funky_clan.mc.ui.renderer.Renderer;
-
 /**
  * @author synopia
  */
 public class Ore {
-    private Point3i start;
-    private Point3i end;
+    private int startX;
+    private int startY;
+    private int startZ;
+    private int endX;
+    private int endY;
+    private int endZ;
 
-    public Ore(Point3i start) {
-        this( start, start );
+    public Ore(int startX, int startY, int startZ, int endX, int endY, int endZ) {
+        this.startX = startX;
+        this.startY = startY;
+        this.startZ = startZ;
+        this.endX = endX;
+        this.endY = endY;
+        this.endZ = endZ;
     }
 
-    public Ore(Point3i start, Point3i end) {
-        this.start = start;
-        this.end = end;
+    public Ore(int startX, int startY, int startZ) {
+        this( startX, startY, startZ, startX, startY, startZ );
     }
 
-    public Point3i getStart() {
-        return start;
+    public int getStartX() {
+        return startX;
     }
 
-    public Point3i getEnd() {
-        return end;
+    public int getStartY() {
+        return startY;
     }
 
-    public void addOre( Point3i pos  ) {
-        start = new Point3i(
-                Math.min( start.x(), pos.x() ),
-                Math.min( start.y(), pos.y() ),
-                Math.min( start.z(), pos.z() )
-        );
-        end = new Point3i(
-                Math.max( end.x(), pos.x() ),
-                Math.max( end.y(), pos.y() ),
-                Math.max( end.z(), pos.z() )
-        );
+    public int getStartZ() {
+        return startZ;
     }
 
-    public boolean contains(Point3i pos) {
-        return pos.x()>=start.x() && pos.y()>=start.y() && pos.z()>=start.z() && pos.x()<=end.x() && pos.y()<=end.y() && pos.z()<=end.z();
+    public int getEndX() {
+        return endX;
+    }
+
+    public int getEndY() {
+        return endY;
+    }
+
+    public int getEndZ() {
+        return endZ;
+    }
+
+    public void addOre( int x, int y, int z) {
+        startX = Math.min( startX, x );
+        startY = Math.min( startY, y );
+        startZ = Math.min( startZ, z );
+
+        endX = Math.max(endX, x);
+        endY = Math.max(endY, y);
+        endZ = Math.max( endZ, z );
+    }
+
+    public boolean contains(int x, int y, int z) {
+        return x>=startX && y>=startY && z>=startZ && x<=endX && y<=endY && z<=endZ;
     }
 
     public void addOre( Ore ore ) {
-        addOre( ore.getStart() );
-        addOre( ore.getEnd() );
-    }
-
-    public void render(RenderContext c) {
-        // draw selected block with player color
-        //Point2d startScreen = c.worldToScreen( startWorld );
-        //Point2d endScreen   = c.worldToScreen( endWorld );
-
-        //..
+        addOre( ore.getStartX(), ore.getStartY(), ore.getStartZ() );
+        addOre( ore.getEndX(), ore.getEndY(), ore.getEndZ() );
     }
 }
