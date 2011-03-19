@@ -12,12 +12,15 @@ import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.net.MitmThread;
 import de.funky_clan.mc.events.TargetServerChanged;
+import de.funky_clan.mc.util.Benchmark;
 
 //~--- JDK imports ------------------------------------------------------------
 
 import java.awt.*;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.DataOutputStream;
@@ -54,7 +57,10 @@ public class MainPanel extends JPanel {
     private JLabel           chunksText;
     private int              chunksLoaded;
     private int              chunksUnloaded;
-    private JLabel memoryText;
+    private JLabel           memoryText;
+    private JLabel           benchmarkText;
+    @Inject
+    private Benchmark benchmark;
 
     @Inject
     public MainPanel(final EventBus eventBus) {
@@ -64,7 +70,6 @@ public class MainPanel extends JPanel {
             @Override
             public void handleEvent(ChunkUpdate event) {
                 chunksLoaded ++;
-                updateStats();
             }
         });
         eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
@@ -72,7 +77,6 @@ public class MainPanel extends JPanel {
             public void handleEvent(UnloadChunk event) {
                 chunksUnloaded ++;
                 chunksLoaded --;
-                updateStats();
             }
         });
 
@@ -116,10 +120,16 @@ public class MainPanel extends JPanel {
                 onInit();
             }
         });
+        new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateStats();
+            }
+        }).start();
     }
 
     protected void onInit() {
-        setLayout( new BorderLayout() );
+        setLayout(new BorderLayout());
 
         this.setFocusable(true);
 
@@ -267,6 +277,18 @@ public class MainPanel extends JPanel {
         long max = Runtime.getRuntime().maxMemory();
         long free = Runtime.getRuntime().freeMemory();
         memoryText.setText("Mem: " + ((max-free)/1024/1024) + "/" + (max/1024/1024) );
+
+        HashMap<Object, Double> results = benchmark.getResults();
+        double eventBusTime = 0;
+        if( results.containsKey(eventBus) ) {
+            eventBusTime = results.get(eventBus);
+        }
+        double renderTime = 0;
+        if( results.containsKey(ZoomPanel.class) ) {
+            renderTime = results.get(ZoomPanel.class);
+        }
+
+        benchmarkText.setText(String.format("CPU: %.0f/%.0f", eventBusTime*100, renderTime*100));
     }
 
     private JToolBar buildInfoToolBar2() {
@@ -277,6 +299,10 @@ public class MainPanel extends JPanel {
 
         memoryText = new JLabel("Mem: 0/0");
         info.add(memoryText);
+        info.addSeparator();
+
+        benchmarkText = new JLabel("CPU: 0");
+        info.add(benchmarkText);
         info.addSeparator();
         return info;
     }

@@ -2,9 +2,11 @@ package de.funky_clan.mc.ui;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.math.Point2d;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.model.RenderContext;
+import de.funky_clan.mc.util.Benchmark;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -25,6 +27,8 @@ public abstract class ZoomPanel extends JPanel {
     private Point start;
     private Rectangle      zoomRect;
     protected RenderContext context;
+    @Inject
+    private Benchmark benchmark;
 
     protected abstract RenderContext createRenderContext();
 
@@ -96,6 +100,7 @@ public abstract class ZoomPanel extends JPanel {
 
     @Override
     protected void paintComponent( Graphics g ) {
+        benchmark.startBenchmark(ZoomPanel.class);
         Graphics2D graphics2D = (Graphics2D) g;
 
         initContext(graphics2D);
@@ -104,8 +109,9 @@ public abstract class ZoomPanel extends JPanel {
 
         graphics2D.setXORMode( Color.WHITE );
         if( zoomRect != null ) {
-            graphics2D.drawRect( zoomRect.x, zoomRect.y, zoomRect.width - 1, zoomRect.height - 1 );
+            graphics2D.drawRect(zoomRect.x, zoomRect.y, zoomRect.width - 1, zoomRect.height - 1);
         }
+        benchmark.endBenchmark(ZoomPanel.class);
     }
 
     protected abstract void paintContent(Graphics2D graphics2D);

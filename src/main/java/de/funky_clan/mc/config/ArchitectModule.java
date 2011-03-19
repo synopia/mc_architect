@@ -14,6 +14,7 @@ import de.funky_clan.mc.ui.renderer.BlockRenderer;
 import de.funky_clan.mc.ui.renderer.ImageRenderer;
 import de.funky_clan.mc.ui.renderer.PlayerRenderer;
 import de.funky_clan.mc.ui.renderer.SliceRenderer;
+import de.funky_clan.mc.util.Benchmark;
 
 /**
  * @author synopia
@@ -29,6 +30,7 @@ public class ArchitectModule implements Module {
         binder.bind(ImageRenderer.class).in(Singleton.class);
         binder.bind(PlayerRenderer.class).in(Singleton.class);
         binder.bind(SliceRenderer.class).in(Singleton.class);
+        binder.bind(Benchmark.class).in(Singleton.class);
 
         binder.bind(Model.class).in(Singleton.class);
         binder.bind(MainPanel.class).in(Singleton.class);

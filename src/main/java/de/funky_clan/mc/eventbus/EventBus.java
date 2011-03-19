@@ -1,5 +1,7 @@
 package de.funky_clan.mc.eventbus;
 
+import com.google.inject.Inject;
+import de.funky_clan.mc.util.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +21,12 @@ public class EventBus {
     private BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
-    private long timeInHandling = 0;
-    private long timeStarted = 0;
+    @Inject
+    private Benchmark benchmark;
 
     public EventBus() {
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                timeStarted = System.nanoTime();
                 while (true) {
                     try {
                         handleNextEvent();
@@ -44,17 +45,14 @@ public class EventBus {
         Event event = events.take();
 
         if( event!=null ) {
-            long before = System.nanoTime();
+            benchmark.startBenchmark(this);
             callbacks.clear();
             getCallbacks(event, callbacks);
 //            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
             }
-            timeInHandling += System.nanoTime() - before;
-            if( timeInHandling > 1000000L ) {
-                System.out.println(((double)timeInHandling / (System.nanoTime()-timeStarted)));
-            }
+            benchmark.endBenchmark(this);
         }
         return events.size()>0;
     }
