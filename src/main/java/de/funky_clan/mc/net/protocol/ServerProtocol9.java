@@ -81,5 +81,29 @@ public class ServerProtocol9 extends Protocol9 {
                 eventBus.fireEvent( new BlockUpdate(x,y,z,type,meta));
             }
         });
+
+        setDecoder(0x34, new MessageDecoder() {
+            @Override
+            public void decode(DataInputStream in) throws IOException {
+                int chunkX = in.readInt();
+                int chunkZ = in.readInt();
+                short size = in.readShort();
+                short[] coords = new short[size];
+                for (int i = 0; i < size; i++) {
+                    coords[i] = in.readShort();
+                }
+                byte[] type = new byte[size];
+                byte[] meta = new byte[size];
+                in.readFully(type);
+                in.readFully(meta);
+
+                for (int i = 0; i < size; i++) {
+                    int x = (chunkX<<4) + (coords[i]>>12);
+                    int z = (chunkZ<<4) + ((coords[i]>>8) & ((1<<4)-1));
+                    int y = coords[i] & ((1<<8)-1);
+                    eventBus.fireEvent( new BlockUpdate(x,y,z,type[i], meta[i]));
+                }
+            }
+        });
     }
 }

@@ -64,8 +64,10 @@ public class OreDetector {
                             }
                         }
                     }
+                    eventBus.fireEvent(new OreFound(ores));
+                } else {
+                    throw new RuntimeException(sizeX+", "+sizeY+", "+sizeZ);
                 }
-                eventBus.fireEvent(new OreFound(ores));
             }
         });
 
