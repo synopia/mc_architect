@@ -288,7 +288,7 @@ public class MainPanel extends JPanel {
             renderTime = results.get(ZoomPanel.class);
         }
 
-        benchmarkText.setText(String.format("CPU: %.0f/%.0f", eventBusTime*100, renderTime*100));
+        benchmarkText.setText(String.format("CPU/GFX: %.0f/%.0f", eventBusTime*100, renderTime*100));
     }
 
     private JToolBar buildInfoToolBar2() {
@@ -301,7 +301,7 @@ public class MainPanel extends JPanel {
         info.add(memoryText);
         info.addSeparator();
 
-        benchmarkText = new JLabel("CPU: 0");
+        benchmarkText = new JLabel("CPU/GFX: 0/0");
         info.add(benchmarkText);
         info.addSeparator();
         return info;
