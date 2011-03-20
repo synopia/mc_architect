@@ -57,7 +57,7 @@ public class SliceRenderer implements Renderer<Slice> {
                     }
                     currentSlice--;
                     darkenFactor *= 0.92;
-                } while( slice.getSlice()-currentSlice<20 );
+                } while( slice.getSlice()-currentSlice<slice.getMaxRenderDepth() );
 
 /*                if( blueprint==1 ) {
                     if( colorForBlock==null ) {

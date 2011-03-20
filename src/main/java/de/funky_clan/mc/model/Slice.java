@@ -13,6 +13,7 @@ public class Slice {
     private Model     model;
     private int       slice;
     private SliceType type;
+    private int       maxRenderDepth;
 
     public void setType(SliceType type) {
         this.type = type;
@@ -20,6 +21,14 @@ public class Slice {
 
     public void setSlice( int slice ) {
         this.slice = slice;
+    }
+
+    public int getMaxRenderDepth() {
+        return maxRenderDepth;
+    }
+
+    public void setMaxRenderDepth(int maxRenderDepth) {
+        this.maxRenderDepth = maxRenderDepth;
     }
 
     public void setPixel( Position pos, int value ) {

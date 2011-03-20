@@ -189,8 +189,8 @@ public class MainPanel extends JPanel {
         rootSplitPane.setLeftComponent( new JScrollPane( topDown ));
         rootSplitPane.setRightComponent( southSplitPane );
         southSplitPane.setResizeWeight( 0.5d );
-//        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
-//        southSplitPane.setRightComponent( new JScrollPane( sideY ));
+        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
+        southSplitPane.setRightComponent( new JScrollPane( sideY ));
 
         JPanel info     = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));

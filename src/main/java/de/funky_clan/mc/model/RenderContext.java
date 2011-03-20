@@ -33,6 +33,7 @@ public class RenderContext {
     private double windowPositionY;
 
     private Position position;
+    private Box windowBox = new Box();
     private Position windowStart;
     private Position windowEnd;
 
@@ -50,25 +51,14 @@ public class RenderContext {
         windowEnd.setRenderContext( this );
     }
 
-    public Position getWindowStart() {
+    public void updateWindowBox() {
         windowStart.setSlice(windowPositionX, windowPositionY, slice.getSlice()-20);
-        return windowStart;
-    }
-
-    public Position getWindowEnd() {
         windowEnd.setSlice(windowPositionX+windowSizeX, windowPositionY+windowSizeY, slice.getSlice()+20);
-        return windowEnd;
+        windowBox.set( windowStart.getWorldX(), windowStart.getWorldY(), windowStart.getWorldZ(), windowEnd.getWorldX(), windowEnd.getWorldY(), windowEnd.getWorldZ() );
     }
 
     public boolean contains( double worldX, double worldY, double worldZ ) {
-        double x1 = windowStart.getWorldX();
-        double y1 = windowStart.getWorldY();
-        double z1 = windowStart.getWorldZ();
-        double x2 = windowEnd.getWorldX();
-        double y2 = windowEnd.getWorldY();
-        double z2 = windowEnd.getWorldZ();
-
-        return x1<=worldX && y1<=worldY && z1<=worldZ && x2>=worldX && y2>worldY && z2>worldY;
+        return windowBox.contains(worldX, worldY, worldZ);
     }
 
     public void setGraphics( Graphics2D g ) {

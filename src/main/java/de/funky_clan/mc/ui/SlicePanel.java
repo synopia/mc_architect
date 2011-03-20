@@ -180,6 +180,7 @@ public class SlicePanel extends ZoomPanel {
 
     public void setSliceType(SliceType type) {
         slice.setType(type);
+        slice.setMaxRenderDepth( type==SliceType.Z?20:1 );
         player.setDrawViewCone( type==SliceType.Z );
     }
 }

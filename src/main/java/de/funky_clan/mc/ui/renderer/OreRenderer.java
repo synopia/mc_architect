@@ -19,8 +19,7 @@ public class OreRenderer implements Renderer<List<Ore>>{
     @Override
     public void render(List<Ore> ores, RenderContext c) {
         Position position = c.getPosition();
-        Position start = c.getWindowStart();
-        Position end = c.getWindowEnd();
+        c.updateWindowBox();
         for (Ore ore : ores) {
             if( c.contains(ore.getStartX(), ore.getStartY(), ore.getEndZ()) ||
                     c.contains(ore.getEndX(), ore.getStartY(), ore.getEndZ() ) ) {
