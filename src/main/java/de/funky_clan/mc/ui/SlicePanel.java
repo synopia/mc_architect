@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.BlockUpdate;
-import de.funky_clan.mc.events.ChunkUpdate;
-import de.funky_clan.mc.events.OreFound;
-import de.funky_clan.mc.events.PlayerMoved;
+import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.ui.renderer.*;
@@ -109,11 +106,12 @@ public class SlicePanel extends ZoomPanel {
             }
         });
 
-        eventBus.registerCallback(OreFound.class, new EventHandler<OreFound>() {
+        eventBus.registerCallback(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
-            public void handleEvent(OreFound event) {
+            public void handleEvent(OreDisplayUpdate event) {
                 synchronized (ores) {
-                    ores.addAll(event.getOres());
+                    ores.clear();
+                    ores.addAll(event.getOre());
                 }
                 repaint();
             }

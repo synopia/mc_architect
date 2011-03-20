@@ -8,6 +8,7 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.model.BackgroundImage;
+import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.MitmThread;
 import de.funky_clan.mc.util.Benchmark;
@@ -83,12 +84,7 @@ public class MainPanel extends JPanel {
         eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {
-                playerX = event.getX();
-                playerY = event.getY();
-                playerZ = event.getZ();
-                yaw     = event.getYaw();
-                pitch   = event.getPitch();
-                firePlayerMoved();
+                updatePlayerPosition(event);
             }
         });
 
@@ -128,6 +124,22 @@ public class MainPanel extends JPanel {
         }).start();
     }
 
+    private void updatePlayerPosition(PlayerPositionUpdate event) {
+        double oldX = playerX;
+        double oldY = playerY;
+        double oldZ = playerZ;
+        playerX = event.getX();
+        playerY = event.getY();
+        playerZ = event.getZ();
+        yaw     = event.getYaw();
+        pitch   = event.getPitch();
+
+        boolean blockChanged = (int)playerX!=(int)oldX || (int)playerY!=(int)oldY || (int)playerZ!=(int)oldZ;
+        boolean chunkChanged = Chunk.getChunkId(oldX, oldZ)!=Chunk.getChunkId(playerX, playerZ);
+
+        firePlayerMoved( blockChanged, chunkChanged );
+    }
+
     protected void onInit() {
         setLayout(new BorderLayout());
 
@@ -139,19 +151,19 @@ public class MainPanel extends JPanel {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_UP:
                         playerX++;
-                        firePlayerMoved();
+                        firePlayerMoved(true, false);
                         break;
                     case KeyEvent.VK_DOWN:
                         playerX--;
-                        firePlayerMoved();
+                        firePlayerMoved(true, false);
                         break;
                     case KeyEvent.VK_LEFT:
                         playerZ++;
-                        firePlayerMoved();
+                        firePlayerMoved(true, false);
                         break;
                     case KeyEvent.VK_RIGHT:
                         playerZ--;
-                        firePlayerMoved();
+                        firePlayerMoved(true, false);
                         break;
                 }
             }
@@ -206,14 +218,14 @@ public class MainPanel extends JPanel {
         eventBus.fireEvent(new TargetServerChanged("localhost"));
     }
 
-    protected void firePlayerMoved() {
-        eventBus.fireEvent( new PlayerMoved(playerX, playerY, playerZ, yaw, pitch, zShift));
+    protected void firePlayerMoved(boolean blockChanged, boolean chunkChanged ) {
+        eventBus.fireEvent( new PlayerMoved(playerX, playerY, playerZ, yaw, pitch, zShift, blockChanged, chunkChanged));
     }
 
     public void setZShift( int zShift ) {
         this.zShift = zShift;
         zShiftLabel.setText("z shift: " + zShift);
-        firePlayerMoved();
+        firePlayerMoved(true, false);
     }
 
     private JToolBar buildImageToolBar() {

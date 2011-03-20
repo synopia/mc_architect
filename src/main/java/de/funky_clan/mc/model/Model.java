@@ -14,12 +14,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
+import static de.funky_clan.mc.model.Chunk.getChunkId;
+
 /**
  * @author synopia
  */
 public class Model {
     private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
-    private HashMap<Integer, HashMap<Integer, Chunk>> chunks = new HashMap<Integer, HashMap<Integer, Chunk>>();
+    private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
     private final Logger log = LoggerFactory.getLogger(Model.class);
     private EventBus eventBus;
 
@@ -99,28 +101,17 @@ public class Model {
         }
     }
 
-    private void removeChunk( int chunkX, int chunkZ ) {
-        HashMap<Integer, Chunk> zChunks;
-        if(chunks.containsKey(chunkZ)) {
-            zChunks = chunks.get(chunkZ);
-            if( zChunks.containsKey(chunkX) ) {
-                zChunks.remove(chunkX);
-            }
+    private void removeChunk( int x, int y ) {
+        long id = getChunkId(x, y);
+
+        if(chunks.containsKey(id)) {
+            chunks.remove(id);
         }
     }
 
-    private Chunk getChunk(int chunkX, int chunkZ) {
-        HashMap<Integer, Chunk> zChunks;
-        if(chunks.containsKey(chunkZ)) {
-            zChunks = chunks.get(chunkZ);
-        } else {
-            return null;
-        }
-        if( zChunks.containsKey(chunkX) ) {
-            return zChunks.get(chunkX);
-        } else {
-            return null;
-        }
+    private Chunk getChunk(int x, int y) {
+        long id = getChunkId(x, y);
+        return chunks.get(id);
     }
 
     public Chunk getOrCreateChunk(Position pos) {
@@ -132,22 +123,15 @@ public class Model {
         return getOrCreateChunk(chunkX, chunkZ);
     }
 
-    public Chunk getOrCreateChunk(int chunkX, int chunkZ) {
+    public Chunk getOrCreateChunk(int x, int y) {
         Chunk chunk;
-        HashMap<Integer, Chunk> zChunks;
+        long id = getChunkId(x, y);
 
-        if( chunks.containsKey(chunkZ) ) {
-            zChunks = chunks.get(chunkZ);
+        if( chunks.containsKey(id) ) {
+            chunk = chunks.get(id);
         } else {
-            zChunks = new HashMap<Integer, Chunk>();
-            chunks.put(chunkZ, zChunks);
-        }
-
-        if( zChunks.containsKey(chunkX) ) {
-            chunk = zChunks.get(chunkX);
-        } else {
-            chunk = new Chunk( chunkX<<4, 0, chunkZ<<4, 1<<4, 1<<7, 1<<4 );
-            zChunks.put(chunkX, chunk);
+            chunk = new Chunk( x<<4, 0, y<<4, 1<<4, 1<<7, 1<<4 );
+            chunks.put(id, chunk);
         }
 
         return chunk;

@@ -10,6 +10,7 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.Initialize;
 import de.funky_clan.mc.model.OreDetector;
+import de.funky_clan.mc.model.OreManager;
 import de.funky_clan.mc.ui.MainPanel;
 
 import javax.swing.*;
@@ -29,6 +30,8 @@ public class Main extends JFrame {
 //    RegionFileService regionFileService;
     @Inject
     OreDetector oreDetector;
+    @Inject
+    OreManager oreManager;
 
     public Main() {
     }

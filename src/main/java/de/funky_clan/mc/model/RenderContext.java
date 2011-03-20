@@ -61,12 +61,12 @@ public class RenderContext {
     }
 
     public boolean contains( double worldX, double worldY, double worldZ ) {
-        double x1 = Math.min( windowStart.getWorldX(), windowEnd.getWorldX() );
-        double y1 = Math.min( windowStart.getWorldY(), windowEnd.getWorldY() );
-        double z1 = Math.min( windowStart.getWorldZ(), windowEnd.getWorldZ() );
-        double x2 = Math.max( windowStart.getWorldX(), windowEnd.getWorldX() );
-        double y2 = Math.max( windowStart.getWorldY(), windowEnd.getWorldY() );
-        double z2 = Math.max( windowStart.getWorldZ(), windowEnd.getWorldZ() );
+        double x1 = windowStart.getWorldX();
+        double y1 = windowStart.getWorldY();
+        double z1 = windowStart.getWorldZ();
+        double x2 = windowEnd.getWorldX();
+        double y2 = windowEnd.getWorldY();
+        double z2 = windowEnd.getWorldZ();
 
         return x1<=worldX && y1<=worldY && z1<=worldZ && x2>=worldX && y2>worldY && z2>worldY;
     }

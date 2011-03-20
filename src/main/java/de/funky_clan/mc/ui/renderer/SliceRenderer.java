@@ -51,10 +51,8 @@ public class SliceRenderer implements Renderer<Slice> {
                         drawBlock(c, color, darkenFactor, alphaFactor, position);
                         alphaFactor *= (255.-color.getAlpha())/255.;
                     }
-                    darkenFactor = 1-(slice.getSlice()-currentSlice)/10.;
-                    alphaFactor =  1-(slice.getSlice()-currentSlice)/10.;
-
                     currentSlice--;
+                    darkenFactor *= 0.95;
                 } while( slice.getSlice()-currentSlice<20 );
 
 /*                if( blueprint==1 ) {
@@ -75,7 +73,7 @@ public class SliceRenderer implements Renderer<Slice> {
     protected void drawBlock( RenderContext c, Color color, double darken, double alpha, Position position ) {
         Graphics2D g  = c.getGraphics();
 
-        Color col = new Color(Math.max(0,(int)(darken*color.getRed())), Math.max(0,(int)(darken*color.getGreen())), Math.max(0,(int)(darken*color.getBlue())), Math.max(0, (int)(alpha * color.getAlpha())) );
+        Color col = new Color((int)(darken*color.getRed()), (int)(darken*color.getGreen()), (int)(darken*color.getBlue()), (int)(alpha * color.getAlpha()) );
         g.setColor(col);
         int x = position.getScreenX();
         int y = position.getScreenY();

@@ -64,7 +64,7 @@ public class OreDetector {
                             }
                         }
                     }
-                    eventBus.fireEvent(new OreFound(ores));
+                    eventBus.fireEvent(new OreFound(chunk.getId(), ores));
                 } else {
                     throw new RuntimeException(sizeX+", "+sizeY+", "+sizeZ);
                 }

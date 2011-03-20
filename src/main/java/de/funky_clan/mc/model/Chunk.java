@@ -18,11 +18,12 @@ public final class Chunk {
     private final int startY;
     private final int startZ;
 
+    private final long id;
     private Logger logger = LoggerFactory.getLogger(Chunk.class);
 
     public Chunk(final int startX, final int startY, final int startZ, final int sizeX, final int sizeY, final int sizeZ) {
-        logger.info("Creating chunk "+startX+", "+startY+", "+startZ);
-
+        id = getChunkId(startX>>4, startZ>>4);
+        logger.info("Creating chunk "+id);
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
@@ -31,6 +32,17 @@ public final class Chunk {
         this.sizeZ = sizeZ;
 
         map = new byte[CHUNK_ARRAY_SIZE];
+    }
+
+    public static long getChunkId(int x, int y) {
+        return ((long)x<<32) | y;
+    }
+    public static long getChunkId(double x, double y) {
+        return getChunkId( (int)x>>4, (int)y>>4 );
+    }
+
+    public long getId() {
+        return id;
     }
 
     public final int getStartX() {
