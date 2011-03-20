@@ -53,7 +53,7 @@ public class Graphics {
 
     public void setPixel( int x, int y, int slice, int value ) {
         position.setSlice(x,y,slice);
-        this.slice.setPixel(position, PixelType.BLUEPRINT, value);
+        this.slice.setPixel(position, value);
     }
 
     public void hLine( int x, int y, int width, int level, int type ) {

@@ -33,7 +33,7 @@ public class Model {
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
-                setPixel(event.getX(), event.getY(), event.getZ(), PixelType.BLOCK_ID, event.getType() );
+                setPixel(event.getX(), event.getY(), event.getZ(), event.getType() );
             }
         });
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
@@ -60,13 +60,7 @@ public class Model {
     public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data, BlockUpdateCallable callable ) {
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getOrCreateChunk(sx, sy, sz);
-            int len = 16*128*16;
-            for (int i = 0; i < len; i++) {
-                int x = sx + (i>>11);
-                int y = i & 0x7f;
-                int z = sz + ((i&0x780)>>7);
-                callable.updateBlock(chunk, x, y, z, data[i]);
-            }
+            chunk.updateFullBlock( data );
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
@@ -84,20 +78,25 @@ public class Model {
         interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
             @Override
             public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
-                chunk.setPixelGlobal(x,y,z, PixelType.BLOCK_ID, value );
+                chunk.setPixel(x, y, z, value);
             }
         });
 
     }
 
-    public void setPixel( int x, int y, int z, PixelType type, int value ) {
-        getOrCreateChunk(x,y,z).setPixelGlobal(x,y,z, type, value);
+    public void setPixel( int x, int y, int z, int value ) {
+        getOrCreateChunk(x,y,z).setPixel(x, y, z, value);
     }
-    public int getPixel( int x, int y, int z, PixelType type ) {
+    public int getPixel( int x, int y, int z) {
         int chunkX = x>>4;
         int chunkZ = z>>4;
 
-        return getChunk(chunkX, chunkZ).getPixelGlobal(x,y,z, type);
+        Chunk chunk = getChunk(chunkX, chunkZ);
+        if( chunk!=null ) {
+            return chunk.getPixel(x, y, z);
+        } else {
+            return -1;
+        }
     }
 
     private void removeChunk( int chunkX, int chunkZ ) {
@@ -115,12 +114,12 @@ public class Model {
         if(chunks.containsKey(chunkZ)) {
             zChunks = chunks.get(chunkZ);
         } else {
-            return Chunk.EMPTY;
+            return null;
         }
         if( zChunks.containsKey(chunkX) ) {
             return zChunks.get(chunkX);
         } else {
-            return Chunk.EMPTY;
+            return null;
         }
     }
 

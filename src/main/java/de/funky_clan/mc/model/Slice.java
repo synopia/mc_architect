@@ -22,11 +22,11 @@ public class Slice {
         this.slice = slice;
     }
 
-    public void setPixel( Position pos, PixelType type, int value ) {
-        model.setPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type, value );
+    public void setPixel( Position pos, int value ) {
+        model.setPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), value );
     }
-    public int getPixel( Position pos, PixelType type ) {
-        return model.getPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type);
+    public int getPixel( Position pos) {
+        return model.getPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ());
     }
 
     public SliceType getType() {

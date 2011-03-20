@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * @author synopia
  */
-public class Position {
+public final class Position {
     private int screenX;
     private int screenY;
     private double sliceX;
@@ -37,7 +37,7 @@ public class Position {
         setWorld(worldX, worldY, worldZ);
     }
 
-    public void setWorld(double worldX, double worldY, double worldZ) {
+    public final void setWorld(double worldX, double worldY, double worldZ) {
         this.worldX = worldX;
         this.worldY = worldY;
         this.worldZ = worldZ;
@@ -52,7 +52,7 @@ public class Position {
         }
     }
 
-    public void setSlice(double sliceX, double sliceY, int sliceNo) {
+    public final void setSlice(double sliceX, double sliceY, int sliceNo) {
         this.sliceX = sliceX;
         this.sliceY = sliceY;
         this.sliceNo = sliceNo;
@@ -66,11 +66,11 @@ public class Position {
         }
     }
 
-    public void setScreen( int screenX, int screenY) {
+    public final void setScreen( int screenX, int screenY) {
         setScreen(screenX, screenY, sliceNo);
     }
 
-    public void setScreen( int screenX, int screenY, int sliceNo ) {
+    public final void setScreen( int screenX, int screenY, int sliceNo ) {
         this.screenX = screenX;
         this.screenY = screenY;
         this.sliceNo = sliceNo;
@@ -85,51 +85,51 @@ public class Position {
         }
     }
 
-    public int getScreenX() {
+    public final int getScreenX() {
         return screenX;
     }
 
-    public int getScreenY() {
+    public final int getScreenY() {
         return screenY;
     }
 
-    public double getSliceX() {
+    public final double getSliceX() {
         return sliceX;
     }
 
-    public double getSliceY() {
+    public final double getSliceY() {
         return sliceY;
     }
 
-    public int getSliceNo() {
+    public final int getSliceNo() {
         return sliceNo;
     }
 
-    public double getWorldX() {
+    public final double getWorldX() {
         return worldX;
     }
 
-    public double getWorldY() {
+    public final double getWorldY() {
         return worldY;
     }
 
-    public double getWorldZ() {
+    public final double getWorldZ() {
         return worldZ;
     }
 
-    public int getBlockX() {
+    public final int getBlockX() {
         return (int) worldX;
     }
 
-    public int getBlockY() {
+    public final int getBlockY() {
         return (int) worldY;
     }
 
-    public int getBlockZ() {
+    public final int getBlockZ() {
         return (int) worldZ;
     }
 
-    public void sliceToWorld( SliceType type ) {
+    public final void sliceToWorld( SliceType type ) {
         switch (type) {
             case X:
                 worldX = sliceNo;
@@ -149,16 +149,16 @@ public class Position {
         }
     }
 
-    public double distToSlice() {
+    public final double distToSlice() {
         return sliceNo - slice.getSlice();
     }
 
-    public Color fadeOut( Color color ) {
+    public final Color fadeOut( Color color ) {
         double damp = Math.max(0, Math.min(1, (1 / Math.abs(distToSlice()))));
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(255*damp));
     }
 
-    public void worldToSlice( SliceType type ) {
+    public final void worldToSlice( SliceType type ) {
         switch (type) {
             case X:
                 sliceX = worldZ;
@@ -178,15 +178,15 @@ public class Position {
         }
     }
 
-    public void setRenderContext(RenderContext rc) {
+    public final void setRenderContext(RenderContext rc) {
         this.rc = rc;
     }
 
-    public void setSlice(Slice slice) {
+    public final void setSlice(Slice slice) {
         this.slice = slice;
     }
 
-    public void setSliceNo(int currentSlice) {
+    public final void setSliceNo(int currentSlice) {
         this.sliceNo = currentSlice;
     }
 

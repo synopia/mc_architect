@@ -180,8 +180,8 @@ public class MainPanel extends JPanel {
         rootSplitPane.setLeftComponent( new JScrollPane( topDown ));
         rootSplitPane.setRightComponent( southSplitPane );
         southSplitPane.setResizeWeight( 0.5d );
-        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
-        southSplitPane.setRightComponent( new JScrollPane( sideY ));
+//        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
+//        southSplitPane.setRightComponent( new JScrollPane( sideY ));
 
         JPanel info     = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
@@ -265,10 +265,6 @@ public class MainPanel extends JPanel {
 
         info.add(playerInfo.getTargetConnection());
         info.addSeparator();
-        info.add(playerInfo.getDirection());
-        info.addSeparator();
-        info.add(playerInfo.getPosition());
-        info.addSeparator();
 
         return info;
     }
@@ -304,6 +300,11 @@ public class MainPanel extends JPanel {
 
         benchmarkText = new JLabel("CPU/GFX: 0/0");
         info.add(benchmarkText);
+        info.addSeparator();
+
+        info.add(playerInfo.getDirection());
+        info.addSeparator();
+        info.add(playerInfo.getPosition());
         info.addSeparator();
         return info;
     }

@@ -33,12 +33,42 @@ public class RenderContext {
     private double windowPositionY;
 
     private Position position;
+    private Position windowStart;
+    private Position windowEnd;
 
     public RenderContext(Slice slice) {
         this.slice = slice;
         position = new Position();
         position.setSlice( slice );
         position.setRenderContext( this );
+
+        windowStart = new Position();
+        windowStart.setSlice( slice );
+        windowStart.setRenderContext( this );
+        windowEnd = new Position();
+        windowEnd.setSlice(slice);
+        windowEnd.setRenderContext( this );
+    }
+
+    public Position getWindowStart() {
+        windowStart.setSlice(windowPositionX, windowPositionY, slice.getSlice()-20);
+        return windowStart;
+    }
+
+    public Position getWindowEnd() {
+        windowEnd.setSlice(windowPositionX+windowSizeX, windowPositionY+windowSizeY, slice.getSlice()+20);
+        return windowEnd;
+    }
+
+    public boolean contains( double worldX, double worldY, double worldZ ) {
+        double x1 = Math.min( windowStart.getWorldX(), windowEnd.getWorldX() );
+        double y1 = Math.min( windowStart.getWorldY(), windowEnd.getWorldY() );
+        double z1 = Math.min( windowStart.getWorldZ(), windowEnd.getWorldZ() );
+        double x2 = Math.max( windowStart.getWorldX(), windowEnd.getWorldX() );
+        double y2 = Math.max( windowStart.getWorldY(), windowEnd.getWorldY() );
+        double z2 = Math.max( windowStart.getWorldZ(), windowEnd.getWorldZ() );
+
+        return x1<=worldX && y1<=worldY && z1<=worldZ && x2>=worldX && y2>worldY && z2>worldY;
     }
 
     public void setGraphics( Graphics2D g ) {

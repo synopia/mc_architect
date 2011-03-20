@@ -3,42 +3,24 @@ package de.funky_clan.mc.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 /**
  * @author synopia
  */
-public class Chunk {
-    private int                               map[][][];
-    private int sizeX;
-    private int sizeY;
-    private int sizeZ;
-    private int startX;
-    private int startY;
-    private int startZ;
+public final class Chunk {
+    private static final int CHUNK_ARRAY_SIZE = 16 * 16 * 128;
+    private final byte map[];
+    private final int sizeX;
+    private final int sizeY;
+    private final int sizeZ;
+    private final int startX;
+    private final int startY;
+    private final int startZ;
 
     private Logger logger = LoggerFactory.getLogger(Chunk.class);
 
-    public static Chunk EMPTY = new Chunk(0,0,0, 1<<4, 1<<7, 1<<4) {
-
-        @Override
-        public void setPixelLocal(int x, int y, int z, PixelType type, int value) {
-        }
-
-        @Override
-        public int getPixelLocal(int x, int y, int z, PixelType type) {
-            return -1;
-        }
-
-        @Override
-        public void setPixelGlobal(int x, int y, int z, PixelType type, int value) {
-        }
-
-        @Override
-        public int getPixelGlobal(int x, int y, int z, PixelType type) {
-            return -1;
-        }
-    };
-
-    public Chunk(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
+    public Chunk(final int startX, final int startY, final int startZ, final int sizeX, final int sizeY, final int sizeZ) {
         logger.info("Creating chunk "+startX+", "+startY+", "+startZ);
 
         this.startX = startX;
@@ -48,67 +30,44 @@ public class Chunk {
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
 
-        map        = new int[sizeZ][][];
-
-        for( int z = 0; z < sizeZ; z++ ) {
-            map[z] = new int[sizeY][];
-
-            for( int y = 0; y < sizeY; y++ ) {
-                map[z][y] = new int[sizeX];
-            }
-        }
+        map = new byte[CHUNK_ARRAY_SIZE];
     }
 
-    public int getStartX() {
+    public final int getStartX() {
         return startX;
     }
 
-    public int getStartY() {
+    public final int getStartY() {
         return startY;
     }
 
-    public int getStartZ() {
+    public final int getStartZ() {
         return startZ;
     }
 
-    public int getSizeX() {
+    public final int getSizeX() {
         return sizeX;
     }
 
-    public int getSizeY() {
+    public final int getSizeY() {
         return sizeY;
     }
 
-    public int getSizeZ() {
+    public final int getSizeZ() {
         return sizeZ;
     }
 
-    public boolean isInRange( int x, int y, int z ) {
-        return (x >= 0) && (y >= 0) && (z >= 0) && (x < sizeX) && (y < sizeY) && (z < sizeZ);
+    public final void setPixel(int x, int y, int z, int value) {
+        int index = (y-startY) + ((z-startZ)*sizeY) + ((x-startX)*sizeY*sizeZ);
+        map[index] = (byte) value;
     }
 
-    public void setPixelLocal(int x, int y, int z, PixelType type, int value) {
-        if( isInRange( x, y, z )) {
-            map[z][y][x] = type.set(map[z][y][x], value);
-        }
+    public final int getPixel(int x, int y, int z) {
+        int index = (y-startY) + ((z-startZ)*sizeY) + ((x-startX)*sizeY*sizeZ);
+        return map[index];
     }
 
-    public int getPixelLocal(int x, int y, int z, PixelType type) {
-        int result = -1;
-
-        if( isInRange( x, y, z )) {
-            result = type.get(map[z][y][x]);
-        }
-
-        return result;
+    public void updateFullBlock( byte[] data) {
+        System.arraycopy(data, 0, map, 0, CHUNK_ARRAY_SIZE);
     }
-
-    public void setPixelGlobal(int x, int y, int z, PixelType type, int value) {
-        setPixelLocal( x-startX, y-startY, z-startZ, type, value );
-    }
-
-    public int getPixelGlobal(int x, int y, int z, PixelType type) {
-        return getPixelLocal(x-startX, y-startY, z-startZ, type);
-    }
-
 }
