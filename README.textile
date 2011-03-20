@@ -12,29 +12,22 @@ h1. Download and Installation
  * "mc_architect.jar Runnable jar file":http://mc.funky-clan.de/mc_architect.jar (~ 1.6mb)
  * "Dependency file for mc_architect.jar":http://mc.funky-clan.de/jruby-complete-1.5.2.jar (~ 11mb)
 
- Copy minecraft.jar into your $HOME/AppData/Roaming/.minecraft/bin directory. Start Minecraft as usual.
-
  To start Minecraft Architect, copy mc_architect.jar and the jruby.jar into any directory:
 <pre><code>
-  > java -jar mc_architect.jar <optional ruby script filename to load>
+  > java -jar mc_architect.jar
 </code></pre>
+
+ In the upper textbox type the name of the multiplayer server.
+
+ Then start Minecraft and connect to a multiplayer game using <pre>localhost:12345</pre>.
 
 h1. Scripting
 
 For simplicity there is no 3d rasterization unit, but you are forced to "program" your structure using a simple ruby script.
 
 <pre><code>
-  @builder.create 187, 155, 2
-  @builder.ellipse 0, 93, 77, 93, 77
-  @builder.image 0, "floor.png",
+  java_import "de.funky_clan.mc.config.DataValues"
 
-  @builder.ellipse 1, 93, 77, 92, 76
-  @builder.image 1, "level1.png"
-</code></pre>
-
-Of course you may use the full power of ruby:
-
-<pre><code>
   profile = <<EOP
     XXXX
     X  X
@@ -45,7 +38,7 @@ Of course you may use the full power of ruby:
   profile.split("\n").each_with_index do |line, slice|
     line.chars.each_with_index do |char, index|
       next if char==" "
-      @builder.ellipse slice, 10, 10, 20-index, 15-index
+      @slice_z.ellipse 10, 10, slice, 20-index, 15-index, DataValues::STATIONARYLAVA.id
     end
   end
 </code></pre>
@@ -55,9 +48,14 @@ Which will generate an elliptic ring with a squarish profile.
 h1. Development environment
 
 <pre><code>
-  $HOME/.minecraft/bin> mvn install:install-file -Dfile=minecraft.jar -DgroupId=net.minecraft -DartifactId=minecraft-client -Dversion=1.2.02 -Dpackaging=jar
-  $HOME/.minecraft/bin> mvn install:install-file -Dfile=lwjgl.jar -DgroupId=net.minecraft -DartifactId=lwjgl -Dversion=1.2.02 -Dpackaging=jar
+  $HOME/.minecraft/bin> mvn install:install-file -Dfile=minecraft.jar -DgroupId=net.minecraft -DartifactId=minecraft-client -Dversion=1.3.01 -Dpackaging=jar
 
   mc_architect> mvn install
   mc_architect_patch> mvn package
 </code></pre>
+
+h1. History
+
+h2. 0.2 - SNAPSHOT
+
+* numerous fixes and features ;-)

@@ -4,9 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +45,26 @@ public class Protocol9 extends Protocol {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+    }
+
+    public Protocol9() {
+        try {
+            URLClassLoader cl = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            Class urlClass = URLClassLoader.class;
+            Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+            method.setAccessible(true);
+            File minecraftJar = new File(System.getenv("APPDATA")+"/.minecraft/bin/minecraft.jar");
+            method.invoke(cl, minecraftJar.toURI().toURL());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (MalformedURLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
     @Override
