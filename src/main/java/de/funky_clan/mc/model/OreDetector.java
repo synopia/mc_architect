@@ -77,6 +77,7 @@ public class OreDetector {
                 data == DataValues.COALORE.getId() ||
                 data == DataValues.DIAMONDORE.getId() ||
                 data == DataValues.GOLDORE.getId() ||
+                data == DataValues.LAPIZLAZULIORE.getId() ||
                 data == DataValues.REDSTONEORE.getId();
     }
 

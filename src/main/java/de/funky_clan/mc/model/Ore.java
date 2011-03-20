@@ -12,7 +12,8 @@ public class Ore {
         GOLD(DataValues.GOLDORE.getId(), "Gold"),
         IRON(DataValues.IRONORE.getId(), "Iron"),
         DIAMOND(DataValues.DIAMONDORE.getId(), "Diamond"),
-        REDSTONE(DataValues.REDSTONEORE.getId(), "Redstone")
+        REDSTONE(DataValues.REDSTONEORE.getId(), "Redstone"),
+        LAPIZLAZULI(DataValues.LAPIZLAZULIORE.getId(), "Lapizlazuli")
         ;
 
         private int blockId;
