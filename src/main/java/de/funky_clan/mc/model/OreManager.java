@@ -1,12 +1,10 @@
 package de.funky_clan.mc.model;
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.OreDisplayUpdate;
-import de.funky_clan.mc.events.OreFound;
-import de.funky_clan.mc.events.PlayerMoved;
-import de.funky_clan.mc.events.UnloadChunk;
+import de.funky_clan.mc.events.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +17,7 @@ public class OreManager {
     private EventBus eventBus;
     private HashMap<Long, List<Ore>> ores = new HashMap<Long, List<Ore>>();
     private List<Long> chunksForPlayer = new ArrayList<Long>();
+    private boolean[] oreTypes = new boolean[Ore.OreType.values().length];
 
     @Inject
     public OreManager(EventBus eventBus) {
@@ -51,6 +50,13 @@ public class OreManager {
                 }
             }
         });
+        eventBus.registerCallback(OreFilterChanged.class, new EventHandler<OreFilterChanged>() {
+            @Override
+            public void handleEvent(OreFilterChanged event) {
+                oreTypes = event.getFilter();
+                sendPlayerList();
+            }
+        });
     }
 
     protected void buildPlayerList(int x, int z) {
@@ -69,11 +75,18 @@ public class OreManager {
         List<Ore> all = new ArrayList<Ore>();
         for (Long id : chunksForPlayer) {
             if( ores.containsKey(id) ) {
-                all.addAll( ores.get(id) );
+                addFiltered(all, ores.get(id) );
             }
         }
+        eventBus.fireEvent( new OreDisplayUpdate(all) );
+    }
 
-        eventBus.fireEvent( new OreDisplayUpdate(all));
+    protected void addFiltered( List<Ore> target, List<Ore> source) {
+        for (Ore ore : source) {
+            if( ore.matches(oreTypes) ) {
+                target.add(ore);
+            }
+        }
     }
 
     protected List<Ore> getOre( long id ) {
@@ -84,4 +97,6 @@ public class OreManager {
         ores.put( id, list );
         return list;
     }
+
+
 }

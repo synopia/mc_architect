@@ -25,8 +25,8 @@ public class OreRenderer extends BaseRenderer<List<Ore>>{
                     c.contains(ore.getEndX(), ore.getStartY(), ore.getEndZ() ) ) {
                 renderBox(c,
                         ore.getStartX(), ore.getStartY(), ore.getStartZ(),
-                        ore.getEndX()+1, ore.getEndY()+1, ore.getEndZ()+1,
-                        colors.getSelectedBlockColor(), true, false );
+                        ore.getEndX(), ore.getEndY(), ore.getEndZ(),
+                        colors.getSelectedBlockColor(), true, false, true );
             }
         }
     }

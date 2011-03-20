@@ -47,6 +47,7 @@ public class MainPanel extends JPanel {
     @Inject ColorsPanel       colorsPanel;
     @Inject
     ScriptsPanel scriptsPanel;
+    @Inject OrePanel orePanel;
     @Inject PlayerInfoToolbar playerInfoToolbar;
     @Inject StatisticsToolbar statisticsToolbar;
     @Inject ConnectionToolbar connectionToolbar;
@@ -163,6 +164,7 @@ public class MainPanel extends JPanel {
         rootSplitPane.setRightComponent(tabs);
         tabs.addTab("Colors", colorsPanel);
         tabs.addTab("Scripts", scriptsPanel);
+        tabs.addTab("Ore", orePanel);
 
         JPanel info     = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.X_AXIS));

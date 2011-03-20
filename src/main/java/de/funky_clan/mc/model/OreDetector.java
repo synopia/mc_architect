@@ -50,14 +50,14 @@ public class OreDetector {
                         int y = i & 0x7f;
                         int z = ((i&0x780)>>7);
 
-                        if(DataValues.IRONORE.getId()==data[i] ) {
+                        if( isOre( data[i] ) ) {
                             if( !closedMap[i] ) {
                                 Ore ore = findOre(startX + x, startY + y, startZ + z);
                                 if( ore==null ) {
                                     ore = new Ore(startX + x, startY + y, startZ + z);
                                 }
 
-                                ore = followOre(x,y,z,DataValues.IRONORE.getId(), ore);
+                                ore = followOre(x,y,z, ore);
                                 if( ore!=null && !ores.contains(ore) ) {
                                     ores.add(ore);
                                 }
@@ -70,7 +70,14 @@ public class OreDetector {
                 }
             }
         });
+    }
 
+    public boolean isOre( int data ) {
+        return data == DataValues.IRONORE.getId() ||
+                data == DataValues.COALORE.getId() ||
+                data == DataValues.DIAMONDORE.getId() ||
+                data == DataValues.GOLDORE.getId() ||
+                data == DataValues.REDSTONEORE.getId();
     }
 
     public Ore findOre( int x, int y, int z) {
@@ -82,19 +89,19 @@ public class OreDetector {
         return null;
     }
 
-    protected Ore followOre( int x, int y, int z, int value, Ore ore ) {
+    protected Ore followOre( int x, int y, int z, Ore ore ) {
         Ore result = ore;
         Ore otherChunk = null;
         if( x<0 || y<0 || z<0 || x>15 || y>127 || z>15 ) {
             int pixel = model.getPixel(startX + x, startY + y, startZ + z);
-            if( pixel==value ) {
+            if( isOre(pixel) ) {
                 otherChunk = findOre( startX + x, startY + y, startZ + z );
                 if( otherChunk !=null ) {
                     result = otherChunk ;
                     result.addOre( ore );
 
                 } else {
-                    ore.addOre(startX + x, startY + y, startZ + z);
+                    ore.addOre(startX + x, startY + y, startZ + z, pixel);
                     result = ore;
                 }
             }
@@ -105,18 +112,18 @@ public class OreDetector {
             return ore;
         }
         closedMap[index] = true;
-        if( data[index]!=value ) {
-            return ore;
+        if( isOre(data[index]) ) {
+            result.addOre(startX + x, startY + y, startZ + z, data[index]);
         } else {
-            result.addOre(startX + x, startY + y, startZ + z);
+            return ore;
         }
 
-        result = followOre( x+1, y, z, value, result );
-        result = followOre( x, y+1, z, value, result );
-        result = followOre( x, y, z+1, value, result );
-        result = followOre( x-1, y, z, value, result );
-        result = followOre( x, y-1, z, value, result );
-        result = followOre( x, y, z-1, value, result );
+        result = followOre( x+1, y, z, result );
+        result = followOre( x, y+1, z, result );
+        result = followOre( x, y, z+1, result );
+        result = followOre( x-1, y, z, result );
+        result = followOre( x, y-1, z, result );
+        result = followOre( x, y, z-1, result );
 
         return result;
     }

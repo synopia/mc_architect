@@ -14,7 +14,7 @@ public abstract class BaseRenderer<T> implements Renderer<T>{
     protected void renderBox( RenderContext c,
                               double worldStartX, double worldStartY, double worldStartZ,
                               double worldEndX, double worldEndY, double worldEndZ,
-                              Color color, boolean fadeOut, boolean centered ) {
+                              Color color, boolean fadeOut, boolean centered, boolean unitSize ) {
         Position position = c.getPosition();
 
         double sizeX = 0;
@@ -38,7 +38,10 @@ public abstract class BaseRenderer<T> implements Renderer<T>{
         int y = startY<endY ? startY : endY;
         int w = Math.abs( endX-startX );
         int h = Math.abs( endY-startY );
-
+        if( unitSize ) {
+            w+=c.screenUnitX(1);
+            h+=c.screenUnitY(1);
+        }
         if( fadeOut ) {
             c.getGraphics().setColor( position.fadeOut( color ) );
         } else {

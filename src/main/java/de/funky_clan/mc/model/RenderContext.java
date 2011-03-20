@@ -52,8 +52,14 @@ public class RenderContext {
     }
 
     public void updateWindowBox() {
-        windowStart.setSlice(windowPositionX, windowPositionY, slice.getSlice()-20);
-        windowEnd.setSlice(windowPositionX+windowSizeX, windowPositionY+windowSizeY, slice.getSlice()+20);
+        int minSlice = 0;
+        int maxSlice = 65;
+        if( slice.getType()!=SliceType.Z ) {
+            minSlice = slice.getSlice()-20;
+            maxSlice = slice.getSlice()+20;
+        }
+        windowStart.setSlice(windowPositionX, windowPositionY, minSlice);
+        windowEnd.setSlice(windowPositionX+windowSizeX, windowPositionY+windowSizeY, maxSlice);
         windowBox.set( windowStart.getWorldX(), windowStart.getWorldY(), windowStart.getWorldZ(), windowEnd.getWorldX(), windowEnd.getWorldY(), windowEnd.getWorldZ() );
     }
 

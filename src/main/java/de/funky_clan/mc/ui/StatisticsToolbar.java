@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ChunkUpdate;
+import de.funky_clan.mc.events.OreDisplayUpdate;
 import de.funky_clan.mc.events.UnloadChunk;
 import de.funky_clan.mc.util.Benchmark;
 
@@ -21,6 +22,7 @@ public class StatisticsToolbar extends JToolBar {
     private int              chunksUnloaded;
     private JLabel           memoryText;
     private JLabel           benchmarkText;
+    private JLabel           oreText;
     @Inject
     private Benchmark benchmark;
     private EventBus eventBus;
@@ -44,6 +46,12 @@ public class StatisticsToolbar extends JToolBar {
                 chunksLoaded--;
             }
         });
+        eventBus.registerCallback(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
+            @Override
+            public void handleEvent(OreDisplayUpdate event) {
+                oreText.setText("Ores: "+event.getOre().size());
+            }
+        });
         new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -63,6 +71,10 @@ public class StatisticsToolbar extends JToolBar {
 
         benchmarkText = new JLabel("CPU/GFX: 0/0");
         add(benchmarkText);
+        addSeparator();
+
+        oreText = new JLabel("Ores: 0");
+        add(oreText);
         addSeparator();
 
         addSeparator();
