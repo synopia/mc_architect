@@ -20,6 +20,10 @@ public class SelectedBlock {
     private double positionX;
     private double positionY;
     private double positionZ;
+    private double height; // in z
+    private double sizeX;
+    private double sizeY;
+
     private Type type = Type.ON_GRID;
     private final Logger log = LoggerFactory.getLogger(SelectedBlock.class);
 
@@ -41,6 +45,30 @@ public class SelectedBlock {
 
     public void setThickness( int thickness ) {
         this.thickness = thickness;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getSizeX() {
+        return sizeX;
+    }
+
+    public void setSizeX(double sizeX) {
+        this.sizeX = sizeX;
+    }
+
+    public double getSizeY() {
+        return sizeY;
+    }
+
+    public void setSizeY(double sizeY) {
+        this.sizeY = sizeY;
     }
 
     public void setPosition(double x, double y, double z) {

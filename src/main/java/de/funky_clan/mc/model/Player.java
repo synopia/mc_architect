@@ -39,15 +39,19 @@ public class Player extends SelectedBlock {
         this.direction = direction+90;
     }
 
-
-
-/*
-    todo verify
-    public void repaint( JComponent component, RenderContext c ) {
-        component.repaint(
-                c.modelToScreenX(getX() - 15), c.modelToScreenX(getY() - 15),
-                c.screenUnitX(getX()-15, getX()+15), c.screenUnitY(getY()-15, getY()+15)
-        );
+    @Override
+    public double getHeight() {
+        return 1.7;
     }
-*/
+
+    @Override
+    public double getSizeX() {
+        return 0.7;
+    }
+
+    @Override
+    public double getSizeY() {
+        return 0.7;
+    }
+
 }
