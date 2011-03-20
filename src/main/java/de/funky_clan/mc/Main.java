@@ -9,6 +9,7 @@ import de.funky_clan.mc.config.ArchitectModule;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.Initialize;
+import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.model.OreDetector;
 import de.funky_clan.mc.model.OreManager;
 import de.funky_clan.mc.ui.MainPanel;
@@ -37,7 +38,8 @@ public class Main extends JFrame {
     }
 
     public void init() {
-        setTitle("Minecraft Architect for v" + Main.class.getPackage().getImplementationVersion());
+        String version = Main.class.getPackage().getImplementationVersion();
+        setTitle("Minecraft Architect for v" + version);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(mainPanel);
         eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
@@ -47,7 +49,11 @@ public class Main extends JFrame {
             }
         });
         eventBus.fireEvent( new Initialize() );
-
+        if( version==null ) {
+            eventBus.fireEvent(new TargetServerChanged("localhost"));
+        } else {
+            eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
+        }
     }
 
     public void start() {

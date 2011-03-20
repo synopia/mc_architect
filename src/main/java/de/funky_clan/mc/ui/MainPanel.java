@@ -32,7 +32,7 @@ public class MainPanel extends JPanel {
     @Inject
     private Configuration    configuration;
     @Inject
-    private PlayerInfoLabels playerInfo;
+    private PlayerInfoToolbar playerInfo;
     private double           playerX;
     private double           playerY;
     private double           playerZ;
@@ -47,15 +47,12 @@ public class MainPanel extends JPanel {
     private int              zShift;
     private JLabel           zShiftLabel;
     private EventBus         eventBus;
-    private JLabel           chunksText;
-    private int              chunksLoaded;
-    private int              chunksUnloaded;
-    private JLabel           memoryText;
-    private JLabel           benchmarkText;
-    @Inject
-    private Benchmark benchmark;
     @Inject
     private ColorsPanel colorsPanel;
+
+    @Inject PlayerInfoToolbar playerInfoToolbar;
+    @Inject StatisticsToolbar statisticsToolbar;
+    @Inject ConnectionToolbar connectionToolbar;
 
     @Inject
     public MainPanel(final EventBus eventBus) {
@@ -66,19 +63,6 @@ public class MainPanel extends JPanel {
                 repaint();
             }
         });
-        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
-            @Override
-            public void handleEvent(ChunkUpdate event) {
-                chunksLoaded ++;
-            }
-        });
-        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
-            @Override
-            public void handleEvent(UnloadChunk event) {
-                chunksUnloaded ++;
-                chunksLoaded --;
-            }
-        });
 
         eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
@@ -87,17 +71,6 @@ public class MainPanel extends JPanel {
             }
         });
 
-        eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
-            @Override
-            public void handleEvent(ConnectionEstablished event) {
-            }
-        });
-
-        eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
-            @Override
-            public void handleEvent(ConnectionLost event) {
-            }
-        });
 
         eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
             @Override
@@ -113,12 +86,6 @@ public class MainPanel extends JPanel {
                 onInit();
             }
         });
-        new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateStats();
-            }
-        }).start();
     }
 
     private void updatePlayerPosition(PlayerPositionUpdate event) {
@@ -182,37 +149,37 @@ public class MainPanel extends JPanel {
         sideX.init();
         sideY.init();
 
-        JSplitPane rootSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
+        JSplitPane rootSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
+        JSplitPane sliceViewSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
         JSplitPane southSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
 
-        rootSplitPane.setResizeWeight( 0.66 );
-        rootSplitPane.setLeftComponent( new JScrollPane( topDown ));
-        rootSplitPane.setRightComponent( southSplitPane );
+        sliceViewSplitPane.setResizeWeight(0.66);
+        sliceViewSplitPane.setLeftComponent(new JScrollPane(topDown));
+        sliceViewSplitPane.setRightComponent(southSplitPane);
         southSplitPane.setResizeWeight( 0.5d );
         southSplitPane.setLeftComponent( new JScrollPane( sideX ));
         southSplitPane.setRightComponent( new JScrollPane( sideY ));
 
+        rootSplitPane.setResizeWeight(0.80);
+        rootSplitPane.setLeftComponent(sliceViewSplitPane);
+        JTabbedPane tabs = new JTabbedPane();
+        rootSplitPane.setRightComponent(tabs);
+        tabs.addTab("Colors", colorsPanel);
+
         JPanel info     = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        JToolBar bar1 = buildInfoToolBar1();
-        JToolBar bar2 = buildInfoToolBar2();
-        bar1.setAlignmentX(LEFT_ALIGNMENT);
-        bar2.setAlignmentX(LEFT_ALIGNMENT);
-        info.add(bar2);
-        info.add(bar1);
+        info.add( connectionToolbar);
+        info.add( statisticsToolbar );
+        info.add( playerInfoToolbar );
 
         JToolBar imageBar = buildImageToolBar();
 
         add( rootSplitPane, BorderLayout.CENTER );
         add( info, BorderLayout.NORTH );
         add( imageBar, BorderLayout.SOUTH );
-        add( colorsPanel, BorderLayout.EAST );
 
         mitmThread.setSourcePort(12345);
         mitmThread.start();
-
-//        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
-        eventBus.fireEvent(new TargetServerChanged("localhost"));
     }
 
     protected void firePlayerMoved(boolean blockChanged, boolean chunkChanged ) {
@@ -267,54 +234,5 @@ public class MainPanel extends JPanel {
         } );
 
         return imageBar;
-    }
-
-    private JToolBar buildInfoToolBar1() {
-        JToolBar info = new JToolBar();
-
-        info.add(playerInfo.getTargetConnection());
-        info.addSeparator();
-
-        return info;
-    }
-
-    protected void updateStats() {
-        chunksText.setText("Chunks: " + chunksLoaded + "/"+chunksUnloaded );
-        long max = Runtime.getRuntime().maxMemory();
-        long free = Runtime.getRuntime().freeMemory();
-        memoryText.setText("Mem: " + ((max-free)/1024/1024) + "/" + (max/1024/1024) );
-
-        HashMap<Object, Double> results = benchmark.getResults();
-        double eventBusTime = 0;
-        if( results.containsKey(eventBus) ) {
-            eventBusTime = results.get(eventBus);
-        }
-        double renderTime = 0;
-        if( results.containsKey(ZoomPanel.class) ) {
-            renderTime = results.get(ZoomPanel.class);
-        }
-
-        benchmarkText.setText(String.format("CPU/GFX: %.0f/%.0f", eventBusTime*100, renderTime*100));
-    }
-
-    private JToolBar buildInfoToolBar2() {
-        JToolBar info = new JToolBar();
-        chunksText = new JLabel("Chunks:");
-        info.add(chunksText);
-        info.addSeparator();
-
-        memoryText = new JLabel("Mem: 0/0");
-        info.add(memoryText);
-        info.addSeparator();
-
-        benchmarkText = new JLabel("CPU/GFX: 0/0");
-        info.add(benchmarkText);
-        info.addSeparator();
-
-        info.add(playerInfo.getDirection());
-        info.addSeparator();
-        info.add(playerInfo.getPosition());
-        info.addSeparator();
-        return info;
     }
 }

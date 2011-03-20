@@ -5,6 +5,8 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.events.ConnectionEstablished;
+import de.funky_clan.mc.events.ConnectionLost;
 import de.funky_clan.mc.events.PlayerMoved;
 import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.model.Model;
@@ -18,19 +20,20 @@ import java.awt.event.ActionListener;
 /**
  * @author synopia
  */
-public class PlayerInfoLabels {
+public class PlayerInfoToolbar extends JToolBar {
     private JLabel position;
     private JLabel direction;
     @Inject
     private Model  model;
     private EventBus eventBus;
-    private JTextField host;
 
     @Inject
-    public PlayerInfoLabels(final EventBus eventBus) {
+    public PlayerInfoToolbar(final EventBus eventBus) {
+        setAlignmentX(LEFT_ALIGNMENT);
         this.eventBus = eventBus;
-        direction     = new JLabel();
-        position      = new JLabel();
+
+        build();
+
 
         eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
             @Override
@@ -39,32 +42,17 @@ public class PlayerInfoLabels {
                 position.setText("Position: " + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
             }
         });
-        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
-            @Override
-            public void handleEvent(TargetServerChanged event) {
-                host.setText( event.getReadableHost() );
-            }
-        });
     }
 
-    public JTextField getTargetConnection() {
-        host = new JTextField();
-        host.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                eventBus.fireEvent(new TargetServerChanged(host.getText()));
-            }
-        });
-        return host;
+    private void build() {
+        direction     = new JLabel();
+        position      = new JLabel();
+
+        add(direction);
+        addSeparator();
+        add(position);
     }
 
-    public JLabel getDirection() {
-        return direction;
-    }
-
-    public JLabel getPosition() {
-        return position;
-    }
 
     public String formatDirection( int angle ) {
         angle += 45 / 2;

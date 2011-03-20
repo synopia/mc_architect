@@ -47,8 +47,6 @@ public class ServerProtocol9 extends Protocol9 {
                 int dim = in.readByte();
 
                 playerPositionProtocol.setEntityId(entityId);
-
-                eventBus.fireEvent(new ConnectionEstablished());
             }
         });
 
