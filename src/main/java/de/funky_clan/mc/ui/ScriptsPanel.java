@@ -34,7 +34,7 @@ public class ScriptsPanel extends JPanel {
         });
 
         build();
-        addScriptButton("kolloseum.rb");
+        addScriptButton("kolloseum.rb", true);
     }
 
     protected void build() {
@@ -56,13 +56,16 @@ public class ScriptsPanel extends JPanel {
     }
 
     protected void addScriptButton( final String filename) {
+        addScriptButton(filename, false);
+    }
+    protected void addScriptButton( final String filename, final boolean useClasspath) {
 
         String name = filename.replace('\\', '/');
         name = filename.substring( name.lastIndexOf('/')+1, filename.lastIndexOf('.'));
         add(new JButton(new AbstractAction(name) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventBus.fireEvent(new RunScript(filename) );
+                eventBus.fireEvent(new RunScript(filename, useClasspath) );
             }
         }));
         revalidate();
