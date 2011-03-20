@@ -99,6 +99,8 @@ public class MitmThread extends Thread {
             socket = null;
         }
 
+        clientProtocol.load();
+        serverProtocol.load();
         while( socket!=null ) {
             try {
                 logger.info("MITM Server is waiting for client ");

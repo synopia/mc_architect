@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.events.BlockUpdate;
 import de.funky_clan.mc.events.ChunkUpdate;
+import de.funky_clan.mc.events.ConnectionEstablished;
 import de.funky_clan.mc.events.UnloadChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,33 @@ public class ServerProtocol9 extends Protocol9 {
     @Inject
     private EventBus eventBus;
 
+    @Inject
+    private PlayerPositionProtocol playerPositionProtocol;
+
     @Override
-    protected void load() {
+    public void load() {
         super.load();
 
         inflater = new Inflater();
         compressedData = new byte[1<<17];
+
+        playerPositionProtocol.loadServer(this);
+
+        setDecoder(0x01, new MessageDecoder() {
+            @Override
+            public void decode(DataInputStream in) throws IOException {
+                int entityId = in.readInt();
+                String username = in.readUTF();
+                String password = in.readUTF();
+                long seed = in.readLong();
+                int dim = in.readByte();
+
+                playerPositionProtocol.setEntityId(entityId);
+
+                eventBus.fireEvent(new ConnectionEstablished());
+            }
+        });
+
 
         setDecoder(0x32, new MessageDecoder() {
             @Override

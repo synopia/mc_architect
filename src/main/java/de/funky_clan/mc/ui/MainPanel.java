@@ -31,7 +31,6 @@ public class MainPanel extends JPanel {
     private MitmThread mitmThread;
     @Inject
     private Configuration    configuration;
-    private JTextField       host;
     @Inject
     private PlayerInfoLabels playerInfo;
     private double           playerX;
@@ -91,14 +90,12 @@ public class MainPanel extends JPanel {
         eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
             @Override
             public void handleEvent(ConnectionEstablished event) {
-                host.setEditable(false);
             }
         });
 
         eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
             public void handleEvent(ConnectionLost event) {
-                host.setEditable(true);
             }
         });
 

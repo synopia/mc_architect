@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.net.protocol.PlayerPositionProtocol;
 import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.ui.renderer.BlockRenderer;
 import de.funky_clan.mc.ui.renderer.ImageRenderer;
@@ -23,6 +24,7 @@ public class ArchitectModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(EventBus.class).in(Singleton.class);
+        binder.bind(PlayerPositionProtocol.class).in(Singleton.class);
         binder.bind(BlockRenderer.class).in(Singleton.class);
         binder.bind(ImageRenderer.class).in(Singleton.class);
         binder.bind(PlayerRenderer.class).in(Singleton.class);

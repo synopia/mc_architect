@@ -26,7 +26,6 @@ public abstract class Protocol {
     private EventBus eventBus;
 
     public Protocol() {
-        load();
     }
 
     public void decode( DataInputStream in ) throws IOException {
@@ -40,20 +39,7 @@ public abstract class Protocol {
     }
 
 
-    protected void load() {
-        setDecoder( 0x01, new MessageDecoder() {
-            @Override
-            public void decode(DataInputStream in) throws IOException {
-                int version = in.readInt();
-                String username = in.readUTF();
-                String password = in.readUTF();
-                long seed = in.readLong();
-                int dim = in.readByte();
-
-                eventBus.fireEvent(new ConnectionEstablished());
-            }
-        });
-
+    public void load() {
         setDecoder( 0xff, new MessageDecoder() {
             @Override
             public void decode(DataInputStream in) throws IOException {

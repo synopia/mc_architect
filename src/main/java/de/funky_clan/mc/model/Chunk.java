@@ -23,7 +23,6 @@ public final class Chunk {
 
     public Chunk(final int startX, final int startY, final int startZ, final int sizeX, final int sizeY, final int sizeZ) {
         id = getChunkId(startX>>4, startZ>>4);
-        logger.info("Creating chunk "+id);
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;

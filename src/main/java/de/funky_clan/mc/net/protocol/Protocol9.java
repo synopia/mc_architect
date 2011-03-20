@@ -44,7 +44,7 @@ public class Protocol9 extends Protocol {
     }
 
     @Override
-    protected void load() {
+    public void load() {
         try {
             Class<?> hz = Class.forName("hz");
             Method method = hz.getMethod("a", Integer.TYPE );

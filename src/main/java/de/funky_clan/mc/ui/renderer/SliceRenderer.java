@@ -18,6 +18,10 @@ public class SliceRenderer implements Renderer<Slice> {
         int        ex = c.getWindowEndX() + 1;
         int        ey = c.getWindowEndY() + 1;
 
+        if( slice.getSlice()==-999 ) {
+            return;
+        }
+
         Position pos = c.getPosition();
         pos.setSlice(sx,sy,slice.getSlice());
         int chunkStartX = (int)pos.getWorldX()>>4;
@@ -52,7 +56,7 @@ public class SliceRenderer implements Renderer<Slice> {
                         alphaFactor *= (255.-color.getAlpha())/255.;
                     }
                     currentSlice--;
-                    darkenFactor *= 0.95;
+                    darkenFactor *= 0.92;
                 } while( slice.getSlice()-currentSlice<20 );
 
 /*                if( blueprint==1 ) {
