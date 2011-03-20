@@ -56,6 +56,9 @@ h1. Development environment
 
 h1. History
 
+h2. 0.2.2
+* ore filter
+
 h2. 0.2.1
 * player is 1x2x1 blocks
 
