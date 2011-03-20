@@ -34,7 +34,7 @@ public final class Chunk {
     }
 
     public static long getChunkId(int x, int y) {
-        return ((long)x<<32) | y;
+        return ((long)x<<32) | (y&0xffff);
     }
     public static long getChunkId(double x, double y) {
         return getChunkId( (int)x>>4, (int)y>>4 );
@@ -69,12 +69,24 @@ public final class Chunk {
     }
 
     public final void setPixel(int x, int y, int z, int value) {
-        int index = (y-startY) + ((z-startZ)*sizeY) + ((x-startX)*sizeY*sizeZ);
+        int sy = y - startY;
+        int sz = z - startZ;
+        int sx = x - startX;
+        int index = sy + (sz *sizeY) + (sx *sizeY*sizeZ);
+        if( index<0 || index>=CHUNK_ARRAY_SIZE ) {
+            throw new IllegalArgumentException(sx+", "+sy+", "+sz+" is no valid chunk pos");
+        }
         map[index] = (byte) value;
     }
 
     public final int getPixel(int x, int y, int z) {
-        int index = (y-startY) + ((z-startZ)*sizeY) + ((x-startX)*sizeY*sizeZ);
+        int sy = y - startY;
+        int sz = z - startZ;
+        int sx = x - startX;
+        int index = sy + (sz *sizeY) + (sx *sizeY*sizeZ);
+        if( index<0 || index>=CHUNK_ARRAY_SIZE ) {
+            throw new IllegalArgumentException(sx+", "+sy+", "+sz+" is no valid chunk pos");
+        }
         return map[index];
     }
 

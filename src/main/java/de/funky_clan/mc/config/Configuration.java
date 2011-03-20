@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
+import de.funky_clan.mc.scripts.Graphics;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -18,7 +19,7 @@ import java.util.HashMap;
  */
 public class Configuration {
     private HashMap<String, BackgroundImage> images = new HashMap<String, BackgroundImage>();
-    private Graphics                         graphics;
+    private Graphics graphics;
     @Inject
     private Model                            model;
     private int                              originX;
@@ -59,7 +60,6 @@ public class Configuration {
     public Configuration origin( int x, int y, int z, SliceType type ) {
         slice = sliceProvider.get();
         slice.setType( type );
-        graphics = new Graphics(slice);
         originX = x;
         originY = y;
         originSlice = z;
@@ -82,7 +82,7 @@ public class Configuration {
     }
 
     public Configuration ellipse( int slice, int x, int y, int width, int height ) {
-        graphics.ellipse( slice+originSlice, x+originX, y+originY, width, height, 1 );
+        graphics.ellipse(x+originX, y+originY, slice+originSlice, width, height, 1 );
 
         return this;
     }
@@ -115,8 +115,6 @@ public class Configuration {
     }
 
     public Configuration axis( int x, int y ) {
-        graphics.hLine( 0, y, 50, 2 );
-        graphics.vLine(x, 0, 50, 2);
 
         return this;
     }

@@ -87,11 +87,13 @@ public class Model {
     }
 
     public void setPixel( int x, int y, int z, int value ) {
+        if( y<0 || y>=128 ) return;
         getOrCreateChunk(x,y,z).setPixel(x, y, z, value);
     }
     public int getPixel( int x, int y, int z) {
         int chunkX = x>>4;
         int chunkZ = z>>4;
+        if( y<0 || y>=128 ) return -1;
 
         Chunk chunk = getChunk(chunkX, chunkZ);
         if( chunk!=null ) {

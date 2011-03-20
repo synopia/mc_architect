@@ -72,6 +72,7 @@ public class SlicePanel extends ZoomPanel {
         addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
+                if( e.isShiftDown() ) return;
                 if( e.getWheelRotation()>0 ) {
                     setSliceNo(sliceNo+1);
                 } else {
@@ -79,6 +80,12 @@ public class SlicePanel extends ZoomPanel {
                 }
 
 
+            }
+        });
+        eventBus.registerCallback(ScriptFinished.class, new EventHandler<ScriptFinished>() {
+            @Override
+            public void handleEvent(ScriptFinished event) {
+                repaint();
             }
         });
         eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {

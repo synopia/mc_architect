@@ -11,12 +11,10 @@ import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.MitmThread;
-import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -31,8 +29,7 @@ public class MainPanel extends JPanel {
     private MitmThread mitmThread;
     @Inject
     private Configuration    configuration;
-    @Inject
-    private PlayerInfoToolbar playerInfo;
+
     private double           playerX;
     private double           playerY;
     private double           playerZ;
@@ -47,9 +44,9 @@ public class MainPanel extends JPanel {
     private int              zShift;
     private JLabel           zShiftLabel;
     private EventBus         eventBus;
+    @Inject ColorsPanel       colorsPanel;
     @Inject
-    private ColorsPanel colorsPanel;
-
+    ScriptsPanel scriptsPanel;
     @Inject PlayerInfoToolbar playerInfoToolbar;
     @Inject StatisticsToolbar statisticsToolbar;
     @Inject ConnectionToolbar connectionToolbar;
@@ -165,12 +162,13 @@ public class MainPanel extends JPanel {
         JTabbedPane tabs = new JTabbedPane();
         rootSplitPane.setRightComponent(tabs);
         tabs.addTab("Colors", colorsPanel);
+        tabs.addTab("Scripts", scriptsPanel);
 
         JPanel info     = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setLayout(new BoxLayout(info, BoxLayout.X_AXIS));
+        info.add( playerInfoToolbar );
         info.add( connectionToolbar);
         info.add( statisticsToolbar );
-        info.add( playerInfoToolbar );
 
         JToolBar imageBar = buildImageToolBar();
 

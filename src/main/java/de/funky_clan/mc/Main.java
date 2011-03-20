@@ -12,6 +12,7 @@ import de.funky_clan.mc.events.Initialize;
 import de.funky_clan.mc.events.TargetServerChanged;
 import de.funky_clan.mc.model.OreDetector;
 import de.funky_clan.mc.model.OreManager;
+import de.funky_clan.mc.scripts.ScriptFactory;
 import de.funky_clan.mc.ui.MainPanel;
 
 import javax.swing.*;
@@ -33,6 +34,8 @@ public class Main extends JFrame {
     OreDetector oreDetector;
     @Inject
     OreManager oreManager;
+    @Inject
+    ScriptFactory scriptFactory;
 
     public Main() {
     }
