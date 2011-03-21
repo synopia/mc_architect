@@ -12,11 +12,11 @@ public class WorldGraphics extends Graphics {
 
     @Override
     public void setPixel(double x, double y, double z, int value) {
-        model.setPixel((int)x, (int)y, (int)z, value );
+        model.setPixel((int)x, (int)y, (int)z, 1, value );
     }
 
     @Override
     public int getPixel(double x, double y, double z, int value) {
-        return model.getPixel((int)x, (int)y, (int)z );
+        return model.getPixel((int)x, (int)y, (int)z, 1);
     }
 }

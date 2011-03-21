@@ -1,5 +1,6 @@
 package de.funky_clan.mc.ui.renderer;
 
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.Slice;
@@ -31,11 +32,11 @@ public class SliceRenderer implements Renderer<Slice> {
         int chunkEndX = (int)pos.getWorldX()>>4;
         int chunkEndY = (int)pos.getWorldZ()>>4;
         int endZ = (int)pos.getWorldY();
-
+        Color blueprint = c.getColors().getBlueprintColor();
 
         Position position = c.getPosition();
-        for( int y = sy; y < ey; y++ ) {
-            for( int x = sx; x < ex; x++ ) {
+        for( int y = sy; y <= ey; y++ ) {
+            for( int x = sx; x <= ex; x++ ) {
                 int currentSlice = slice.getSlice();
 
                 int blockId;
@@ -43,7 +44,7 @@ public class SliceRenderer implements Renderer<Slice> {
                 double darkenFactor = 1;
                 do {
                     position.setSlice(x, y, currentSlice);
-                    blockId     = slice.getPixel(position);
+                    blockId     = slice.getPixel(position, 0);
                     if( blockId==-1 ) {
                         break;
                     }
@@ -59,13 +60,10 @@ public class SliceRenderer implements Renderer<Slice> {
                     darkenFactor *= 0.92;
                 } while( slice.getSlice()-currentSlice<slice.getMaxRenderDepth() );
 
-/*                if( blueprint==1 ) {
-                    if( colorForBlock==null ) {
-                        colorForBlock = c.getColors().getColorForBlock(DataValues.AIR.getId());
-                    }
-                    colorForBlock = colorForBlock.darker().darker().darker();
+                position.setSlice(x, y, slice.getSlice());
+                if( slice.getPixel(position, 1)>0 ) {
+                    drawRect(c,  blueprint, position );
                 }
-*/
             }
         }
     }
@@ -74,17 +72,27 @@ public class SliceRenderer implements Renderer<Slice> {
 
     }
 
-    protected void drawBlock( RenderContext c, Color color, double darken, double alpha, Position position ) {
+    protected void drawBlock( RenderContext c, Color color, double darken, double alpha, Position position) {
         Graphics2D g  = c.getGraphics();
 
         Color col = new Color((int)(darken*color.getRed()), (int)(darken*color.getGreen()), (int)(darken*color.getBlue()), (int)(alpha * color.getAlpha()) );
         g.setColor(col);
         int x = position.getScreenX();
         int y = position.getScreenY();
-        int w = c.screenUnitX(1);
-        int h = c.screenUnitY(1);
+        int w = position.getScreenUnitX();
+        int h = position.getScreenUnitY();
 
         g.fillRect( x,y, w, h);
+    }
 
+    protected void drawRect( RenderContext c, Color blueprint, Position position ) {
+        Graphics2D g  = c.getGraphics();
+
+        int x = position.getScreenX();
+        int y = position.getScreenY();
+        int w = position.getScreenUnitX();
+        int h = position.getScreenUnitY();
+        g.setColor(blueprint);
+        g.drawRect( x,y, w-1, h-1);
     }
 }

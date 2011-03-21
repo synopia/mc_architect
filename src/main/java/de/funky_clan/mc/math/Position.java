@@ -12,6 +12,8 @@ import java.awt.*;
 public final class Position {
     private int screenX;
     private int screenY;
+    private int screenUnitX;
+    private int screenUnitY;
     private double sliceX;
     private double sliceY;
     private int sliceNo;
@@ -48,6 +50,8 @@ public final class Position {
             if( rc!=null ) {
                 screenX = rc.sliceToScreenX( sliceX );
                 screenY = rc.sliceToScreenY( sliceY);
+                screenUnitX = rc.sliceToScreenX( sliceX+1 ) - screenX;
+                screenUnitY = rc.sliceToScreenY(sliceY + 1) - screenY;
             }
         }
     }
@@ -59,7 +63,9 @@ public final class Position {
 
         if( rc!=null ) {
             screenX = rc.sliceToScreenX( sliceX );
-            screenY = rc.sliceToScreenY( sliceY);
+            screenY = rc.sliceToScreenY(sliceY);
+            screenUnitX = rc.sliceToScreenX( sliceX+1 ) - screenX;
+            screenUnitY = rc.sliceToScreenY(sliceY + 1) - screenY;
         }
         if( slice!=null ) {
             sliceToWorld(slice.getType());
@@ -78,7 +84,8 @@ public final class Position {
         if( rc!=null ) {
             sliceX = rc.screenToSliceX( screenX );
             sliceY = rc.screenToSliceY( screenY );
-
+            screenUnitX = rc.sliceToScreenX( sliceX+1 ) - screenX;
+            screenUnitY = rc.sliceToScreenY(sliceY + 1) - screenY;
             if( slice!=null ) {
                 sliceToWorld(slice.getType());
             }
@@ -204,5 +211,13 @@ public final class Position {
                 ", rc=" + rc +
                 ", slice=" + slice +
                 '}';
+    }
+
+    public int getScreenUnitX() {
+        return screenUnitX;
+    }
+
+    public int getScreenUnitY() {
+        return screenUnitY;
     }
 }

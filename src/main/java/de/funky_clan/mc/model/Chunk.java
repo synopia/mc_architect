@@ -9,6 +9,7 @@ import java.util.Arrays;
  * @author synopia
  */
 public final class Chunk {
+    private static final int NO_PIXEL_TYPES = 2;
     private static final int CHUNK_ARRAY_SIZE = 16 * 16 * 128;
     private final byte map[];
     private final int sizeX;
@@ -30,10 +31,11 @@ public final class Chunk {
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
 
-        map = new byte[CHUNK_ARRAY_SIZE];
+        map = new byte[CHUNK_ARRAY_SIZE * NO_PIXEL_TYPES];
     }
 
     public static long getChunkId(int x, int y) {
+        // todo notice, only y-values below -0xffff will work :-(
         return ((long)x<<32) | (y&0xffff);
     }
     public static long getChunkId(double x, double y) {
@@ -68,7 +70,7 @@ public final class Chunk {
         return sizeZ;
     }
 
-    public final void setPixel(int x, int y, int z, int value) {
+    public final void setPixel(int x, int y, int z, int type, int value) {
         int sy = y - startY;
         int sz = z - startZ;
         int sx = x - startX;
@@ -76,10 +78,10 @@ public final class Chunk {
         if( index<0 || index>=CHUNK_ARRAY_SIZE ) {
             throw new IllegalArgumentException(sx+", "+sy+", "+sz+" is no valid chunk pos");
         }
-        map[index] = (byte) value;
+        map[index+type*CHUNK_ARRAY_SIZE] = (byte) value;
     }
 
-    public final int getPixel(int x, int y, int z) {
+    public final int getPixel(int x, int y, int z, int type) {
         int sy = y - startY;
         int sz = z - startZ;
         int sx = x - startX;
@@ -87,10 +89,10 @@ public final class Chunk {
         if( index<0 || index>=CHUNK_ARRAY_SIZE ) {
             throw new IllegalArgumentException(sx+", "+sy+", "+sz+" is no valid chunk pos");
         }
-        return map[index];
+        return map[index+type*CHUNK_ARRAY_SIZE];
     }
 
-    public void updateFullBlock( byte[] data) {
-        System.arraycopy(data, 0, map, 0, CHUNK_ARRAY_SIZE);
+    public void updateFullBlock(int type, byte[] data) {
+        System.arraycopy(data, 0, map, CHUNK_ARRAY_SIZE*type, CHUNK_ARRAY_SIZE);
     }
 }

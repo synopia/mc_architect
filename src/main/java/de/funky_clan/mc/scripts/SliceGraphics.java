@@ -17,13 +17,13 @@ public class SliceGraphics extends Graphics{
     @Override
     public void setPixel(double x, double y, double z, int value) {
         pos.setSlice(x, y, (int) z);
-        slice.setPixel(pos, value);
+        slice.setPixel(pos, 1, value);
     }
 
     @Override
     public int getPixel(double x, double y, double z, int value) {
         pos.setSlice(x, y, (int) z);
-        return slice.getPixel(pos);
+        return slice.getPixel(pos, 1);
     }
 
     public void setSliceType(SliceType sliceType) {

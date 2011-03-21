@@ -94,7 +94,7 @@ public class OreDetector {
         Ore result = ore;
         Ore otherChunk = null;
         if( x<0 || y<0 || z<0 || x>15 || y>127 || z>15 ) {
-            int pixel = model.getPixel(startX + x, startY + y, startZ + z);
+            int pixel = model.getPixel(startX + x, startY + y, startZ + z, 0);
             if( isOre(pixel) ) {
                 otherChunk = findOre( startX + x, startY + y, startZ + z );
                 if( otherChunk !=null ) {

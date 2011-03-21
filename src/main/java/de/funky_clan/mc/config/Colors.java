@@ -7,6 +7,7 @@ import java.awt.*;
 */
 public class Colors {
     public static final Color EMPTY = new Color(255,255,255,0);
+    private static final Color BLUEPRINT = new Color(40, 40, 255, 255);
     private Color[] colorData = new Color[255];
 
     public Colors() {
@@ -149,5 +150,9 @@ public class Colors {
 
     public void setColorForBlock(int rowIndex, Color aValue) {
         colorData[rowIndex] = aValue;
+    }
+
+    public Color getBlueprintColor() {
+        return BLUEPRINT;
     }
 }

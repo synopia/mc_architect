@@ -35,7 +35,7 @@ public class Model {
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
-                setPixel(event.getX(), event.getY(), event.getZ(), event.getType() );
+                setPixel(event.getX(), event.getY(), event.getZ(), 0, event.getType() );
             }
         });
         eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
@@ -55,6 +55,7 @@ public class Model {
         });
     }
 
+    // todo tidy up this!
     public void interate( ChunkUpdate event, BlockUpdateCallable callable ) {
         interate(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData(), callable);
     }
@@ -62,7 +63,7 @@ public class Model {
     public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data, BlockUpdateCallable callable ) {
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getOrCreateChunk(sx, sy, sz);
-            chunk.updateFullBlock( data );
+            chunk.updateFullBlock(0, data );
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
@@ -80,24 +81,24 @@ public class Model {
         interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
             @Override
             public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
-                chunk.setPixel(x, y, z, value);
+                chunk.setPixel(x, y, z, 0, value);
             }
         });
 
     }
 
-    public void setPixel( int x, int y, int z, int value ) {
+    public void setPixel(int x, int y, int z, int type, int value) {
         if( y<0 || y>=128 ) return;
-        getOrCreateChunk(x,y,z).setPixel(x, y, z, value);
+        getOrCreateChunk(x,y,z).setPixel(x, y, z, type, value);
     }
-    public int getPixel( int x, int y, int z) {
+    public int getPixel(int x, int y, int z, int type) {
         int chunkX = x>>4;
         int chunkZ = z>>4;
         if( y<0 || y>=128 ) return -1;
 
         Chunk chunk = getChunk(chunkX, chunkZ);
         if( chunk!=null ) {
-            return chunk.getPixel(x, y, z);
+            return chunk.getPixel(x, y, z, type);
         } else {
             return -1;
         }
