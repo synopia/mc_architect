@@ -7,6 +7,8 @@ import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
+import de.funky_clan.mc.events.mouse.MouseMoved;
+import de.funky_clan.mc.events.mouse.MouseRectangle;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.ui.renderer.*;
@@ -29,7 +31,6 @@ public class SlicePanel extends ZoomPanel {
     private Model           model;
     @Inject
     private Player          player;
-    private SelectedBlock   selectedBlock;
     @Inject
     private Slice           slice;
     private int             sliceNo;
@@ -49,9 +50,16 @@ public class SlicePanel extends ZoomPanel {
     private SliceRenderer sliceRenderer;
     @Inject
     private OreRenderer oreRenderer;
+    @Inject
+    private BoxRenderer boxRenderer;
+    @Inject
+    private Box selectedBox;
 
     private Position position = new Position();
-    private Point lastMousePos = new Point();
+
+    private int lastMouseX;
+    private int lastMouseY;
+    private int lastMouseZ;
 
     @Override
     public void init() {
@@ -60,40 +68,10 @@ public class SlicePanel extends ZoomPanel {
         position.setRenderContext(context);
 
         setFocusable(true);
-        setAutoscrolls( true );
-        context.setColors( colors );
-        context.setWindowSize(50,50);
-        addMouseListener( new MouseAdapter() {
-            @Override
-            public void mouseReleased( MouseEvent e ) {
-                if( !e.isConsumed() && e.getButton()==MouseEvent.BUTTON1 ) {
-                }
-            }
-        });
-        addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                Point mousePos = e.getPoint();
-                if( mousePos.equals(lastMousePos) ) {
-                    return;
-                }
-                position.setScreen(mousePos.x, mousePos.y);
-//                System.out.println(position.getBlockX()+", "+position.getBlockY()+", "+position.getBlockZ());
-            }
-        } );
-        addMouseWheelListener(new MouseAdapter() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if( e.isShiftDown() ) return;
-                if( e.getWheelRotation()>0 ) {
-                    setSliceNo(sliceNo+1);
-                } else {
-                    setSliceNo(sliceNo-1);
-                }
+        setAutoscrolls(true);
+        context.setColors(colors);
+        context.setWindowSize(50, 50);
 
-
-            }
-        });
         eventBus.registerCallback(ScriptFinished.class, new EventHandler<ScriptFinished>() {
             @Override
             public void handleEvent(ScriptFinished event) {
@@ -137,6 +115,67 @@ public class SlicePanel extends ZoomPanel {
         });
     }
 
+    @Override
+    protected void onMouseRectangle(MouseEvent e, int x, int y, int width, int height) {
+        if( e.isShiftDown() || e.isControlDown()) {
+            applyWindow(x,y,width,height);
+        } else {
+            position.setScreen(x,y);
+            int sx = position.getBlockX();
+            int sy = position.getBlockY();
+            int sz = position.getBlockZ();
+            position.setScreen(x+width,y+height);
+            int ex = position.getBlockX();
+            int ey = position.getBlockY();
+            int ez = position.getBlockZ();
+            int sizeX = ex-sx;
+            int sizeY = ey-sy;
+            int sizeZ = ez-sz;
+            eventBus.fireEvent(new MouseRectangle(sx, sy, sz, sizeX, sizeY, sizeZ) );
+        }
+    }
+
+    @Override
+    protected void onMouseDragged(MouseEvent e, int x, int y, int lastX, int lastY) {
+        double windowPosX = context.screenToSliceX(lastX)-context.screenToSliceX(x) + context.getWindowPositionX();
+        double windowPosY = context.screenToSliceY(lastY)-context.screenToSliceY(y) + context.getWindowPositionY();
+
+        context.setWindowPosition(windowPosX, windowPosY);
+
+        repaint();
+    }
+
+    @Override
+    protected void onMouseWheel(MouseWheelEvent e, int x, int y, int wheelRotation) {
+        if( e.isShiftDown() || e.isControlDown()) {
+            double scale = 1 + wheelRotation * 0.05;
+            context.zoom(scale, scale, e.getPoint());
+            repaint();
+        } else {
+            if( e.getWheelRotation()>0 ) {
+                setSliceNo(sliceNo+1);
+            } else {
+                setSliceNo(sliceNo-1);
+            }
+        }
+    }
+
+    @Override
+    protected void onMouseMoved(MouseEvent e, int x, int y) {
+        position.setScreen(x,y, sliceNo);
+
+        int blockX = position.getBlockX();
+        int blockY = position.getBlockY();
+        int blockZ = position.getBlockZ();
+
+        if( lastMouseX!= blockX || lastMouseY!= blockY || lastMouseZ!= blockZ) {
+            eventBus.fireEvent(new MouseMoved(blockX, blockY, blockZ));
+        }
+        lastMouseX = blockX;
+        lastMouseY = blockY;
+        lastMouseZ = blockZ;
+    }
+
     protected void scrollTo( Position pos ) {
         pos.sliceToWorld(slice.getType());
         scrollTo(pos.getSliceX(), pos.getSliceY(), pos.getSliceNo());
@@ -170,8 +209,8 @@ public class SlicePanel extends ZoomPanel {
             oreRenderer.render( ores, context);
         }
 
-        if( selectedBlock != null ) {
-            blockRenderer.render( selectedBlock, context );
+        if( selectedBox != null ) {
+            boxRenderer.render( selectedBox, context );
         }
 
         if( player != null ) {
@@ -201,11 +240,5 @@ public class SlicePanel extends ZoomPanel {
         slice.setType(type);
         slice.setMaxRenderDepth( type==SliceType.Z?20:1 );
         player.setDrawViewCone( type==SliceType.Z );
-    }
-
-    @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-
     }
 }

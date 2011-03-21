@@ -6,6 +6,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ChunkUpdate;
 import de.funky_clan.mc.events.OreDisplayUpdate;
 import de.funky_clan.mc.events.UnloadChunk;
+import de.funky_clan.mc.net.protocol.Protocol;
 import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.*;

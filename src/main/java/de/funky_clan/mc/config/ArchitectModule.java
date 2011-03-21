@@ -5,13 +5,11 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.file.RegionFileService;
+import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.net.protocol.PlayerPositionProtocol;
 import de.funky_clan.mc.ui.MainPanel;
-import de.funky_clan.mc.ui.renderer.BlockRenderer;
-import de.funky_clan.mc.ui.renderer.ImageRenderer;
-import de.funky_clan.mc.ui.renderer.PlayerRenderer;
-import de.funky_clan.mc.ui.renderer.SliceRenderer;
+import de.funky_clan.mc.ui.renderer.*;
 import de.funky_clan.mc.util.Benchmark;
 
 /**
@@ -29,6 +27,8 @@ public class ArchitectModule implements Module {
         binder.bind(ImageRenderer.class).in(Singleton.class);
         binder.bind(PlayerRenderer.class).in(Singleton.class);
         binder.bind(SliceRenderer.class).in(Singleton.class);
+        binder.bind(BoxRenderer.class).in(Singleton.class);
+        binder.bind(Box.class).in(Singleton.class);
         binder.bind(Benchmark.class).in(Singleton.class);
         binder.bind(Colors.class).in(Singleton.class);
 

@@ -130,7 +130,9 @@ public enum DataValues
     SLABCOBBLE,
 
     DATAVALUES_MAX_AMOUNT,
-    DATAVALUES_AMOUNT(256 + (DATAVALUES_MAX_AMOUNT.id - BLOCKAMOUNT.id));
+    DATAVALUES_AMOUNT(256 + (DATAVALUES_MAX_AMOUNT.id - BLOCKAMOUNT.id)),
+    NOT_LOADED
+    ;
 
     private int id;
     private static int lastId;
@@ -155,5 +157,14 @@ public enum DataValues
 
     public int getId() {
         return id;
+    }
+
+    public static DataValues find( int blockId ) {
+        for (DataValues values : DataValues.values()) {
+            if( values.getId()==blockId ) {
+                return values;
+            }
+        }
+        return NOT_LOADED;
     }
 }

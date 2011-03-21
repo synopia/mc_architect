@@ -4,10 +4,14 @@ package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Configuration;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
+import de.funky_clan.mc.events.mouse.MouseMoved;
+import de.funky_clan.mc.events.mouse.MouseRectangle;
 import de.funky_clan.mc.model.BackgroundImage;
+import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.MitmThread;
@@ -42,7 +46,7 @@ public class MainPanel extends JPanel {
     @Inject
     private SlicePanel       topDown;
     private int              zShift;
-    private JLabel           zShiftLabel;
+    private JLabel zShiftLabel;
     private EventBus         eventBus;
     @Inject ColorsPanel       colorsPanel;
     @Inject
@@ -52,11 +56,39 @@ public class MainPanel extends JPanel {
     @Inject StatisticsToolbar statisticsToolbar;
     @Inject ConnectionToolbar connectionToolbar;
 
+    @Inject
+    private Box selectionBox;
+
     private JLabel mousePosInfo;
+    private JLabel selectionInfo;
 
     @Inject
     public MainPanel(final EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBus.registerCallback(MouseRectangle.class, new EventHandler<MouseRectangle>() {
+            @Override
+            public void handleEvent(MouseRectangle event) {
+                selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getX()+event.getSizeX(), event.getY()+event.getSizeY(), event.getZ()+event.getSizeZ() );
+                selectionInfo.setText(String.format(
+                        "Selection: (%d, %d, %d) -> (%d, %d, %d) = (%d, %d, %d)",
+                        event.getX(), event.getY(), event.getZ(),
+                        event.getX()+event.getSizeX(), event.getY()+event.getSizeY(), event.getSizeZ(),
+                        event.getSizeX(), event.getSizeY(), event.getSizeZ()
+                ));
+                repaint();
+            }
+        });
+        eventBus.registerCallback(MouseMoved.class, new EventHandler<MouseMoved>() {
+            @Override
+            public void handleEvent(MouseMoved event) {
+                int x = event.getX();
+                int y = event.getY();
+                int z = event.getZ();
+
+                String pixelText = DataValues.find(configuration.getModel().getPixel(x,y,z,0)).toString();
+                mousePosInfo.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
+            }
+        });
         eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
             @Override
             public void handleEvent(ColorChanged event) {
@@ -197,8 +229,6 @@ public class MainPanel extends JPanel {
     private JToolBar buildToolBar() {
         JToolBar toolBar = new JToolBar();
 
-        toolBar.add(mousePosInfo = new JLabel("Mouse: "));
-
         zShiftLabel = new JLabel();
         setZShift( 0 );
         toolBar.add(zShiftLabel);
@@ -217,6 +247,10 @@ public class MainPanel extends JPanel {
             }
         });
 
+        toolBar.addSeparator();
+        toolBar.add(mousePosInfo = new JLabel("Mouse: "));
+        toolBar.addSeparator();
+        toolBar.add(selectionInfo = new JLabel(""));
         return toolBar;
     }
 }

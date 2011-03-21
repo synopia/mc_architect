@@ -14,6 +14,21 @@ public class Box {
     public Box() {
     }
 
+    public void union(double startX, double startY, double startZ, double endX, double endY, double endZ) {
+        startX = Math.min(startX, endX);
+        startY = Math.min(startY, endY);
+        startZ = Math.min(startZ, endZ);
+        endX = Math.max(startX, endX);
+        endY = Math.max(startY, endY);
+        endZ = Math.max(startZ, endZ);
+        this.startX = Math.min( this.startX, startX );
+        this.startY = Math.min( this.startY, startY );
+        this.startZ = Math.min( this.startZ, startZ );
+        this.endX = Math.max( this.endX, endX );
+        this.endY = Math.max( this.endY, endY );
+        this.endZ = Math.max( this.endZ, endZ );
+    }
+    
     public void set(double startX, double startY, double startZ, double endX, double endY, double endZ) {
         this.startX = Math.min(startX, endX);
         this.startY = Math.min(startY, endY);
