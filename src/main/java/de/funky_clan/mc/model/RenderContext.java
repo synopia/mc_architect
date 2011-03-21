@@ -117,7 +117,7 @@ public class RenderContext {
         calculateSizes();
     }
 
-    private void calculateSizes() {
+    public void calculateSizes() {
         if( windowSizeX>0 && windowSizeY>0 ) {
             pixelSizeX = screenSizeX / windowSizeX;
             pixelSizeY = screenSizeY / windowSizeY;

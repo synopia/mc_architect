@@ -52,6 +52,8 @@ public class MainPanel extends JPanel {
     @Inject StatisticsToolbar statisticsToolbar;
     @Inject ConnectionToolbar connectionToolbar;
 
+    private JLabel mousePosInfo;
+
     @Inject
     public MainPanel(final EventBus eventBus) {
         this.eventBus = eventBus;
@@ -172,7 +174,7 @@ public class MainPanel extends JPanel {
         info.add( connectionToolbar);
         info.add( statisticsToolbar );
 
-        JToolBar imageBar = buildImageToolBar();
+        JToolBar imageBar = buildToolBar();
 
         add( rootSplitPane, BorderLayout.CENTER );
         add( info, BorderLayout.NORTH );
@@ -192,47 +194,29 @@ public class MainPanel extends JPanel {
         firePlayerMoved(true, false);
     }
 
-    private JToolBar buildImageToolBar() {
-        JToolBar imageBar = new JToolBar();
+    private JToolBar buildToolBar() {
+        JToolBar toolBar = new JToolBar();
 
-        imageBar.add( new AbstractAction( "auto" ) {
-            @Override
-            public void actionPerformed( ActionEvent e ) {
-                topDown.setImage( null );
-            }
-        } );
+        toolBar.add(mousePosInfo = new JLabel("Mouse: "));
 
-        HashMap<String, BackgroundImage> images = configuration.getImages();
-
-        for( final BackgroundImage image : images.values() ) {
-            imageBar.add( new AbstractAction( image.getFilename(), image.getIcon() ) {
-                @Override
-                public void actionPerformed( ActionEvent e ) {
-                    topDown.setImage( image );
-                }
-            } );
-        }
-
-        imageBar.addSeparator();
-        imageBar.addSeparator();
         zShiftLabel = new JLabel();
         setZShift( 0 );
-        imageBar.add( zShiftLabel );
-        imageBar.addSeparator();
-        imageBar.add( new AbstractAction( "raise z" ) {
+        toolBar.add(zShiftLabel);
+        toolBar.addSeparator();
+        toolBar.add(new AbstractAction("raise z") {
             @Override
-            public void actionPerformed( ActionEvent e ) {
-                setZShift( zShift + 1 );
+            public void actionPerformed(ActionEvent e) {
+                setZShift(zShift + 1);
             }
-        } );
-        imageBar.addSeparator();
-        imageBar.add( new AbstractAction( "lower z" ) {
+        });
+        toolBar.addSeparator();
+        toolBar.add(new AbstractAction("lower z") {
             @Override
-            public void actionPerformed( ActionEvent e ) {
-                setZShift( zShift - 1 );
+            public void actionPerformed(ActionEvent e) {
+                setZShift(zShift - 1);
             }
-        } );
+        });
 
-        return imageBar;
+        return toolBar;
     }
 }

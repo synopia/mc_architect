@@ -51,6 +51,7 @@ public class SlicePanel extends ZoomPanel {
     private OreRenderer oreRenderer;
 
     private Position position = new Position();
+    private Point lastMousePos = new Point();
 
     @Override
     public void init() {
@@ -67,6 +68,17 @@ public class SlicePanel extends ZoomPanel {
             public void mouseReleased( MouseEvent e ) {
                 if( !e.isConsumed() && e.getButton()==MouseEvent.BUTTON1 ) {
                 }
+            }
+        });
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point mousePos = e.getPoint();
+                if( mousePos.equals(lastMousePos) ) {
+                    return;
+                }
+                position.setScreen(mousePos.x, mousePos.y);
+//                System.out.println(position.getBlockX()+", "+position.getBlockY()+", "+position.getBlockZ());
             }
         } );
         addMouseWheelListener(new MouseAdapter() {
@@ -189,5 +201,11 @@ public class SlicePanel extends ZoomPanel {
         slice.setType(type);
         slice.setMaxRenderDepth( type==SliceType.Z?20:1 );
         player.setDrawViewCone( type==SliceType.Z );
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+
     }
 }

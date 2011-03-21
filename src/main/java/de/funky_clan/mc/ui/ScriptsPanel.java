@@ -35,6 +35,7 @@ public class ScriptsPanel extends JPanel {
 
         build();
         addScriptButton("kolloseum.rb", true);
+        addScriptButton("akw.rb", true);
     }
 
     protected void build() {

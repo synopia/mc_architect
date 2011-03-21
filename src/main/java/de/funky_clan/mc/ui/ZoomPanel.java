@@ -78,6 +78,7 @@ public abstract class ZoomPanel extends JPanel {
     public void setSize(int width, int height) {
         super.setSize(width, height);
         context.setScreenSize(width, height);
+        context.calculateSizes();
     }
 
     /**
