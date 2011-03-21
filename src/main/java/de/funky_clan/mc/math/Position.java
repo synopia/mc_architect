@@ -125,14 +125,23 @@ public final class Position {
     }
 
     public final int getBlockX() {
+        if( worldX<0 ) {
+            return (int)worldX-1;
+        }
         return (int) worldX;
     }
 
     public final int getBlockY() {
+        if( worldY<0 ) {
+            return (int)worldY-1;
+        }
         return (int) worldY;
     }
 
     public final int getBlockZ() {
+        if( worldZ<0 ) {
+            return (int)worldZ-1;
+        }
         return (int) worldZ;
     }
 

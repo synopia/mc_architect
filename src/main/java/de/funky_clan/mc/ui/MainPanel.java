@@ -10,7 +10,6 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.*;
 import de.funky_clan.mc.events.mouse.MouseMoved;
 import de.funky_clan.mc.events.mouse.MouseRectangle;
-import de.funky_clan.mc.model.BackgroundImage;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
@@ -21,7 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -68,12 +66,12 @@ public class MainPanel extends JPanel {
         eventBus.registerCallback(MouseRectangle.class, new EventHandler<MouseRectangle>() {
             @Override
             public void handleEvent(MouseRectangle event) {
-                selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getX()+event.getSizeX(), event.getY()+event.getSizeY(), event.getZ()+event.getSizeZ() );
+                selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getEndX(), event.getEndY(), event.getEndZ() );
                 selectionInfo.setText(String.format(
-                        "Selection: (%d, %d, %d) -> (%d, %d, %d) = (%d, %d, %d)",
-                        event.getX(), event.getY(), event.getZ(),
-                        event.getX()+event.getSizeX(), event.getY()+event.getSizeY(), event.getSizeZ(),
-                        event.getSizeX(), event.getSizeY(), event.getSizeZ()
+                        "Selection: (%.0f, %.0f, %.0f) -> (%.0f, %.0f, %.0f) = (%.0f, %.0f, %.0f)",
+                        selectionBox.getStartX(), selectionBox.getStartY(), selectionBox.getStartZ(),
+                        selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
+                        selectionBox.getEndX()-selectionBox.getStartX(), selectionBox.getEndY()-selectionBox.getStartY(), selectionBox.getEndZ()-selectionBox.getStartZ()
                 ));
                 repaint();
             }

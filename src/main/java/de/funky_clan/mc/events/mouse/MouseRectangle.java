@@ -4,26 +4,26 @@ package de.funky_clan.mc.events.mouse;
  * @author synopia
  */
 public class MouseRectangle extends MouseMoved {
-    private int sizeX;
-    private int sizeY;
-    private int sizeZ;
+    private int endX;
+    private int endY;
+    private int endZ;
 
-    public MouseRectangle(int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
+    public MouseRectangle(int x, int y, int z, int endX, int endY, int endZ) {
         super(x, y, z);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
+        this.endX = endX;
+        this.endY = endY;
+        this.endZ = endZ;
     }
 
-    public int getSizeX() {
-        return sizeX;
+    public int getEndX() {
+        return endX;
     }
 
-    public int getSizeY() {
-        return sizeY;
+    public int getEndY() {
+        return endY;
     }
 
-    public int getSizeZ() {
-        return sizeZ;
+    public int getEndZ() {
+        return endZ;
     }
 }

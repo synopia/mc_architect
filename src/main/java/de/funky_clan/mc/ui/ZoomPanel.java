@@ -38,6 +38,7 @@ public abstract class ZoomPanel extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                onMouseMoved(e, e.getX(), e.getY());
                 if( start == null ) {
                     return;
                 }
@@ -51,14 +52,18 @@ public abstract class ZoomPanel extends JPanel {
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
-                if( isRectMode(e)) {
+                if( isRectMode(e) ) {
                     rectModeReleased(e);
+                } else if( !isDragMode(e) ) {
+                    onMouseReleased( e, e.getX(), e.getY() );
                 }
             }
             @Override
             public void mousePressed( MouseEvent e ) {
                 if( isRectMode(e) || isDragMode(e) ) {
                     start = e.getPoint();
+                } else {
+                    onMousePressed( e, e.getX(), e.getY() );
                 }
             }
         } );
@@ -97,6 +102,8 @@ public abstract class ZoomPanel extends JPanel {
     protected abstract void onMouseDragged( MouseEvent e, int x, int y, int lastX, int lastY );
     protected abstract void onMouseWheel( MouseWheelEvent e, int x, int y, int wheelRotation );
     protected abstract void onMouseMoved( MouseEvent e, int x, int y );
+    protected abstract void onMousePressed( MouseEvent e, int x, int y );
+    protected abstract void onMouseReleased( MouseEvent e, int x, int y );
 
     protected void initContext( Graphics2D g ) {
         context.setGraphics(g);

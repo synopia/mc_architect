@@ -60,6 +60,10 @@ public class SlicePanel extends ZoomPanel {
     private int lastMouseX;
     private int lastMouseY;
     private int lastMouseZ;
+    private boolean selectionBoxMode;
+    private int blockStartX;
+    private int blockStartY;
+    private int blockStartZ;
 
     @Override
     public void init() {
@@ -174,6 +178,30 @@ public class SlicePanel extends ZoomPanel {
         lastMouseX = blockX;
         lastMouseY = blockY;
         lastMouseZ = blockZ;
+
+        if( selectionBoxMode ) {
+            eventBus.fireEvent(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockX+1, blockY+1, blockZ+1));
+            repaint();
+        }
+    }
+
+    @Override
+    protected void onMousePressed(MouseEvent e, int x, int y) {
+        position.setScreen(x,y,sliceNo);
+
+        blockStartX = position.getBlockX();
+        blockStartY = position.getBlockY();
+        blockStartZ = position.getBlockZ();
+
+        eventBus.fireEvent(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockStartX +1, blockStartY +1, blockStartZ +1));
+        selectionBoxMode = true;
+
+        repaint();
+    }
+
+    @Override
+    protected void onMouseReleased(MouseEvent e, int x, int y) {
+        selectionBoxMode = false;
     }
 
     protected void scrollTo( Position pos ) {
@@ -184,6 +212,11 @@ public class SlicePanel extends ZoomPanel {
     protected void scrollTo( double x, double y, int slice) {
         setSliceNo(slice);
         scrollTo(x, y);
+    }
+
+    @Override
+    public boolean isRectMode(MouseEvent e) {
+        return super.isRectMode(e) && (e.isShiftDown()||e.isControlDown());
     }
 
     @Override
