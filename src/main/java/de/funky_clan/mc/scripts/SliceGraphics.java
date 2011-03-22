@@ -15,13 +15,13 @@ public class SliceGraphics extends Graphics{
     private Position pos = new Position();
 
     @Override
-    public void setPixel(double x, double y, double z, int value) {
+    public void setPixelLocal(double x, double y, double z, int value) {
         pos.setSlice(x, y, (int) z);
         slice.setPixel(pos, 1, value);
     }
 
     @Override
-    public int getPixel(double x, double y, double z, int value) {
+    public int getPixelLocal(double x, double y, double z) {
         pos.setSlice(x, y, (int) z);
         return slice.getPixel(pos, 1);
     }

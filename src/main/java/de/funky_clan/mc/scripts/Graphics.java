@@ -6,6 +6,24 @@ package de.funky_clan.mc.scripts;
  * @author synopia
  */
 public abstract class Graphics {
+    private double originX;
+    private double originY;
+    private double originZ;
+    private double scaleX=1;
+    private double scaleY=1;
+    private double scaleZ=1;
+
+    public void setOrigin( double x, double y, double z) {
+        originX = x;
+        originY = y;
+        originZ = z;
+    }
+
+    public void setScale(double scaleX, double scaleY, double scaleZ) {
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.scaleZ = scaleZ;
+    }
 
     public void ellipse(double xm, double ym, double z, double width, double height, int value) {
         int a   = (int) width;
@@ -42,7 +60,14 @@ public abstract class Graphics {
         }
     }
 
-    public abstract void setPixel( double x, double y, double z, int value );
-    public abstract int getPixel( double x, double y, double z, int value );
+    public void setPixel( double x, double y, double z, int value ) {
+        setPixelLocal(x*scaleX+originX, y*scaleY+originY, z*scaleZ+originZ, value);
+    }
+    public int getPixel( double x, double y, double z ) {
+        return getPixelLocal(x*scaleX+originX, y*scaleY+originY, z*scaleZ+originZ);
+    }
+
+    public abstract void setPixelLocal( double x, double y, double z, int value );
+    public abstract int getPixelLocal( double x, double y, double z );
 
 }

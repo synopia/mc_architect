@@ -30,8 +30,8 @@ public class EventBus {
                 while (true) {
                     try {
                         handleNextEvent();
-                    } catch (InterruptedException e) {
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

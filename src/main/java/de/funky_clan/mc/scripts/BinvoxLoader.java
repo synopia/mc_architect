@@ -25,14 +25,11 @@ public class BinvoxLoader {
     private EventBus eventBus;
 
     @Inject
-    private WorldGraphics worldGraphics;
-
-    @Inject
     public BinvoxLoader(final EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
-    public void load( String filename, int sx, int sy, int sz, int ex, int ey, int ez ) {
+    public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez ) {
         try {
             FileInputStream fileInput = new FileInputStream(filename);
             DataInputStream input = new DataInputStream( new BufferedInputStream(fileInput));
@@ -55,12 +52,16 @@ public class BinvoxLoader {
             }
             done = false;
             int x=0, y=0, z=0;
+            int halfSizeX = (ex-sx)/2;
+            int halfSizeY = (ey-sy)/2;
+            int halfSizeZ = (ez-sz)/2;
             while( !done ) {
                 byte value = input.readByte();
                 int count = input.readByte() & 0xff;
                 for( int i=0; i<count; i++ ) {
                     if( value>0 && x>=sx && y>=sy && z>=sz && x<=ex && y<=ey && z<=ez ) {
-                        worldGraphics.setPixel(2*sz-(z-sz),y-sy,x-sx,value);
+                        g.setPixel(x - sx - halfSizeX, y - sy - halfSizeY, z - sz - halfSizeZ, value);
+//                        g.setPixel(2 * sz - (z - sz), y - sy, x - sx, value);
                     }
 
                     y ++;
