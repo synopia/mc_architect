@@ -4,7 +4,7 @@
 java_import "de.funky_clan.mc.config.DataValues"
 
 mid_x = 1705
-mid_y = 69
+mid_y = 65
 mid_z = 188
 
 @world.set_origin 1695, 69, 91
@@ -21,5 +21,5 @@ mid_z = 188
 #@slice_x.set_origin 0, -32, 0
 @slice_x.set_scale 1, -1, -1
 
-@binvox.load @slice_x, "akw.binvox", 155, 162, 108, 369, 225, 309
+@binvox.load @slice_x, "akw.binvox", 155, 166, 108, 369, 225, 309
 
