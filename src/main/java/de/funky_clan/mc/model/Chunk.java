@@ -95,4 +95,8 @@ public final class Chunk {
     public void updateFullBlock(int type, byte[] data) {
         System.arraycopy(data, 0, map, CHUNK_ARRAY_SIZE*type, CHUNK_ARRAY_SIZE);
     }
+
+    public void clearBlueprint() {
+        Arrays.fill(map, CHUNK_ARRAY_SIZE, 2*CHUNK_ARRAY_SIZE, (byte)0);
+    }
 }

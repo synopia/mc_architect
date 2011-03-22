@@ -159,4 +159,10 @@ public class Model {
 
         return result;
     }
+
+    public void clearBlueprint() {
+        for (Chunk chunk : chunks.values()) {
+            chunk.clearBlueprint();
+        }
+    }
 }

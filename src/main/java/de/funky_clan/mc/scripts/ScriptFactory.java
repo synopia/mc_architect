@@ -5,6 +5,7 @@ import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.ScriptFinished;
 import de.funky_clan.mc.events.RunScript;
+import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
@@ -19,6 +20,10 @@ public class ScriptFactory {
     @Inject private SliceGraphics sliceGraphicsY;
     @Inject private SliceGraphics sliceGraphicsZ;
     @Inject private WorldGraphics worldGraphics;
+    @Inject private Model model;
+    @Inject
+    BinvoxLoader binvoxLoader;
+
 
     @Inject
     public ScriptFactory(final EventBus eventBus) {
@@ -26,6 +31,9 @@ public class ScriptFactory {
         eventBus.registerCallback(RunScript.class, new EventHandler<RunScript>() {
             @Override
             public void handleEvent(RunScript event) {
+                if( !event.getFileName().endsWith(".rb") ) {
+                    return;
+                }
                 sliceGraphicsX.setSliceType(SliceType.X);
                 sliceGraphicsY.setSliceType(SliceType.Y);
                 sliceGraphicsZ.setSliceType(SliceType.Z);
@@ -35,6 +43,8 @@ public class ScriptFactory {
                 container.put( "@slice_y", sliceGraphicsY);
                 container.put( "@slice_z", sliceGraphicsZ);
                 container.put( "@world", worldGraphics );
+                container.put( "@binvox", binvoxLoader );
+                container.put( "@model", model );
                 if( event.isUseClasspath() ) {
                     container.runScriptlet(PathType.CLASSPATH, event.getFileName() );
                 } else {

@@ -8,6 +8,7 @@ import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.net.protocol.PlayerPositionProtocol;
+import de.funky_clan.mc.scripts.WorldGraphics;
 import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.ui.renderer.*;
 import de.funky_clan.mc.util.Benchmark;
@@ -31,6 +32,7 @@ public class ArchitectModule implements Module {
         binder.bind(Box.class).in(Singleton.class);
         binder.bind(Benchmark.class).in(Singleton.class);
         binder.bind(Colors.class).in(Singleton.class);
+        binder.bind(WorldGraphics.class).in(Singleton.class);
 
         binder.bind(Model.class).in(Singleton.class);
         binder.bind(MainPanel.class).in(Singleton.class);

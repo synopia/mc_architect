@@ -53,7 +53,7 @@ public class RenderContext {
 
     public void updateWindowBox() {
         int minSlice = 0;
-        int maxSlice = 65;
+        int maxSlice = slice.getSlice();
         if( slice.getType()!=SliceType.Z ) {
             minSlice = slice.getSlice()-20;
             maxSlice = slice.getSlice()+20;
@@ -121,6 +121,7 @@ public class RenderContext {
         if( windowSizeX>0 && windowSizeY>0 ) {
             pixelSizeX = screenSizeX / windowSizeX;
             pixelSizeY = screenSizeY / windowSizeY;
+            pixelSizeY = pixelSizeX;
         } else {
             pixelSizeX = 0;
             pixelSizeY = 0;

@@ -1,6 +1,7 @@
 package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.Main;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.RunScript;
@@ -34,8 +35,11 @@ public class ScriptsPanel extends JPanel {
         });
 
         build();
-        addScriptButton("kolloseum.rb", true);
-        addScriptButton("akw.rb", true);
+        addScriptButton("kolloseum.rb", !Main.isDebug());
+        addScriptButton("akw.rb", !Main.isDebug());
+        if( Main.isDebug() ) {
+            addScriptButton("test.rb", false);
+        }
     }
 
     protected void build() {
