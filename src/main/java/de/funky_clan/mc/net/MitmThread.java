@@ -1,9 +1,6 @@
 package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.net.protocol.ClientProtocol9;
-import de.funky_clan.mc.net.protocol.MinecraftBinding;
-import de.funky_clan.mc.net.protocol.ServerProtocol9;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

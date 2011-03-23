@@ -3,13 +3,11 @@ package de.funky_clan.mc.config;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.eventbus.BackgroundEventBus;
-import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.net.protocol.PlayerPositionProtocol;
 import de.funky_clan.mc.scripts.WorldGraphics;
 import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.ui.renderer.*;
@@ -25,7 +23,7 @@ public class ArchitectModule implements Module {
         binder.bind(Model.class).in(Singleton.class);
 
         binder.bind(SwingEventBus.class).in(Singleton.class);
-        binder.bind(BackgroundEventBus.class).in(Singleton.class);
+        binder.bind(ModelEventBus.class).in(Singleton.class);
 
         binder.bind(PlayerPositionProtocol.class).in(Singleton.class);
         binder.bind(BlockRenderer.class).in(Singleton.class);

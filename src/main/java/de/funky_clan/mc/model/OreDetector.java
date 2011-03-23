@@ -5,7 +5,7 @@ import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.events.network.ChunkUpdate;
-import de.funky_clan.mc.events.background.OreFound;
+import de.funky_clan.mc.events.model.OreFound;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,14 +1,13 @@
 package de.funky_clan.mc.events.swing;
 
 import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.SwingEvent;
 
 import java.awt.*;
 
 /**
  * @author synopia
  */
-public final class ColorChanged implements SwingEvent {
+public final class ColorChanged implements Event {
     private final int blockId;
     private final Color color;
 

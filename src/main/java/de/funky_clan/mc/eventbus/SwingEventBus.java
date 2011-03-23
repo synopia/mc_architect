@@ -1,6 +1,7 @@
 package de.funky_clan.mc.eventbus;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * Whenever an event is fired to the swing eventbus, it is checked, which thread fired the event:
@@ -9,18 +10,29 @@ import javax.swing.*;
  *
  * @author synopia
  */
-public class SwingEventBus extends EventBus<SwingEvent> {
+public class SwingEventBus extends EventBus {
     @Override
-    public void fireEvent(final Object topic, final SwingEvent event) {
+    public void fireEvent(final Event event) {
         if( SwingUtilities.isEventDispatchThread() ) {
-            handleEvent(topic, event);
+            handleEvent(event);
         } else {
-            SwingUtilities.invokeLater( new Runnable() {
-                @Override
-                public void run() {
-                    handleEvent(topic, event);
-                }
-            });
+            handleEventInEdt(event);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    protected void handleEventInEdt(final Event event) {
+        if( event!=null && hasCallbacks(event) ) {
+            List<EventHandler> callbacks = getCallbacks(event);
+            for (final EventHandler callback : callbacks) {
+                SwingUtilities.invokeLater( new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.handleEvent(event);
+                    }
+                });
+            }
+        }
+    }
+
 }

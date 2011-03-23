@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author synopia
  */
-public abstract class NetworkEventBus extends ThreadedEventBus<NetworkEvent>{
+public abstract class NetworkEventBus extends ThreadedEventBus{
 
     @Override
     public void start() {

@@ -14,8 +14,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * @author synopia
  */
-public abstract class ThreadedEventBus<E extends ThreadedEvent> extends EventBus<E>{
-    protected BlockingQueue<E> events = new LinkedBlockingQueue<E>();
+public abstract class ThreadedEventBus extends EventBus {
+    protected BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private Thread thread;
 
     public ThreadedEventBus() {
@@ -28,9 +28,9 @@ public abstract class ThreadedEventBus<E extends ThreadedEvent> extends EventBus
                 List<EventHandler> list = new ArrayList<EventHandler>();
                 while (true) {
                     try {
-                        E event = events.take();
+                        Event event = events.take();
                         list.clear();
-                        getCallbacks(event.getTopic(), event, list);
+                        getCallbacks(event, list);
                         handleEvent(list, event);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -41,17 +41,10 @@ public abstract class ThreadedEventBus<E extends ThreadedEvent> extends EventBus
         thread.start();
     }
 
-    // todo threaded eventbus shutdown
-
     @Override
-    public void fireEvent(Object topic, E event) {
-        throw new UnsupportedOperationException("ThreadedEventBus only accepts events with associated topics!");
-    }
-
-    @Override
-    public void fireEvent(final E event) {
+    public void fireEvent(final Event event) {
         if( Thread.currentThread()==thread ) {
-            handleEvent(event.getTopic(), event);
+            handleEvent(event);
         } else {
             events.add( event );
         }

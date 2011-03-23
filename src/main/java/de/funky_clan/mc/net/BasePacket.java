@@ -6,8 +6,4 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
  * @author synopia
  */
 public abstract class BasePacket implements NetworkEvent {
-    @Override
-    public Object getTopic() {
-        return getPacketId();
-    }
 }

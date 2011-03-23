@@ -1,12 +1,11 @@
 package de.funky_clan.mc.events.swing;
 
 import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.SwingEvent;
 
 /**
  * @author synopia
  */
-public class ConnectionDetailsChanged implements SwingEvent {
+public class ConnectionDetailsChanged implements Event {
     private String readableHost;
     private String host;
     private int port;

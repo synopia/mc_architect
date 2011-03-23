@@ -3,12 +3,19 @@ package de.funky_clan.mc.model;
 //~--- JDK imports ------------------------------------------------------------
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.network.BlockUpdate;
+import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.NetworkEventBus;
+import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.events.network.ChunkUpdate;
 import de.funky_clan.mc.events.network.UnloadChunk;
 import de.funky_clan.mc.math.Position;
+import de.funky_clan.mc.net.packets.BlockMultiUpdate;
+import de.funky_clan.mc.net.packets.BlockUpdate;
+import de.funky_clan.mc.net.packets.ChunkData;
+import de.funky_clan.mc.net.packets.ChunkPreparation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,47 +30,57 @@ public class Model {
     private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
     private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
     private final Logger log = LoggerFactory.getLogger(Model.class);
-    private EventBus eventBus;
+
+    @Inject
+    private EventDispatcher eventDispatcher;
 
     public interface BlockUpdateCallable {
+        void updateChunk( Chunk chunk, byte[] data );
         void updateBlock( Chunk chunk, int x, int y, int z, int value );
     }
 
     @Inject
-    public Model(final EventBus eventBus) {
-        this.eventBus = eventBus;
+    public Model(final ModelEventBus eventBus) {
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
-                setPixel(event.getX(), event.getY(), event.getZ(), 0, event.getType() );
+                setPixel(event.getX(), event.getY(), event.getZ(), 0, event.getType());
+                eventDispatcher.fire(new ModelUpdate(event.getX(), event.getY(), event.getZ(), 1,1,1));
             }
         });
-        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+        eventBus.registerCallback(BlockMultiUpdate.class, new EventHandler<BlockMultiUpdate>() {
             @Override
-            public void handleEvent(ChunkUpdate event) {
-                setBlock(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData());
+            public void handleEvent(BlockMultiUpdate event) {
+                event.each(new BlockMultiUpdate.Each() {
+                    @Override
+                    public void update(int x, int y, int z, int type, int meta) {
+                        setPixel(x, y, z, 0, type);
+                        eventDispatcher.fire(new ModelUpdate(x, y, z, 1, 1, 1));
+                    }
+                });
             }
         });
-        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
+        eventBus.registerCallback(ChunkData.class, new EventHandler<ChunkData>() {
             @Override
-            public void handleEvent(UnloadChunk event) {
-                int chunkX = event.getChunkX();
-                int chunkZ = event.getChunkZ();
+            public void handleEvent(ChunkData event) {
+                setBlock(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData());
+                eventDispatcher.fire(new ModelUpdate(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ()));
+            }
+        });
+        eventBus.registerCallback(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
+            @Override
+            public void handleEvent(ChunkPreparation event) {
+                int chunkX = event.getX();
+                int chunkZ = event.getZ();
                 removeChunk(chunkX,chunkZ);
-
             }
         });
-    }
-
-    // todo tidy up this!
-    public void interate( ChunkUpdate event, BlockUpdateCallable callable ) {
-        interate(event.getSx(), event.getSy(), event.getSz(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), event.getData(), callable);
     }
 
     public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data, BlockUpdateCallable callable ) {
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getOrCreateChunk(sx, sy, sz);
-            chunk.updateFullBlock(0, data );
+            callable.updateChunk(chunk, data);
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
@@ -75,10 +92,15 @@ public class Model {
                 }
             }
         }
-
     }
+
     public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
         interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
+            @Override
+            public void updateChunk(Chunk chunk, byte[] data) {
+                chunk.updateFullBlock(0, data);
+            }
+
             @Override
             public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
                 chunk.setPixel(x, y, z, 0, value);
@@ -112,8 +134,12 @@ public class Model {
         }
     }
 
-    private Chunk getChunk(int x, int y) {
+    public Chunk getChunk(int x, int y) {
         long id = getChunkId(x, y);
+        return chunks.get(id);
+    }
+
+    public Chunk getChunk(long id) {
         return chunks.get(id);
     }
 

@@ -19,9 +19,8 @@ import java.util.List;
  *
  * @author synopia
  */
-public class EventBus<E extends Event> {
-    private HashMap<Class<? extends E>, List<EventHandler<?>>> allHandlers = new HashMap<Class<? extends E>, List<EventHandler<?>>>();
-    private HashMap<Object, HashMap<Class<? extends E>, List<EventHandler<?>>>> topicHandlers = new HashMap<Object, HashMap<Class<? extends E>, List<EventHandler<?>>>>();
+public class EventBus {
+    private HashMap<Class<? extends Event>, List<EventHandler<?>>> handlers = new HashMap<Class<? extends Event>, List<EventHandler<?>>>();
 
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
@@ -31,13 +30,13 @@ public class EventBus<E extends Event> {
     public EventBus() {
     }
 
-    protected void handleEvent(Object topic, E event) {
-        handleEvent(getCallbacks(topic, event), event);
+    protected void handleEvent(Event event) {
+        handleEvent(getCallbacks(event), event);
     }
 
     @SuppressWarnings("unchecked")
-    protected void handleEvent(List<EventHandler> callbacks, E event) {
-        if( event!=null ) {
+    protected void handleEvent(List<EventHandler> callbacks, Event event) {
+        if( event!=null && hasCallbacks(event) ) {
             benchmark.startBenchmark(this);
 //            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
@@ -47,57 +46,35 @@ public class EventBus<E extends Event> {
         }
     }
 
-    public void fireEvent( final E event ) {
-        fireEvent( null, event );
-    }
-    public void fireEvent( Object topic, final E event ) {
-        handleEvent(getCallbacks(topic, event), event);
+    public void fireEvent( final Event event ) {
+        handleEvent(getCallbacks(event), event);
     }
 
-    public synchronized <T extends E> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
-        addCallback( allHandlers, cls, callback );
+    public synchronized boolean hasCallbacks( Event event ) {
+        return handlers.containsKey(event.getClass());
     }
 
-    public synchronized <T extends E> void registerCallback( Object topic, Class<T> cls, EventHandler<T> callback ) {
-        HashMap<Class<? extends E>, List<EventHandler<?>>> topicHandlers;
-        if( this.topicHandlers.containsKey(topic) ) {
-            topicHandlers = this.topicHandlers.get(topic);
-        } else {
-            topicHandlers = new HashMap<Class<? extends E>, List<EventHandler<?>>>();
-            this.topicHandlers.put(topic, topicHandlers);
-        }
-        addCallback(topicHandlers, cls, callback);
+    public synchronized <T extends Event> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
+        addCallback(handlers, cls, callback);
     }
 
-    protected List<EventHandler> getCallbacks(Object topic, E event) {
+    protected List<EventHandler> getCallbacks(Event event) {
         ArrayList<EventHandler> handlers = new ArrayList<EventHandler>();
-        getCallbacks(topic, event, handlers );
+        getCallbacks(event, handlers );
         return handlers;
     }
 
-    protected synchronized void getCallbacks(Object topic, E event, List<EventHandler> resultCallbacks) {
+    protected synchronized void getCallbacks(Event event, List<EventHandler> resultCallbacks) {
         Class cls = event.getClass();
-        if( topic!=null ) {
-            if( topicHandlers.containsKey(topic) ) {
-                HashMap<Class<? extends E>, List<EventHandler<?>>> channelHandler = topicHandlers.get(topic);
-                if( channelHandler.containsKey(cls) ) {
-                    List<EventHandler<?>> callbacks = channelHandler.get(cls);
-                    for (EventHandler callback : callbacks) {
-                        resultCallbacks.add(callback);
-                    }
-                }
-            }
-        }
-
-        if( allHandlers.containsKey(cls) ) {
-            List<EventHandler<?>> callbackList = allHandlers.get(cls);
+        if( handlers.containsKey(cls) ) {
+            List<EventHandler<?>> callbackList = handlers.get(cls);
             for (EventHandler callback : callbackList) {
                 resultCallbacks.add(callback);
             }
         }
     }
 
-    private <T extends E>void addCallback(HashMap<Class<? extends E>, List<EventHandler<?>>> target, Class<T> cls, EventHandler<T> handler) {
+    private <T extends Event>void addCallback(HashMap<Class<? extends Event>, List<EventHandler<?>>> target, Class<T> cls, EventHandler<T> handler) {
         List<EventHandler<?>> handlerList;
         if( target.containsKey(cls) ) {
             handlerList = target.get(cls);

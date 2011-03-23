@@ -1,14 +1,13 @@
 package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.NetworkEventBus;
 import de.funky_clan.mc.net.packets.Handshake;
 import de.funky_clan.mc.net.packets.LoginRequest;
-import de.funky_clan.mc.net.protocol.MinecraftBinding;
 
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +23,9 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     @Inject
     private MinecraftBinding minecraftBinding;
+
+    @Inject
+    private EventDispatcher eventDispatcher;
 
     protected MinecraftNetworkEventBus() {
         addPacketType( LoginRequest.ID, LoginRequest.class );
@@ -47,7 +49,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
                 packet.decode(in);
-                fireEvent(packet);
+                eventDispatcher.fire(packet);
             } else {
                 handleUnknownPacket( packetId );
             }

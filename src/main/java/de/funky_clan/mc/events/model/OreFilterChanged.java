@@ -1,12 +1,11 @@
-package de.funky_clan.mc.events.background;
+package de.funky_clan.mc.events.model;
 
-import de.funky_clan.mc.eventbus.BackgroundEvent;
 import de.funky_clan.mc.eventbus.Event;
 
 /**
  * @author synopia
  */
-public class OreFilterChanged implements BackgroundEvent {
+public class OreFilterChanged implements Event {
     private boolean [] filter;
 
     public OreFilterChanged(boolean[] filter) {

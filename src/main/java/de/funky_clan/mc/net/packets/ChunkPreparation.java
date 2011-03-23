@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ChunkPreparation extends BasePacket {
     public static final int ID = 0x32;
     private int x;
-    private int y;
+    private int z;
     private boolean mode;
 
     @Override
@@ -23,7 +23,7 @@ public class ChunkPreparation extends BasePacket {
     @Override
     public void decode(DataInputStream in) throws IOException {
         x = in.readInt();
-        y = in.readInt();
+        z = in.readInt();
         mode = in.readBoolean();
     }
 
@@ -36,8 +36,8 @@ public class ChunkPreparation extends BasePacket {
         return x;
     }
 
-    public int getY() {
-        return y;
+    public int getZ() {
+        return z;
     }
 
     public boolean isMode() {

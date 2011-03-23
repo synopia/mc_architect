@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public interface NetworkEvent extends ThreadedEvent {
+public interface NetworkEvent extends Event {
     int getPacketId();
     void decode( DataInputStream in ) throws IOException;
     void encode( DataOutputStream out );

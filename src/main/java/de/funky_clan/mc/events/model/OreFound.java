@@ -1,6 +1,5 @@
-package de.funky_clan.mc.events.background;
+package de.funky_clan.mc.events.model;
 
-import de.funky_clan.mc.eventbus.BackgroundEvent;
 import de.funky_clan.mc.eventbus.Event;
 import de.funky_clan.mc.model.Ore;
 
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * @author synopia
  */
-public class OreFound implements BackgroundEvent {
+public class OreFound implements Event {
     private long  chunkId;
     private List<Ore> ores;
 

@@ -1,14 +1,11 @@
 package de.funky_clan.mc.events.swing;
 
 import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.SwingEvent;
-
-import javax.swing.*;
 
 /**
  * @author synopia
  */
-public abstract class MouseEvent implements SwingEvent {
+public abstract class MouseEvent implements Event {
     private int x;
     private int y;
     private int z;
