@@ -37,12 +37,9 @@ public class EventBus {
     @SuppressWarnings("unchecked")
     protected void handleEvent(List<EventHandler> callbacks, Event event) {
         if( event!=null && hasCallbacks(event) ) {
-            benchmark.startBenchmark(this);
-//            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
             }
-            benchmark.endBenchmark(this);
         }
     }
 

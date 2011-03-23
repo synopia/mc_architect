@@ -74,9 +74,9 @@ public class Main extends JFrame {
         });
         eventDispatcher.fire(new Initialize());
         if( isDebug() ) {
-            eventDispatcher.fire(new ConnectionDetailsChanged("localhost"));
+            eventDispatcher.fire(new ConnectionDetailsChanged(12345,"localhost"));
         } else {
-            eventDispatcher.fire(new ConnectionDetailsChanged("mc.funky-clan.de"));
+            eventDispatcher.fire(new ConnectionDetailsChanged(12345,"mc.funky-clan.de"));
         }
     }
 
@@ -89,7 +89,6 @@ public class Main extends JFrame {
 
         minecraftServer.start();
         minecraftClient.start();
-        minecraftService.start();
     }
 
     public static void main( String[] args ) {

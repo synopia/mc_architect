@@ -3,6 +3,7 @@ package de.funky_clan.mc.scripts;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.swing.ScriptFinished;
 import de.funky_clan.mc.events.model.RunScript;
 import de.funky_clan.mc.model.Model;
@@ -14,8 +15,6 @@ import org.jruby.embed.ScriptingContainer;
  * @author synopia
  */
 public class ScriptFactory {
-    private EventBus eventBus;
-
     @Inject private SliceGraphics sliceGraphicsX;
     @Inject private SliceGraphics sliceGraphicsY;
     @Inject private SliceGraphics sliceGraphicsZ;
@@ -26,8 +25,7 @@ public class ScriptFactory {
 
 
     @Inject
-    public ScriptFactory(final EventBus eventBus) {
-        this.eventBus = eventBus;
+    public ScriptFactory(final ModelEventBus eventBus) {
         eventBus.registerCallback(RunScript.class, new EventHandler<RunScript>() {
             @Override
             public void handleEvent(RunScript event) {

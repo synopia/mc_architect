@@ -34,7 +34,6 @@ public class MainPanel extends JPanel {
     private SlicePanel       topDown;
     private int              zShift;
     private JLabel zShiftLabel;
-    private EventBus         eventBus;
     @Inject ColorsPanel       colorsPanel;
     @Inject
     ScriptsPanel scriptsPanel;
@@ -53,7 +52,6 @@ public class MainPanel extends JPanel {
 
     @Inject
     public MainPanel(final SwingEventBus eventBus) {
-        this.eventBus = eventBus;
         eventBus.registerCallback(MouseRectangle.class, new EventHandler<MouseRectangle>() {
             @Override
             public void handleEvent(MouseRectangle event) {

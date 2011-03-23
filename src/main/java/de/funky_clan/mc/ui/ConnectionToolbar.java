@@ -57,7 +57,7 @@ public class ConnectionToolbar extends JToolBar {
         host.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventDispatcher.fire(new ConnectionDetailsChanged(host.getText()));
+                eventDispatcher.fire(new ConnectionDetailsChanged(12345, host.getText()));
             }
         });
 

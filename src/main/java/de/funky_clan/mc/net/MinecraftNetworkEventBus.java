@@ -29,7 +29,6 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     protected MinecraftNetworkEventBus() {
         addPacketType( LoginRequest.ID, LoginRequest.class );
-        addPacketType( Handshake.ID,    Handshake.class );
     }
 
     public synchronized void connect( InputStream in, OutputStream out ) {
@@ -45,7 +44,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     @Override
     protected void processNetwork() {
         try {
-            int packetId = in.readByte();
+            int packetId = in.readByte() & 0xff;
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
                 packet.decode(in);
@@ -65,6 +64,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     @Override
     protected synchronized void disconnect(NetworkException e) {
+        e.printStackTrace();
         eventDispatcher.fire(new ConnectionLost() );
 
         connected = false;

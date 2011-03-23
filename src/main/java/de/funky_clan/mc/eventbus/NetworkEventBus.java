@@ -1,6 +1,8 @@
 package de.funky_clan.mc.eventbus;
 
 import de.funky_clan.mc.net.NetworkException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,6 +17,7 @@ import java.util.List;
  * @author synopia
  */
 public abstract class NetworkEventBus extends ThreadedEventBus{
+    private final Logger logger = LoggerFactory.getLogger(NetworkEventBus.class);
 
     @Override
     public void start() {

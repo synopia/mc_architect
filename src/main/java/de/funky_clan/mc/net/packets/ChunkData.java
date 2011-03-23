@@ -22,6 +22,9 @@ public class ChunkData extends BasePacket {
     private int sizeZ;
     private byte[] data;
 
+    public ChunkData() {
+    }
+
     public ChunkData(int x, int y, int z, int sizeX, int sizeY, int sizeZ, byte[] data) {
         this.x = x;
         this.y = y;

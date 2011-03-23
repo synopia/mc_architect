@@ -9,6 +9,8 @@ import de.funky_clan.mc.net.packets.*;
 @Singleton
 public class MinecraftClient extends MinecraftNetworkEventBus {
     public MinecraftClient() {
+        addPacketType( Handshake.ID,    Handshake.class );
+
         addPacketType(EntityAttach.ID,              EntityAttach.class);
         addPacketType(EntityLook.ID,                EntityLook.class);
         addPacketType(EntityRelativeMove.ID,        EntityRelativeMove.class);
