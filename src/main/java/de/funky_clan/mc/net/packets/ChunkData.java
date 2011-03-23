@@ -22,6 +22,16 @@ public class ChunkData extends BasePacket {
     private int sizeZ;
     private byte[] data;
 
+    public ChunkData(int x, int y, int z, int sizeX, int sizeY, int sizeZ, byte[] data) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.data = data;
+    }
+
     @Override
     public int getPacketId() {
         return ID;

@@ -3,9 +3,9 @@ package de.funky_clan.mc.ui;
 //~--- non-JDK imports --------------------------------------------------------
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.swing.PlayerMoved;
+import de.funky_clan.mc.eventbus.SwingEventBus;
+import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.model.Model;
 
 import javax.swing.*;
@@ -20,19 +20,16 @@ public class PlayerInfoToolbar extends JToolBar {
     private JLabel direction;
     @Inject
     private Model  model;
-    private EventBus eventBus;
 
     @Inject
-    public PlayerInfoToolbar(final EventBus eventBus) {
+    public PlayerInfoToolbar(final SwingEventBus eventBus) {
         setAlignmentX(LEFT_ALIGNMENT);
-        this.eventBus = eventBus;
 
         build();
 
-
-        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent(PlayerMoved event) {
+            public void handleEvent(PlayerPositionUpdate event) {
                 direction.setText("Direction: " + formatDirection((int) event.getYaw()));
                 position.setText("Position: " + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
             }

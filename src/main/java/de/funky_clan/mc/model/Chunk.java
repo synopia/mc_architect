@@ -99,4 +99,8 @@ public final class Chunk {
     public void clearBlueprint() {
         Arrays.fill(map, CHUNK_ARRAY_SIZE, 2*CHUNK_ARRAY_SIZE, (byte)0);
     }
+
+    byte[] getMap() {
+        return map;
+    }
 }

@@ -3,14 +3,11 @@ package de.funky_clan.mc.model;
 //~--- JDK imports ------------------------------------------------------------
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.eventbus.NetworkEventBus;
 import de.funky_clan.mc.events.model.ModelUpdate;
-import de.funky_clan.mc.events.network.ChunkUpdate;
-import de.funky_clan.mc.events.network.UnloadChunk;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import de.funky_clan.mc.net.packets.BlockUpdate;
@@ -26,6 +23,7 @@ import static de.funky_clan.mc.model.Chunk.getChunkId;
 /**
  * @author synopia
  */
+@Singleton
 public class Model {
     private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
     private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
@@ -88,6 +86,22 @@ public class Model {
                         int i = y + (z*sizeY) + x * sizeY * sizeZ;
                         Chunk chunk = getOrCreateChunk(sx + x, sy + y, sz + z);
                         callable.updateBlock(chunk, sx + x, sy + y, sz + z, data[i]);
+                    }
+                }
+            }
+        }
+    }
+
+    public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, BlockUpdateCallable callable ) {
+        if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
+            Chunk chunk = getOrCreateChunk(sx, sy, sz);
+            callable.updateChunk(chunk, chunk.getMap());
+        } else {
+            for( int x=0; x<sizeX; x++ ) {
+                for( int y=0; y<sizeY; y++ ) {
+                    for( int z=0; z<sizeZ; z++ ) {
+                        Chunk chunk = getOrCreateChunk(sx + x, sy + y, sz + z);
+                        callable.updateBlock(chunk, sx + x, sy + y, sz + z, chunk.getPixel(sx+x,sy+y,sz+z,0));
                     }
                 }
             }

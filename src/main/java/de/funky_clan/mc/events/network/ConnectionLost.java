@@ -6,5 +6,5 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 /**
  * @author synopia
  */
-public class ConnectionLost implements NetworkEvent {
+public class ConnectionLost implements Event {
 }

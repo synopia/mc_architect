@@ -20,17 +20,13 @@ public class ArchitectModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(Model.class).in(Singleton.class);
 
-        binder.bind(SwingEventBus.class).in(Singleton.class);
-        binder.bind(ModelEventBus.class).in(Singleton.class);
-
-        binder.bind(PlayerPositionProtocol.class).in(Singleton.class);
         binder.bind(BlockRenderer.class).in(Singleton.class);
         binder.bind(ImageRenderer.class).in(Singleton.class);
         binder.bind(PlayerRenderer.class).in(Singleton.class);
         binder.bind(SliceRenderer.class).in(Singleton.class);
         binder.bind(BoxRenderer.class).in(Singleton.class);
+
         binder.bind(Box.class).in(Singleton.class);
         binder.bind(Benchmark.class).in(Singleton.class);
         binder.bind(Colors.class).in(Singleton.class);

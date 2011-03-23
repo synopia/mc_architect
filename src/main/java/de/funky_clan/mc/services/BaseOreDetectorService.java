@@ -1,11 +1,15 @@
-package de.funky_clan.mc.model;
+package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.network.ChunkUpdate;
+import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.events.model.OreFound;
+import de.funky_clan.mc.model.Chunk;
+import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.model.Ore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,10 +17,12 @@ import java.util.Arrays;
 /**
  * @author synopia
  */
-public class OreDetector {
-    private EventBus eventBus;
+public abstract class BaseOreDetectorService {
     @Inject
     private Model model;
+    @Inject
+    private EventDispatcher eventDispatcher;
+
     private ArrayList<Ore> ores = new ArrayList<Ore>();
     private boolean[] closedMap = new boolean[16*128*16];
     private byte[] data;
@@ -24,50 +30,47 @@ public class OreDetector {
     private int startY;
     private int startZ;
 
-    @Inject
-    public OreDetector(final EventBus eventBus) {
-        this.eventBus = eventBus;
 
-        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+    @Inject
+    public BaseOreDetectorService(final ModelEventBus eventBus) {
+
+        eventBus.registerCallback(ModelUpdate.class, new EventHandler<ModelUpdate>() {
             @Override
-            public void handleEvent(ChunkUpdate event) {
+            public void handleEvent(ModelUpdate event) {
                 Arrays.fill(closedMap,false);
                 ores = new ArrayList<Ore>();
 
-                startX = event.getSx();
-                startY = event.getSy();
-                startZ = event.getSz();
-                int sizeX = event.getSizeX();
-                int sizeY = event.getSizeY();
-                int sizeZ = event.getSizeZ();
-                data = event.getData();
+                model.interate( event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), new Model.BlockUpdateCallable() {
+                    @Override
+                    public void updateChunk(Chunk chunk, byte[] data) {
+                        int len = 16*128*16;
+                        for (int i = 0; i < len; i++) {
+                            int x = (i>>11);
+                            int y = i & 0x7f;
+                            int z = ((i&0x780)>>7);
 
-                if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
-                    Chunk chunk = model.getOrCreateChunk(startX, startY, startZ);
-                    int len = 16*128*16;
-                    for (int i = 0; i < len; i++) {
-                        int x = (i>>11);
-                        int y = i & 0x7f;
-                        int z = ((i&0x780)>>7);
+                            if( isOre( data[i] ) ) {
+                                if( !closedMap[i] ) {
+                                    Ore ore = findOre(startX + x, startY + y, startZ + z);
+                                    if( ore==null ) {
+                                        ore = new Ore(startX + x, startY + y, startZ + z);
+                                    }
 
-                        if( isOre( data[i] ) ) {
-                            if( !closedMap[i] ) {
-                                Ore ore = findOre(startX + x, startY + y, startZ + z);
-                                if( ore==null ) {
-                                    ore = new Ore(startX + x, startY + y, startZ + z);
-                                }
-
-                                ore = followOre(x,y,z, ore);
-                                if( ore!=null && !ores.contains(ore) ) {
-                                    ores.add(ore);
+                                    ore = followOre(x,y,z, ore);
+                                    if( ore!=null && !ores.contains(ore) ) {
+                                        ores.add(ore);
+                                    }
                                 }
                             }
                         }
+                        eventDispatcher.fire(new OreFound(chunk.getId(), ores));
                     }
-                    eventBus.fireEvent(new OreFound(chunk.getId(), ores));
-                } else {
-//                    throw new RuntimeException(sizeX+", "+sizeY+", "+sizeZ);
-                }
+
+                    @Override
+                    public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
+                        // todo
+                    }
+                });
             }
         });
     }

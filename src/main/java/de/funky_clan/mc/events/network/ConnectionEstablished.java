@@ -6,7 +6,7 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 /**
  * @author synopia
  */
-public class ConnectionEstablished implements NetworkEvent {
+public class ConnectionEstablished implements Event {
     private String username;
 
     public ConnectionEstablished(String username) {

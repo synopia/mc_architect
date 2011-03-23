@@ -4,11 +4,11 @@ package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
-import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.network.BlockUpdate;
-import de.funky_clan.mc.events.network.ChunkUpdate;
-import de.funky_clan.mc.events.swing.PlayerMoved;
+import de.funky_clan.mc.eventbus.SwingEventBus;
+import de.funky_clan.mc.events.model.ModelUpdate;
+import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.events.swing.MouseMoved;
 import de.funky_clan.mc.events.swing.MouseRectangle;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
@@ -38,7 +38,10 @@ public class SlicePanel extends ZoomPanel {
     private Slice           slice;
     private int             sliceNo;
     @Inject
-    private EventBus        eventBus;
+    private EventDispatcher eventDispatcher;
+    @Inject
+    private SwingEventBus eventBus;
+
     private final List<Ore> ores = new ArrayList<Ore>();
     @Inject
     private Colors colors;
@@ -85,9 +88,9 @@ public class SlicePanel extends ZoomPanel {
                 repaint();
             }
         });
-        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent(PlayerMoved event) {
+            public void handleEvent(PlayerPositionUpdate event) {
                 player.setPosition(event.getX(), event.getY(), event.getZ());
                 player.setDirection( (int)event.getYaw() );
 
@@ -96,16 +99,9 @@ public class SlicePanel extends ZoomPanel {
             }
         });
 
-        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+        eventBus.registerCallback(ModelUpdate.class, new EventHandler<ModelUpdate>() {
             @Override
-            public void handleEvent(ChunkUpdate event) {
-                repaint();
-            }
-        });
-
-        eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
-            @Override
-            public void handleEvent(BlockUpdate event) {
+            public void handleEvent(ModelUpdate event) {
                 repaint();
             }
         });
@@ -138,7 +134,7 @@ public class SlicePanel extends ZoomPanel {
             int sizeX = ex-sx;
             int sizeY = ey-sy;
             int sizeZ = ez-sz;
-            eventBus.fireEvent(new MouseRectangle(sx, sy, sz, sizeX, sizeY, sizeZ) );
+            eventDispatcher.fire(new MouseRectangle(sx, sy, sz, sizeX, sizeY, sizeZ));
         }
     }
 
@@ -176,14 +172,14 @@ public class SlicePanel extends ZoomPanel {
         int blockZ = position.getBlockZ();
 
         if( lastMouseX!= blockX || lastMouseY!= blockY || lastMouseZ!= blockZ) {
-            eventBus.fireEvent(new MouseMoved(blockX, blockY, blockZ));
+            eventDispatcher.fire(new MouseMoved(blockX, blockY, blockZ));
         }
         lastMouseX = blockX;
         lastMouseY = blockY;
         lastMouseZ = blockZ;
 
         if( selectionBoxMode ) {
-            eventBus.fireEvent(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockX+1, blockY+1, blockZ+1));
+            eventDispatcher.fire(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockX + 1, blockY + 1, blockZ + 1));
             repaint();
         }
     }
@@ -196,7 +192,7 @@ public class SlicePanel extends ZoomPanel {
         blockStartY = position.getBlockY();
         blockStartZ = position.getBlockZ();
 
-        eventBus.fireEvent(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockStartX +1, blockStartY +1, blockStartZ +1));
+        eventDispatcher.fire(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockStartX + 1, blockStartY + 1, blockStartZ + 1));
         selectionBoxMode = true;
 
         repaint();

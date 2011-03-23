@@ -11,7 +11,8 @@ public class ConnectionDetailsChanged implements Event {
     private int port;
     private int listeningPort;
 
-    public ConnectionDetailsChanged(String readableHost) {
+    public ConnectionDetailsChanged(int listeningPort, String readableHost) {
+        this.listeningPort = listeningPort;
         this.readableHost = readableHost;
         if( readableHost.indexOf(':')!=-1 ) {
             String[] split = readableHost.split(":", 2);

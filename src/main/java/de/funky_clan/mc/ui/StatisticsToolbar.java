@@ -1,11 +1,11 @@
 package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.network.ChunkUpdate;
+import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
-import de.funky_clan.mc.events.network.UnloadChunk;
+import de.funky_clan.mc.net.packets.ChunkData;
+import de.funky_clan.mc.net.packets.ChunkPreparation;
 import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.*;
@@ -25,27 +25,28 @@ public class StatisticsToolbar extends JToolBar {
     private JLabel           oreText;
     @Inject
     private Benchmark benchmark;
-    private EventBus eventBus;
-    
+
     @Inject
-    public StatisticsToolbar(EventBus eventBus) {
+    public StatisticsToolbar(SwingEventBus eventBus) {
         setAlignmentX(LEFT_ALIGNMENT);
-        this.eventBus = eventBus;
 
         build();
-        eventBus.registerCallback(ChunkUpdate.class, new EventHandler<ChunkUpdate>() {
+        eventBus.registerCallback(ChunkData.class, new EventHandler<ChunkData>() {
             @Override
-            public void handleEvent(ChunkUpdate event) {
+            public void handleEvent(ChunkData event) {
                 chunksLoaded++;
             }
         });
-        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
+        eventBus.registerCallback(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
             @Override
-            public void handleEvent(UnloadChunk event) {
-                chunksUnloaded++;
-                chunksLoaded--;
+            public void handleEvent(ChunkPreparation event) {
+                if( !event.isLoad() ) {
+                    chunksUnloaded++;
+                    chunksLoaded--;
+                }
             }
         });
+
         eventBus.registerCallback(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
             public void handleEvent(OreDisplayUpdate event) {
@@ -87,9 +88,9 @@ public class StatisticsToolbar extends JToolBar {
 
         HashMap<Object, Double> results = benchmark.getResults();
         double eventBusTime = 0;
-        if( results.containsKey(eventBus) ) {
-            eventBusTime = results.get(eventBus);
-        }
+//        if( results.containsKey(eventBus) ) {
+//            eventBusTime = results.get(eventBus);
+//        }
         double renderTime = 0;
         if( results.containsKey(ZoomPanel.class) ) {
             renderTime = results.get(ZoomPanel.class);

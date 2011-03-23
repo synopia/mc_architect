@@ -1,5 +1,7 @@
 package de.funky_clan.mc.eventbus;
 
+import com.google.inject.Singleton;
+
 import javax.swing.*;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import java.util.List;
  *
  * @author synopia
  */
+@Singleton
 public class SwingEventBus extends EventBus {
     @Override
     public void fireEvent(final Event event) {

@@ -1,8 +1,10 @@
 package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
@@ -15,14 +17,14 @@ import java.awt.event.ActionListener;
  * @author synopia
  */
 public class ConnectionToolbar extends JToolBar {
+    @Inject
+    private EventDispatcher eventDispatcher;
     private JLabel connectionStatus;
-    private EventBus eventBus;
     private JTextField host;
 
     @Inject
-    public ConnectionToolbar(EventBus eventBus) {
+    public ConnectionToolbar(SwingEventBus eventBus) {
         setAlignmentX(LEFT_ALIGNMENT);
-        this.eventBus = eventBus;
         build();
 
         eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
@@ -55,7 +57,7 @@ public class ConnectionToolbar extends JToolBar {
         host.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventBus.fireEvent(new ConnectionDetailsChanged(host.getText()));
+                eventDispatcher.fire(new ConnectionDetailsChanged(host.getText()));
             }
         });
 

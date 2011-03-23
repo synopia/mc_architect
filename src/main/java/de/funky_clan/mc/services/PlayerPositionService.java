@@ -30,6 +30,8 @@ public class PlayerPositionService {
     private int entityId = -1;
     private int attachedId = -1;
 
+    private int zShift = 0;
+
     @Inject
     private EventDispatcher eventDispatcher;
 
@@ -128,6 +130,7 @@ public class PlayerPositionService {
     }
 
     private void firePositionUpdate() {
+        z += zShift;
         double oldX = lastX;
         double oldY = lastY;
         double oldZ = lastZ;
@@ -141,4 +144,8 @@ public class PlayerPositionService {
         eventDispatcher.fire(new PlayerPositionUpdate(x, y, z, yaw, pitch, blockChanged, chunkChanged));
     }
 
+    public void setZShift(int zShift) {
+        this.zShift = zShift;
+        firePositionUpdate();
+    }
 }

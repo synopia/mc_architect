@@ -6,12 +6,18 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import de.funky_clan.mc.config.ArchitectModule;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 import de.funky_clan.mc.events.swing.Initialize;
-import de.funky_clan.mc.model.OreDetector;
-import de.funky_clan.mc.model.OreManager;
+import de.funky_clan.mc.net.MinecraftClient;
+import de.funky_clan.mc.net.MinecraftServer;
+import de.funky_clan.mc.net.MinecraftService;
+import de.funky_clan.mc.services.BaseOreDetectorService;
+import de.funky_clan.mc.services.OreDetectorService;
 import de.funky_clan.mc.scripts.ScriptFactory;
 import de.funky_clan.mc.ui.MainPanel;
 
@@ -26,16 +32,26 @@ public class Main extends JFrame {
 
     @Inject
     MainPanel mainPanel;
-    @Inject
-    EventBus eventBus;
+
 //    @Inject
 //    RegionFileService regionFileService;
+
     @Inject
-    OreDetector oreDetector;
-    @Inject
-    OreManager oreManager;
+    OreDetectorService oreDetectorService;
     @Inject
     ScriptFactory scriptFactory;
+    @Inject
+    SwingEventBus swingEventBus;
+    @Inject
+    EventDispatcher eventDispatcher;
+    @Inject
+    MinecraftService minecraftService;
+    @Inject
+    MinecraftServer minecraftServer;
+    @Inject
+    MinecraftClient minecraftClient;
+    @Inject
+    ModelEventBus modelEventBus;
 
     public Main() {
     }
@@ -45,21 +61,22 @@ public class Main extends JFrame {
     }
 
     public void init() {
+        startServices();
         String version = Main.class.getPackage().getImplementationVersion();
         setTitle("Minecraft Architect for v" + version);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(mainPanel);
-        eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
+        swingEventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
             @Override
             public void handleEvent(Initialize event) {
                 pack();
             }
         });
-        eventBus.fireEvent( new Initialize() );
+        eventDispatcher.fire(new Initialize());
         if( isDebug() ) {
-            eventBus.fireEvent(new ConnectionDetailsChanged("localhost"));
+            eventDispatcher.fire(new ConnectionDetailsChanged("localhost"));
         } else {
-            eventBus.fireEvent(new ConnectionDetailsChanged("mc.funky-clan.de"));
+            eventDispatcher.fire(new ConnectionDetailsChanged("mc.funky-clan.de"));
         }
     }
 
@@ -67,18 +84,19 @@ public class Main extends JFrame {
         this.setVisible( true );
     }
 
+    protected void startServices() {
+        modelEventBus.start();
+
+        minecraftServer.start();
+        minecraftClient.start();
+        minecraftService.start();
+    }
+
     public static void main( String[] args ) {
         ArchitectModule module = new ArchitectModule();
         Injector injector = Guice.createInjector(module);
 
-        String configFilename = "kolloseum.rb";
-
-        if( args.length > 0 ) {
-            configFilename = args[0];
-        }
-
-//        Configuration conf = Configuration.createFromRuby( configFilename );
-        Main          main = injector.getInstance(Main.class);
+        Main main = injector.getInstance(Main.class);
         main.init();
         main.start();
     }

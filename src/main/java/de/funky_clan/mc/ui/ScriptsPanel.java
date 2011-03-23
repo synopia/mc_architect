@@ -2,8 +2,10 @@ package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.Main;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.RunScript;
 import de.funky_clan.mc.events.swing.ScriptFinished;
 
@@ -15,16 +17,16 @@ import java.io.File;
  * @author synopia
  */
 public class ScriptsPanel extends JPanel {
-    private EventBus eventBus;
+
+    @Inject
+    private EventDispatcher eventDispatcher;
 
     private JButton load;
     private JFileChooser fileChooser;
 
     @Inject
-    public ScriptsPanel(EventBus eventBus) {
+    public ScriptsPanel(SwingEventBus eventBus) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        this.eventBus = eventBus;
 
         eventBus.registerCallback(ScriptFinished.class, new EventHandler<ScriptFinished>() {
             @Override
@@ -69,7 +71,7 @@ public class ScriptsPanel extends JPanel {
         add(new JButton(new AbstractAction(name) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventBus.fireEvent(new RunScript(filename, useClasspath) );
+                eventDispatcher.fire(new RunScript(filename, useClasspath) );
             }
         }));
         revalidate();

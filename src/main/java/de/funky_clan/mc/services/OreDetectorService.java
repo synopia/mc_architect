@@ -1,13 +1,17 @@
-package de.funky_clan.mc.model;
+package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.eventbus.EventBus;
+import com.google.inject.Singleton;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
+import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.model.OreFilterChanged;
 import de.funky_clan.mc.events.model.OreFound;
-import de.funky_clan.mc.events.swing.PlayerMoved;
-import de.funky_clan.mc.events.network.UnloadChunk;
+import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
+import de.funky_clan.mc.model.Chunk;
+import de.funky_clan.mc.model.Ore;
+import de.funky_clan.mc.net.packets.ChunkPreparation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,28 +20,32 @@ import java.util.List;
 /**
  * @author synopia
  */
-public class OreManager {
-    private EventBus eventBus;
+@Singleton
+public class OreDetectorService extends BaseOreDetectorService {
+    @Inject
+    private EventDispatcher eventDispatcher;
     private HashMap<Long, List<Ore>> ores = new HashMap<Long, List<Ore>>();
     private List<Long> chunksForPlayer = new ArrayList<Long>();
     private boolean[] oreTypes = new boolean[Ore.OreType.values().length];
 
     @Inject
-    public OreManager(EventBus eventBus) {
-        this.eventBus = eventBus;
-        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+    public OreDetectorService(ModelEventBus eventBus) {
+        super(eventBus);
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent(PlayerMoved event) {
+            public void handleEvent(PlayerPositionUpdate event) {
                 if( event.isChunkChanged() ) {
                     buildPlayerList((int) event.getX(), (int) event.getZ());
                     sendPlayerList();
                 }
             }
         });
-        eventBus.registerCallback(UnloadChunk.class, new EventHandler<UnloadChunk>() {
+        eventBus.registerCallback(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
             @Override
-            public void handleEvent(UnloadChunk event) {
-                ores.remove(Chunk.getChunkId(event.getChunkX(), event.getChunkZ()));
+            public void handleEvent(ChunkPreparation event) {
+                if( !event.isLoad() ) {
+                    ores.remove(Chunk.getChunkId(event.getX(), event.getZ()));
+                }
             }
         });
 
@@ -81,7 +89,7 @@ public class OreManager {
                 addFiltered(all, ores.get(id) );
             }
         }
-        eventBus.fireEvent( new OreDisplayUpdate(all) );
+        eventDispatcher.fire(new OreDisplayUpdate(all));
     }
 
     protected void addFiltered( List<Ore> target, List<Ore> source) {

@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.NetworkEventBus;
+import de.funky_clan.mc.events.network.ConnectionEstablished;
+import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.net.packets.Handshake;
 import de.funky_clan.mc.net.packets.LoginRequest;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -32,9 +32,9 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( Handshake.ID,    Handshake.class );
     }
 
-    public synchronized void connect( DataInputStream in, DataOutputStream out ) {
-        this.in = in;
-        this.out = out;
+    public synchronized void connect( InputStream in, OutputStream out ) {
+        this.in = new DataInputStream( new MitmInputStream(in, out) );
+        this.out = new DataOutputStream(out);
         connected = true;
     }
 
@@ -53,6 +53,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             } else {
                 handleUnknownPacket( packetId );
             }
+            out.flush();
         } catch (IOException e) {
             throw new NetworkException(e);
         }
@@ -64,6 +65,8 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     @Override
     protected synchronized void disconnect(NetworkException e) {
+        eventDispatcher.fire(new ConnectionLost() );
+
         connected = false;
     }
 

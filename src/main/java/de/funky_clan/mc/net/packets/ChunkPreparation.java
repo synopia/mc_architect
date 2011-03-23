@@ -40,7 +40,7 @@ public class ChunkPreparation extends BasePacket {
         return z;
     }
 
-    public boolean isMode() {
+    public boolean isLoad() {
         return mode;
     }
 }
