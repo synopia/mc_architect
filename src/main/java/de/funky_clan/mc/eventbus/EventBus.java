@@ -8,83 +8,83 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
+ * An eventbus using a publish/subscribe mechanism.
+ *
+ * Subscribers (EventHandler) may register to specific events. Events with a specified topic
+ * are only handled by subscribers of the same topic.
+ *
+ * This basic implementation runs all subscribers as the event is published (fired).
+ *
  * @author synopia
  */
-public class EventBus {
-    private HashMap<Class<? extends Event>, List<EventHandler<?>>> allHandlers = new HashMap<Class<? extends Event>, List<EventHandler<?>>>();
-    private HashMap<Object, HashMap<Class<? extends Event>, List<EventHandler<?>>>> channelHandlers = new HashMap<Object, HashMap<Class<? extends Event>, List<EventHandler<?>>>>();
+public class EventBus<E extends Event> {
+    private HashMap<Class<? extends E>, List<EventHandler<?>>> allHandlers = new HashMap<Class<? extends E>, List<EventHandler<?>>>();
+    private HashMap<Object, HashMap<Class<? extends E>, List<EventHandler<?>>>> topicHandlers = new HashMap<Object, HashMap<Class<? extends E>, List<EventHandler<?>>>>();
 
-    private BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
     @Inject
     private Benchmark benchmark;
 
     public EventBus() {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                        handleNextEvent();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        thread.start();
+    }
+
+    protected void handleEvent(Object topic, E event) {
+        handleEvent(getCallbacks(topic, event), event);
     }
 
     @SuppressWarnings("unchecked")
-    public boolean handleNextEvent() throws InterruptedException {
-        List<EventHandler> callbacks = new ArrayList<EventHandler>();
-        Event event = events.take();
-
+    protected void handleEvent(List<EventHandler> callbacks, E event) {
         if( event!=null ) {
             benchmark.startBenchmark(this);
-            callbacks.clear();
-            getCallbacks(event, callbacks);
 //            log.info("Calling "+callbacks.size()+" handlers for event "+event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
             }
             benchmark.endBenchmark(this);
         }
-        return events.size()>0;
     }
 
-    public void fireEvent( Event event ) {
-        events.add(event);
+    public void fireEvent( final E event ) {
+        fireEvent( null, event );
+    }
+    public void fireEvent( Object topic, final E event ) {
+        handleEvent(getCallbacks(topic, event), event);
     }
 
-    public synchronized <T extends Event> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
+    public synchronized <T extends E> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
         addCallback( allHandlers, cls, callback );
     }
 
-    public synchronized <T extends Event> void registerCallback( Object channel, Class<T> cls, EventHandler<T> callback ) {
-        HashMap<Class<? extends Event>, List<EventHandler<?>>> channelHandler;
-        if( channelHandlers.containsKey(channel) ) {
-            channelHandler = channelHandlers.get(channel);
+    public synchronized <T extends E> void registerCallback( Object topic, Class<T> cls, EventHandler<T> callback ) {
+        HashMap<Class<? extends E>, List<EventHandler<?>>> topicHandlers;
+        if( this.topicHandlers.containsKey(topic) ) {
+            topicHandlers = this.topicHandlers.get(topic);
         } else {
-            channelHandler = new HashMap<Class<? extends Event>, List<EventHandler<?>>>();
-            channelHandlers.put(channel, channelHandler);
+            topicHandlers = new HashMap<Class<? extends E>, List<EventHandler<?>>>();
+            this.topicHandlers.put(topic, topicHandlers);
         }
-        addCallback(channelHandler, cls, callback);
+        addCallback(topicHandlers, cls, callback);
     }
 
-    protected synchronized void getCallbacks(Event event, List<EventHandler> resultCallbacks) {
+    protected List<EventHandler> getCallbacks(Object topic, E event) {
+        ArrayList<EventHandler> handlers = new ArrayList<EventHandler>();
+        getCallbacks(topic, event, handlers );
+        return handlers;
+    }
+
+    protected synchronized void getCallbacks(Object topic, E event, List<EventHandler> resultCallbacks) {
         Class cls = event.getClass();
-        Object channel = event.getChannel();
-        if( channelHandlers.containsKey(channel) ) {
-            HashMap<Class<? extends Event>, List<EventHandler<?>>> channelHandler = channelHandlers.get(channel);
-            if( channelHandler.containsKey(cls) ) {
-                List<EventHandler<?>> callbacks = channelHandler.get(cls);
-                for (EventHandler callback : callbacks) {
-                    resultCallbacks.add(callback);
+        if( topic!=null ) {
+            if( topicHandlers.containsKey(topic) ) {
+                HashMap<Class<? extends E>, List<EventHandler<?>>> channelHandler = topicHandlers.get(topic);
+                if( channelHandler.containsKey(cls) ) {
+                    List<EventHandler<?>> callbacks = channelHandler.get(cls);
+                    for (EventHandler callback : callbacks) {
+                        resultCallbacks.add(callback);
+                    }
                 }
             }
         }
@@ -97,7 +97,7 @@ public class EventBus {
         }
     }
 
-    private <T extends Event>void addCallback(HashMap<Class<? extends Event>, List<EventHandler<?>>> target, Class<T> cls, EventHandler<T> handler) {
+    private <T extends E>void addCallback(HashMap<Class<? extends E>, List<EventHandler<?>>> target, Class<T> cls, EventHandler<T> handler) {
         List<EventHandler<?>> handlerList;
         if( target.containsKey(cls) ) {
             handlerList = target.get(cls);

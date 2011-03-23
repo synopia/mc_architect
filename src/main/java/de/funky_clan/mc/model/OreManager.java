@@ -1,10 +1,13 @@
 package de.funky_clan.mc.model;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.*;
+import de.funky_clan.mc.events.background.OreFilterChanged;
+import de.funky_clan.mc.events.background.OreFound;
+import de.funky_clan.mc.events.swing.PlayerMoved;
+import de.funky_clan.mc.events.network.UnloadChunk;
+import de.funky_clan.mc.events.swing.OreDisplayUpdate;
 
 import java.util.ArrayList;
 import java.util.HashMap;

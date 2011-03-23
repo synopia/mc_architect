@@ -2,7 +2,7 @@ package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.events.OreFilterChanged;
+import de.funky_clan.mc.events.background.OreFilterChanged;
 import de.funky_clan.mc.model.Ore;
 
 import javax.swing.*;

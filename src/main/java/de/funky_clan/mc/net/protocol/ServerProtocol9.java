@@ -2,10 +2,9 @@ package de.funky_clan.mc.net.protocol;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.events.BlockUpdate;
-import de.funky_clan.mc.events.ChunkUpdate;
-import de.funky_clan.mc.events.ConnectionEstablished;
-import de.funky_clan.mc.events.UnloadChunk;
+import de.funky_clan.mc.events.network.BlockUpdate;
+import de.funky_clan.mc.events.network.ChunkUpdate;
+import de.funky_clan.mc.events.network.UnloadChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +16,7 @@ import java.util.zip.Inflater;
 /**
  * @author synopia
  */
-public class ServerProtocol9 extends Protocol9 {
+public class ServerProtocol9 extends MinecraftBinding {
     private final Logger log = LoggerFactory.getLogger(ServerProtocol9.class);
 
     private Inflater inflater;

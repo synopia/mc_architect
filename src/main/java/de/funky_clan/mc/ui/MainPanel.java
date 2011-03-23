@@ -7,9 +7,9 @@ import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.*;
-import de.funky_clan.mc.events.mouse.MouseMoved;
-import de.funky_clan.mc.events.mouse.MouseRectangle;
+import de.funky_clan.mc.events.swing.PlayerMoved;
+import de.funky_clan.mc.events.network.PlayerPositionUpdate;
+import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
@@ -102,9 +102,9 @@ public class MainPanel extends JPanel {
         });
 
 
-        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
+        eventBus.registerCallback(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
-            public void handleEvent(TargetServerChanged event) {
+            public void handleEvent(ConnectionDetailsChanged event) {
                 mitmThread.setTargetHost( event.getHost() );
                 mitmThread.setTargetPort( event.getPort() );
             }

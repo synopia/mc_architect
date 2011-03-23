@@ -2,9 +2,8 @@ package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.net.protocol.ClientProtocol9;
-import de.funky_clan.mc.net.protocol.Protocol9;
+import de.funky_clan.mc.net.protocol.MinecraftBinding;
 import de.funky_clan.mc.net.protocol.ServerProtocol9;
-import de.funky_clan.mc.util.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +58,9 @@ public class MitmThread extends Thread {
         private InputStream input;
         private DataInputStream dataInput;
         private OutputStream output;
-        private Protocol9 protocol;
+        private MinecraftBinding protocol;
 
-        private Filter(InputStream input, OutputStream output, Protocol9 protocol) {
+        private Filter(InputStream input, OutputStream output, MinecraftBinding protocol) {
             this.input = new MitmInputStream(input, output);
             this.dataInput = new DataInputStream( this.input );
             this.output = output;

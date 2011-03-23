@@ -4,9 +4,8 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.Main;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.RunScript;
-import de.funky_clan.mc.events.ScriptFinished;
-import de.funky_clan.mc.scripts.ScriptFactory;
+import de.funky_clan.mc.events.background.RunScript;
+import de.funky_clan.mc.events.swing.ScriptFinished;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

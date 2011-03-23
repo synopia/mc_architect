@@ -3,9 +3,9 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.ConnectionEstablished;
-import de.funky_clan.mc.events.ConnectionLost;
-import de.funky_clan.mc.events.TargetServerChanged;
+import de.funky_clan.mc.events.network.ConnectionEstablished;
+import de.funky_clan.mc.events.network.ConnectionLost;
+import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -41,9 +41,9 @@ public class ConnectionToolbar extends JToolBar {
             }
         });
 
-        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
+        eventBus.registerCallback(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
-            public void handleEvent(TargetServerChanged event) {
+            public void handleEvent(ConnectionDetailsChanged event) {
                 host.setText( event.getReadableHost() );
             }
         });
@@ -55,7 +55,7 @@ public class ConnectionToolbar extends JToolBar {
         host.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                eventBus.fireEvent(new TargetServerChanged(host.getText()));
+                eventBus.fireEvent(new ConnectionDetailsChanged(host.getText()));
             }
         });
 

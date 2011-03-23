@@ -2,7 +2,7 @@ package de.funky_clan.mc.net.protocol;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.events.PlayerPositionUpdate;
+import de.funky_clan.mc.events.network.PlayerPositionUpdate;
 
 import java.io.DataInputStream;
 import java.io.IOException;

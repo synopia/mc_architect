@@ -2,8 +2,7 @@ package de.funky_clan.mc.net.protocol;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.events.ConnectionEstablished;
-import de.funky_clan.mc.events.ConnectionLost;
+import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.util.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

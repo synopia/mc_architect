@@ -5,15 +5,10 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.ConnectionEstablished;
-import de.funky_clan.mc.events.ConnectionLost;
-import de.funky_clan.mc.events.PlayerMoved;
-import de.funky_clan.mc.events.TargetServerChanged;
+import de.funky_clan.mc.events.swing.PlayerMoved;
 import de.funky_clan.mc.model.Model;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 //~--- JDK imports ------------------------------------------------------------
 

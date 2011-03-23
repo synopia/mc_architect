@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.events.ColorChanged;
+import de.funky_clan.mc.events.swing.ColorChanged;
 import de.funky_clan.mc.ui.renderer.ColorEditor;
 import de.funky_clan.mc.ui.renderer.ColorRenderer;
 

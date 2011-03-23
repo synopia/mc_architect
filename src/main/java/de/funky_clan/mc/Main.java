@@ -8,11 +8,10 @@ import com.google.inject.Injector;
 import de.funky_clan.mc.config.ArchitectModule;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.Initialize;
-import de.funky_clan.mc.events.TargetServerChanged;
+import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
+import de.funky_clan.mc.events.swing.Initialize;
 import de.funky_clan.mc.model.OreDetector;
 import de.funky_clan.mc.model.OreManager;
-import de.funky_clan.mc.scripts.BinvoxLoader;
 import de.funky_clan.mc.scripts.ScriptFactory;
 import de.funky_clan.mc.ui.MainPanel;
 
@@ -58,9 +57,9 @@ public class Main extends JFrame {
         });
         eventBus.fireEvent( new Initialize() );
         if( isDebug() ) {
-            eventBus.fireEvent(new TargetServerChanged("localhost"));
+            eventBus.fireEvent(new ConnectionDetailsChanged("localhost"));
         } else {
-            eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
+            eventBus.fireEvent(new ConnectionDetailsChanged("mc.funky-clan.de"));
         }
     }
 

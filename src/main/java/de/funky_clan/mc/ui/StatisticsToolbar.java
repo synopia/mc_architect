@@ -3,10 +3,9 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.ChunkUpdate;
-import de.funky_clan.mc.events.OreDisplayUpdate;
-import de.funky_clan.mc.events.UnloadChunk;
-import de.funky_clan.mc.net.protocol.Protocol;
+import de.funky_clan.mc.events.network.ChunkUpdate;
+import de.funky_clan.mc.events.swing.OreDisplayUpdate;
+import de.funky_clan.mc.events.network.UnloadChunk;
 import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.*;
