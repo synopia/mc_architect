@@ -60,8 +60,8 @@ public class Main extends JFrame {
         if( isDebug() ) {
             eventBus.fireEvent(new TargetServerChanged("localhost"));
         } else {
-            eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
         }
+        eventBus.fireEvent(new TargetServerChanged("mc.funky-clan.de"));
     }
 
     public void start() {

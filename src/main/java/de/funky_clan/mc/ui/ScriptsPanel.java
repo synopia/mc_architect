@@ -38,6 +38,7 @@ public class ScriptsPanel extends JPanel {
         addScriptButton("kolloseum.rb", !Main.isDebug());
         addScriptButton("akw.rb", !Main.isDebug());
         addScriptButton("sphere.rb", !Main.isDebug());
+        addScriptButton("glaskugel.rb", !Main.isDebug());
         if( Main.isDebug() ) {
             addScriptButton("test.rb", false);
         }
