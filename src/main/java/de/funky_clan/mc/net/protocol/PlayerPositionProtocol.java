@@ -82,9 +82,9 @@ public class PlayerPositionProtocol {
             @Override
             public void decode(DataInputStream in) throws IOException {
                 int id = in.readInt();
-                double nx = in.readInt();
-                double ny = in.readInt();
-                double nz = in.readInt();
+                double nx = in.readInt()/32.;
+                double ny = in.readInt()/32.;
+                double nz = in.readInt()/32.;
                 int yaw = in.readByte();
                 int pitch = in.readByte();
 

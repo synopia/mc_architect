@@ -190,9 +190,10 @@ public class MainPanel extends JPanel {
         southSplitPane.setLeftComponent( new JScrollPane( sideX ));
         southSplitPane.setRightComponent( new JScrollPane( sideY ));
 
-        rootSplitPane.setResizeWeight(0.80);
+        rootSplitPane.setResizeWeight(1);
         rootSplitPane.setLeftComponent(sliceViewSplitPane);
         JTabbedPane tabs = new JTabbedPane();
+        tabs.setPreferredSize(new Dimension(150,500));
         rootSplitPane.setRightComponent(tabs);
         tabs.addTab("Colors", colorsPanel);
         tabs.addTab("Scripts", scriptsPanel);
