@@ -7,6 +7,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
+import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 import de.funky_clan.mc.net.packets.Handshake;
 import org.slf4j.Logger;
@@ -18,6 +19,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author synopia
@@ -38,9 +43,12 @@ public class MinecraftService {
 
     @Inject
     private EventDispatcher eventDispatcher;
+    private ExecutorService pool;
 
     @Inject
     public MinecraftService(ModelEventBus eventBus) {
+        logger.info("Starting MinecraftService...");
+        pool = Executors.newFixedThreadPool(1);
         eventBus.registerCallback(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
             public void handleEvent(ConnectionDetailsChanged event) {
@@ -57,10 +65,18 @@ public class MinecraftService {
                 eventDispatcher.fire(new ConnectionEstablished(event.getUsername()) );
             }
         });
+        eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
+            @Override
+            public void handleEvent(ConnectionLost event) {
+                stop();
+                start();
+            }
+        });
     }
 
     public void start() {
-        thread = new Thread(new Runnable() {
+
+        pool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -82,20 +98,25 @@ public class MinecraftService {
                     server.connect(fromTarget, toSource);
 
                     logger.info("connection established!");
+                    serverSocket.close();
                 } catch (IOException e) {
                     logger.info("connection could not established!");
                     e.printStackTrace();
                 }
             }
         });
-        thread.start();
     }
 
     public void stop() {
-        logger.info("Stop listening at port "+port);
         client.disconnect();
         if( thread!=null ) {
             thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }

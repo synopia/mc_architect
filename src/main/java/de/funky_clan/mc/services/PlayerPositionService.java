@@ -10,12 +10,15 @@ import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.packets.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author synopia
  */
 @Singleton
 public class PlayerPositionService {
+    private final Logger logger = LoggerFactory.getLogger(PlayerPositionService.class);
     private double x;
     private double y;
     private double z;
@@ -37,6 +40,7 @@ public class PlayerPositionService {
 
     @Inject
     public PlayerPositionService(final ModelEventBus eventBus) {
+        logger.info("Starting PlayerPositionService...");
         eventBus.registerCallback(LoginRequest.class, new EventHandler<LoginRequest>() {
             @Override
             public void handleEvent(LoginRequest event) {

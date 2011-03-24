@@ -12,6 +12,8 @@ import de.funky_clan.mc.events.swing.OreDisplayUpdate;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.Ore;
 import de.funky_clan.mc.net.packets.ChunkPreparation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ import java.util.List;
  */
 @Singleton
 public class OreDetectorService extends BaseOreDetectorService {
+    private final Logger logger = LoggerFactory.getLogger(OreDetectorService.class);
+
     @Inject
     private EventDispatcher eventDispatcher;
     private HashMap<Long, List<Ore>> ores = new HashMap<Long, List<Ore>>();
@@ -31,6 +35,8 @@ public class OreDetectorService extends BaseOreDetectorService {
     @Inject
     public OreDetectorService(ModelEventBus eventBus) {
         super(eventBus);
+        logger.info("Starting OreDetectorService...");
+
         eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {

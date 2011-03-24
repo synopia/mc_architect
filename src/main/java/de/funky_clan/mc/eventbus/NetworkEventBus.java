@@ -1,6 +1,8 @@
 package de.funky_clan.mc.eventbus;
 
+import com.google.inject.Inject;
 import de.funky_clan.mc.net.NetworkException;
+import de.funky_clan.mc.util.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,8 @@ import java.util.List;
  */
 public abstract class NetworkEventBus extends ThreadedEventBus{
     private final Logger logger = LoggerFactory.getLogger(NetworkEventBus.class);
+    @Inject
+    private Benchmark benchmark;
 
     @Override
     public void start() {
@@ -43,6 +47,7 @@ public abstract class NetworkEventBus extends ThreadedEventBus{
             }
         });
         thread.start();
+        benchmark.addThreadId("net", thread.getId() );
     }
 
     protected abstract void disconnect(NetworkException e);

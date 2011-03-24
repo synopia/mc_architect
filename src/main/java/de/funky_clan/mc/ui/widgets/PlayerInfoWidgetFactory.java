@@ -1,12 +1,15 @@
-package de.funky_clan.mc.ui;
+package de.funky_clan.mc.ui.widgets;
 
 //~--- non-JDK imports --------------------------------------------------------
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.model.Model;
+import de.funky_clan.mc.util.StatusBar;
 
 import javax.swing.*;
 
@@ -15,36 +18,30 @@ import javax.swing.*;
 /**
  * @author synopia
  */
-public class PlayerInfoToolbar extends JToolBar {
+@Singleton
+public class PlayerInfoWidgetFactory {
     private JLabel position;
     private JLabel direction;
     @Inject
     private Model  model;
 
     @Inject
-    public PlayerInfoToolbar(final SwingEventBus eventBus) {
-        setAlignmentX(LEFT_ALIGNMENT);
-
+    public PlayerInfoWidgetFactory(final SwingEventBus eventBus) {
         build();
 
         eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {
-                direction.setText("Direction: " + formatDirection((int) event.getYaw()));
+                direction.setText(formatDirection((int) event.getYaw()));
                 position.setText("Position: " + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
             }
         });
     }
 
     private void build() {
-        direction     = new JLabel();
-        position      = new JLabel();
-
-        add(direction);
-        addSeparator();
-        add(position);
+        direction     = new JLabel("W");
+        position      = new JLabel("Position: 1600, 1600, 1000");
     }
-
 
     public String formatDirection( int angle ) {
         angle += 45 / 2;
@@ -79,5 +76,13 @@ public class PlayerInfoToolbar extends JToolBar {
 
     public String formatCoord( int x, int y, int z ) {
         return x + ", " + y + ", " + z;
+    }
+
+    public JLabel getPosition() {
+        return position;
+    }
+
+    public JLabel getDirection() {
+        return direction;
     }
 }

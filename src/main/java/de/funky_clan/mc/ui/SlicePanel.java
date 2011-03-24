@@ -2,6 +2,10 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.config.EventDispatcher;
@@ -272,5 +276,9 @@ public class SlicePanel extends ZoomPanel {
         slice.setType(type);
         slice.setMaxRenderDepth( type==SliceType.Z?20:1 );
         player.setDrawViewCone( type==SliceType.Z );
+    }
+
+    public CDockable getDockable() {
+        return new DefaultSingleCDockable(slice.getType().toString(),this);
     }
 }

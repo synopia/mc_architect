@@ -90,8 +90,9 @@ public class MinecraftBinding {
             for (Integer packetId : PACKET_IDS) {
                 Object mcInstance = method.invoke(null, packetId );
                 decoderMethods.put(packetId, new MinecraftMessageDecoder(mcInstance));
-                log.info("packet id="+packetId+" registered successfully.");
             }
+            log.info(decoderMethods.size()+ " packets registered successfully.");
+
         } catch (ClassNotFoundException e) {
             throw new NetworkException(e);
         } catch (NoSuchMethodException e) {

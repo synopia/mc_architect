@@ -1,6 +1,7 @@
-package de.funky_clan.mc.ui;
+package de.funky_clan.mc.ui.widgets;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
@@ -16,15 +17,15 @@ import java.awt.event.ActionListener;
 /**
  * @author synopia
  */
-public class ConnectionToolbar extends JToolBar {
+@Singleton
+public class ConnectionWidgetFactory {
     @Inject
     private EventDispatcher eventDispatcher;
     private JLabel connectionStatus;
     private JTextField host;
 
     @Inject
-    public ConnectionToolbar(SwingEventBus eventBus) {
-        setAlignmentX(LEFT_ALIGNMENT);
+    public ConnectionWidgetFactory(SwingEventBus eventBus) {
         build();
 
         eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
@@ -60,12 +61,13 @@ public class ConnectionToolbar extends JToolBar {
                 eventDispatcher.fire(new ConnectionDetailsChanged(12345, host.getText()));
             }
         });
-
-        add(connectionStatus);
-        addSeparator();
-        add(new JLabel("host "));
-        add(host);
     }
 
+    public JLabel getConnectionStatus() {
+        return connectionStatus;
+    }
 
+    public JTextField getHost() {
+        return host;
+    }
 }

@@ -5,9 +5,9 @@ package de.funky_clan.mc;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.name.Named;
 import de.funky_clan.mc.config.ArchitectModule;
 import de.funky_clan.mc.config.EventDispatcher;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
@@ -16,12 +16,13 @@ import de.funky_clan.mc.events.swing.Initialize;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.MinecraftService;
-import de.funky_clan.mc.services.BaseOreDetectorService;
 import de.funky_clan.mc.services.OreDetectorService;
 import de.funky_clan.mc.scripts.ScriptFactory;
 import de.funky_clan.mc.ui.MainPanel;
+import de.funky_clan.mc.util.StatusBar;
 
 import javax.swing.*;
+import java.awt.*;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -52,6 +53,10 @@ public class Main extends JFrame {
     MinecraftClient minecraftClient;
     @Inject
     ModelEventBus modelEventBus;
+    @Inject @Named("Status")
+    StatusBar status;
+    @Inject @Named("Info")
+    StatusBar info;
 
     public Main() {
     }
@@ -61,15 +66,18 @@ public class Main extends JFrame {
     }
 
     public void init() {
+        setLayout(new BorderLayout());
         startServices();
         String version = Main.class.getPackage().getImplementationVersion();
         setTitle("Minecraft Architect for v" + version);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(mainPanel);
+        add(mainPanel.getContentArea(), BorderLayout.CENTER);
+        add(info, BorderLayout.NORTH);
+        add(status, BorderLayout.SOUTH);
         swingEventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
             @Override
             public void handleEvent(Initialize event) {
-                pack();
+                setBounds(20,20,600,500);
             }
         });
         eventDispatcher.fire(new Initialize());

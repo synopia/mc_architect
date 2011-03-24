@@ -2,16 +2,23 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CGrid;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.services.PlayerPositionService;
+import de.funky_clan.mc.ui.widgets.ConnectionWidgetFactory;
+import de.funky_clan.mc.ui.widgets.PlayerInfoWidgetFactory;
+import de.funky_clan.mc.ui.widgets.StatisticWidgetFactory;
+import de.funky_clan.mc.util.StatusBar;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +29,7 @@ import java.awt.event.ActionEvent;
 /**
  * @author synopia
  */
-public class MainPanel extends JPanel {
+public class MainPanel extends CControl {
     @Inject
     private Configuration    configuration;
 
@@ -38,11 +45,19 @@ public class MainPanel extends JPanel {
     @Inject
     ScriptsPanel scriptsPanel;
     @Inject OrePanel orePanel;
-    @Inject PlayerInfoToolbar playerInfoToolbar;
-    @Inject StatisticsToolbar statisticsToolbar;
-    @Inject ConnectionToolbar connectionToolbar;
+    @Inject
+    PlayerInfoWidgetFactory playerInfoWidgetFactory;
+    @Inject
+    ConnectionWidgetFactory connectionWidgetFactory;
+    @Inject
+    StatisticWidgetFactory statisticWidgetFactory;
     @Inject
     private PlayerPositionService playerPositionService;
+
+    @Inject @Named("Info")
+    private StatusBar infoBar;
+    @Inject @Named("Status")
+    private StatusBar statusBar;
 
     @Inject
     private Box selectionBox;
@@ -62,7 +77,7 @@ public class MainPanel extends JPanel {
                         selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
                         selectionBox.getEndX()-selectionBox.getStartX(), selectionBox.getEndY()-selectionBox.getStartY(), selectionBox.getEndZ()-selectionBox.getStartZ()
                 ));
-                repaint();
+//                repaint();
             }
         });
         eventBus.registerCallback(MouseMoved.class, new EventHandler<MouseMoved>() {
@@ -73,13 +88,13 @@ public class MainPanel extends JPanel {
                 int z = event.getZ();
 
                 String pixelText = DataValues.find(configuration.getModel().getPixel(x,y,z,0)).toString();
-                mousePosInfo.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
+//                mousePosInfo.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
             }
         });
         eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
             @Override
             public void handleEvent(ColorChanged event) {
-                repaint();
+//                repaint();
             }
         });
 
@@ -92,9 +107,6 @@ public class MainPanel extends JPanel {
     }
 
     protected void onInit() {
-        setLayout(new BorderLayout());
-
-        this.setFocusable(true);
 
         topDown.setSliceType(SliceType.Z);
         sideX.setSliceType(SliceType.X);
@@ -108,38 +120,30 @@ public class MainPanel extends JPanel {
         sideX.init();
         sideY.init();
 
-        JSplitPane rootSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-        JSplitPane sliceViewSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-        JSplitPane southSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
+        CGrid grid = new CGrid(this);
 
-        sliceViewSplitPane.setResizeWeight(0.66);
-        sliceViewSplitPane.setLeftComponent(new JScrollPane(topDown));
-        sliceViewSplitPane.setRightComponent(southSplitPane);
-        southSplitPane.setResizeWeight( 0.5d );
-        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
-        southSplitPane.setRightComponent( new JScrollPane( sideY ));
+        grid.add(0, 0, 2, 1, topDown.getDockable());
+        grid.add(0, 1, 1, 1, sideX.getDockable());
+        grid.add(1, 1, 1, 1, sideY.getDockable());
 
-        rootSplitPane.setResizeWeight(1);
-        rootSplitPane.setLeftComponent(sliceViewSplitPane);
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(150,500));
-        rootSplitPane.setRightComponent(tabs);
-        tabs.addTab("Colors", colorsPanel);
-        tabs.addTab("Scripts", scriptsPanel);
-        tabs.addTab("Ore", orePanel);
+        this.getContentArea().deploy(grid);
 
-        JPanel info     = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.X_AXIS));
-        info.add( playerInfoToolbar );
-        info.add( connectionToolbar);
-        info.add( statisticsToolbar );
 
-        JToolBar imageBar = buildToolBar();
+        this.getContentArea().getEast().add(new DefaultDockable(colorsPanel, "Colors"), 0);
+        this.getContentArea().getEast().add(new DefaultDockable(scriptsPanel, "Scripts"), 1);
+        this.getContentArea().getEast().add(new DefaultDockable(orePanel, "Ore"), 2);
 
-        add( rootSplitPane, BorderLayout.CENTER );
-        add( info, BorderLayout.NORTH );
-        add( imageBar, BorderLayout.SOUTH );
+        infoBar.addZone( "dir", playerInfoWidgetFactory.getDirection());
+        infoBar.addZone( "pos", playerInfoWidgetFactory.getPosition());
+        infoBar.addZone( "space", new JLabel(), "50");
 
+        statusBar.addZone( "statusText", new JLabel(), "*");
+        statusBar.addZone( "benchmark", statisticWidgetFactory.getBenchmarkText());
+        statusBar.addZone( "chunks", statisticWidgetFactory.getChunksText());
+        statusBar.addZone( "mem", statisticWidgetFactory.getMemoryText());
+        statusBar.addZone( "ore", statisticWidgetFactory.getOreText());
+
+        buildToolBar();
     }
 
     public void setZShift( int zShift ) {

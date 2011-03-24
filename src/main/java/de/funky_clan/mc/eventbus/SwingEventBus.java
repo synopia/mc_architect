@@ -1,8 +1,13 @@
 package de.funky_clan.mc.eventbus;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.*;
+import java.awt.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.List;
 
 /**
@@ -14,6 +19,18 @@ import java.util.List;
  */
 @Singleton
 public class SwingEventBus extends EventBus {
+    @Inject
+    private Benchmark benchmark;
+
+    public SwingEventBus() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                benchmark.addThreadId("gfx", Thread.currentThread().getId());
+            }
+        });
+    }
+
     @Override
     public void fireEvent(final Event event) {
         if( SwingUtilities.isEventDispatchThread() ) {

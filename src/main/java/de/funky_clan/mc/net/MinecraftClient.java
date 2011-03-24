@@ -2,13 +2,18 @@ package de.funky_clan.mc.net;
 
 import com.google.inject.Singleton;
 import de.funky_clan.mc.net.packets.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author synopia
  */
 @Singleton
 public class MinecraftClient extends MinecraftNetworkEventBus {
+    private final Logger logger = LoggerFactory.getLogger(MinecraftClient.class);
+
     public MinecraftClient() {
+        logger.info("Starting Minecraft Client Network...");
         addPacketType( Handshake.ID,    Handshake.class );
 
         addPacketType(EntityAttach.ID,              EntityAttach.class);

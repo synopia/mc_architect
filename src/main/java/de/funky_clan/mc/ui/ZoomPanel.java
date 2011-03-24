@@ -5,6 +5,8 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.util.Benchmark;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,12 +20,11 @@ import java.awt.event.MouseWheelListener;
  * @author synopia
  */
 public abstract class ZoomPanel extends JPanel {
+    private final Logger logger = LoggerFactory.getLogger(ZoomPanel.class);
     private Rectangle lastRect;
     private Point start;
     private Rectangle rect;
     protected RenderContext context;
-    @Inject
-    private Benchmark benchmark;
 
     protected abstract RenderContext createRenderContext();
 
@@ -77,8 +78,8 @@ public abstract class ZoomPanel extends JPanel {
     }
 
     @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
         context.setScreenSize(width, height);
         context.calculateSizes();
     }
@@ -135,7 +136,6 @@ public abstract class ZoomPanel extends JPanel {
 
     @Override
     protected void paintComponent( Graphics g ) {
-        benchmark.startBenchmark(ZoomPanel.class);
         Graphics2D graphics2D = (Graphics2D) g;
 
         initContext(graphics2D);
@@ -146,7 +146,6 @@ public abstract class ZoomPanel extends JPanel {
         if( rect != null ) {
             graphics2D.drawRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
         }
-        benchmark.endBenchmark(ZoomPanel.class);
     }
 
     protected void rectModeDragged(MouseEvent e) {

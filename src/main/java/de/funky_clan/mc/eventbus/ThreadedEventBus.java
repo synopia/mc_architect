@@ -1,5 +1,12 @@
 package de.funky_clan.mc.eventbus;
 
+import com.google.inject.Inject;
+import de.funky_clan.mc.util.Benchmark;
+
+import javax.swing.*;
+import java.awt.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -17,6 +24,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class ThreadedEventBus extends EventBus {
     protected BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     private Thread thread;
+
+    @Inject
+    private Benchmark benchmark;
+
 
     public ThreadedEventBus() {
     }
@@ -39,6 +50,7 @@ public abstract class ThreadedEventBus extends EventBus {
             }
         });
         thread.start();
+        benchmark.addThreadId("bus", thread.getId() );
     }
 
     @Override
