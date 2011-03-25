@@ -33,8 +33,12 @@ public final class LoginRequest extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(entityId);
+        out.writeUTF(username);
+        out.writeUTF(password);
+        out.writeLong(seed);
+        out.writeByte(dimension);
     }
 
     public int getEntityId() {

@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.services.BaseOreDetectorService;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,10 +10,9 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class EntityAttach extends BasePacket {
-    public static final int ID = 0x27;
-    private int entityId;
-    private int vehicleId;
+public class Disconnect extends BasePacket {
+    public static final int ID = 0xff;
+    private String reason;
 
     @Override
     public int getPacketId() {
@@ -21,21 +21,11 @@ public class EntityAttach extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        entityId = in.readInt();
-        vehicleId = in.readInt();
+        reason = in.readUTF();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(entityId);
-        out.writeInt(vehicleId);
-    }
-
-    public int getEntityId() {
-        return entityId;
-    }
-
-    public int getVehicleId() {
-        return vehicleId;
+        out.writeUTF(reason);
     }
 }

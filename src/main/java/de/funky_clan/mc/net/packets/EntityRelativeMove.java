@@ -30,8 +30,11 @@ public class EntityRelativeMove extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(eid);
+        out.writeByte(dx);
+        out.writeByte(dy);
+        out.writeByte(dz);
     }
 
     public int getEid() {

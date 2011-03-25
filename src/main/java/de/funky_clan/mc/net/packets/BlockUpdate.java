@@ -32,8 +32,12 @@ public class BlockUpdate extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(x);
+        out.writeByte(y);
+        out.writeInt(z);
+        out.writeByte(type);
+        out.writeByte(meta);
     }
 
     public int getX() {

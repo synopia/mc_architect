@@ -36,8 +36,14 @@ public class PlayerPositionAndLook extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeDouble(x);
+        out.writeDouble(y);
+        out.writeDouble(stance);
+        out.writeDouble(z);
+        out.writeFloat(yaw);
+        out.writeFloat(pitch);
+        out.writeBoolean(onGround);
     }
 
     public double getX() {

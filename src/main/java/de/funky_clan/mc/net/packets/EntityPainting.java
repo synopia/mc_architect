@@ -9,11 +9,14 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class ChunkPreparation extends BasePacket {
-    public static final int ID = 0x32;
+public class EntityPainting extends BasePacket {
+    public static final int ID = 0x19;
+    private int eid;
+    private String title;
     private int x;
+    private int y;
     private int z;
-    private boolean mode;
+    private int direction;
 
     @Override
     public int getPacketId() {
@@ -22,27 +25,21 @@ public class ChunkPreparation extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
+        eid = in.readInt();
+        title = in.readUTF();
         x = in.readInt();
+        y = in.readInt();
         z = in.readInt();
-        mode = in.readBoolean();
+        direction = in.readInt();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(eid);
+        out.writeUTF(title);
         out.writeInt(x);
+        out.writeInt(y);
         out.writeInt(z);
-        out.writeBoolean(mode);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public boolean isLoad() {
-        return mode;
+        out.writeInt(direction);
     }
 }

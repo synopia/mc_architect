@@ -1,6 +1,5 @@
 package de.funky_clan.mc.net.packets;
 
-import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.net.BasePacket;
 
 import java.io.DataInputStream;
@@ -10,13 +9,14 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class PlayerPosition extends BasePacket {
-    public static final int ID = 0x0b;
+public class BlockExplosion extends BasePacket {
+    public static final int ID = 0x3c;
     private double x;
     private double y;
-    private double stance;
     private double z;
-    private boolean onGround;
+    private float radius;
+    private int recordCount;
+    private byte[] records;
 
     @Override
     public int getPacketId() {
@@ -27,37 +27,20 @@ public class PlayerPosition extends BasePacket {
     public void decode(DataInputStream in) throws IOException {
         x = in.readDouble();
         y = in.readDouble();
-        stance = in.readDouble();
         z = in.readDouble();
-        onGround = in.readBoolean();
+        radius = in.readFloat();
+        recordCount = in.readInt();
+        records = new byte[recordCount*3];
+        in.readFully(records);
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
         out.writeDouble(x);
         out.writeDouble(y);
-        out.writeDouble(stance);
         out.writeDouble(z);
-        out.writeBoolean(onGround);
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getStance() {
-        return stance;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
+        out.writeFloat(radius);
+        out.writeInt(recordCount);
+        out.write(records, 0, recordCount*3);
     }
 }

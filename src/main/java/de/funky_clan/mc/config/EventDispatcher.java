@@ -31,4 +31,16 @@ public class EventDispatcher {
         server.fireEvent(event);
     }
 
+    public void fireFromClient( Event event ) {
+        modelEventBus.fireEvent(event);
+        swingEventBus.fireEvent(event);
+        client.fireEvent(event);
+    }
+
+    public void fireFromServer( Event event ) {
+        modelEventBus.fireEvent(event);
+        swingEventBus.fireEvent(event);
+        server.fireEvent(event);
+    }
+
 }

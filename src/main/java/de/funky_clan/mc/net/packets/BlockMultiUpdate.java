@@ -43,8 +43,15 @@ public class BlockMultiUpdate extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(x);
+        out.writeInt(y);
+        out.writeShort(size);
+        for (int i = 0; i < size; i++) {
+            out.writeShort(coords[i]);
+        }
+        out.write(type);
+        out.write(meta);
     }
 
     public void each( Each block ) {

@@ -25,8 +25,8 @@ public class Handshake extends BasePacket {
     }
 
     @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeUTF(username);
     }
 
     public String getConnectionHash() {

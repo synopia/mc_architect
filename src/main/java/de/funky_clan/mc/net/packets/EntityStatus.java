@@ -9,11 +9,10 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class EntityLook extends BasePacket {
-    public static final int ID = 0x20;
+public class EntityStatus extends BasePacket {
+    public static final int ID = 0x26;
     private int eid;
-    private int yaw;
-    private int pitch;
+    private byte status;
 
     @Override
     public int getPacketId() {
@@ -23,26 +22,12 @@ public class EntityLook extends BasePacket {
     @Override
     public void decode(DataInputStream in) throws IOException {
         eid = in.readInt();
-        yaw = in.readByte();
-        pitch = in.readByte();
+        status = in.readByte();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
         out.writeInt(eid);
-        out.writeByte(yaw);
-        out.writeByte(pitch);
-    }
-
-    public int getEid() {
-        return eid;
-    }
-
-    public int getYaw() {
-        return yaw;
-    }
-
-    public int getPitch() {
-        return pitch;
+        out.writeByte(status);
     }
 }

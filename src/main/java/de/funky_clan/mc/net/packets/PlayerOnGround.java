@@ -9,10 +9,8 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class PlayerLook extends BasePacket {
-    public static final int ID = 0x0c;
-    private float yaw;
-    private float pitch;
+public class PlayerOnGround extends BasePacket {
+    public static final int ID = 0x0a;
     private boolean onGround;
 
     @Override
@@ -22,27 +20,11 @@ public class PlayerLook extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        yaw = in.readFloat();
-        pitch = in.readFloat();
         onGround = in.readBoolean();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
-        out.writeFloat(yaw);
-        out.writeFloat(pitch);
         out.writeBoolean(onGround);
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
     }
 }

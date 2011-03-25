@@ -30,13 +30,10 @@ public class EventBus {
     public EventBus() {
     }
 
-    protected void handleEvent(Event event) {
-        handleEvent(getCallbacks(event), event);
-    }
-
     @SuppressWarnings("unchecked")
-    protected void handleEvent(List<EventHandler> callbacks, Event event) {
-        if( event!=null && hasCallbacks(event) ) {
+    protected void handleEvent(Event event) {
+        if( event!=null ) {
+            List<EventHandler> callbacks = getCallbacks(event);
             for (EventHandler callback : callbacks) {
                 callback.handleEvent(event);
             }
@@ -44,7 +41,7 @@ public class EventBus {
     }
 
     public void fireEvent( final Event event ) {
-        handleEvent(getCallbacks(event), event);
+        handleEvent(event);
     }
 
     public synchronized boolean hasCallbacks( Event event ) {

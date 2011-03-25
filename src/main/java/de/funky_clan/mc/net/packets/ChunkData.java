@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 /**
@@ -21,6 +22,7 @@ public class ChunkData extends BasePacket {
     private int sizeY;
     private int sizeZ;
     private byte[] data;
+    private byte[] compressedData;
 
     public ChunkData() {
     }
@@ -42,8 +44,6 @@ public class ChunkData extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        Inflater inflater = new Inflater();
-        byte[] compressedData;
         x = in.readInt();
         y = in.readShort();
         z = in.readInt();
@@ -53,9 +53,35 @@ public class ChunkData extends BasePacket {
         int compressedSize = in.readInt();
         compressedData = new byte[compressedSize];
         in.readFully(compressedData);
+
+        inflateData();
+    }
+
+    @Override
+    public void encode(DataOutputStream out) throws IOException {
+        int size = deflateData();
+        out.writeInt(x);
+        out.writeShort(y);
+        out.writeInt(z);
+        out.write(sizeX - 1);
+        out.write(sizeY - 1);
+        out.write(sizeZ-1);
+        out.writeInt(size);
+        out.write(compressedData,0,size);
+    }
+
+    private int deflateData() {
+        Deflater deflater = new Deflater();
+        compressedData = new byte[data.length];
+        deflater.setInput(data);
+        deflater.finish();
+        return deflater.deflate(compressedData);
+    }
+
+    private void inflateData() throws IOException {
+        Inflater inflater = new Inflater();
         int uncompressedSize = (sizeX * sizeY * sizeZ * 5) / 2;
         data = new byte[uncompressedSize];
-        inflater.reset();
         inflater.setInput(compressedData);
         try {
             inflater.inflate(data, 0, uncompressedSize);
@@ -90,10 +116,5 @@ public class ChunkData extends BasePacket {
 
     public byte[] getData() {
         return data;
-    }
-
-    @Override
-    public void encode(DataOutputStream out) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

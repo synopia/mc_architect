@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,7 +23,7 @@ import java.util.List;
 public class MinecraftBinding {
     private final Logger log = LoggerFactory.getLogger(MinecraftBinding.class);
     private static List<Integer> PACKET_IDS = Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33,34,38,39,40,50,51,52,53,54,60,100,101,102,103,104,105,106,130,255);
-    private HashMap<Integer, MinecraftMessageDecoder> decoderMethods = new HashMap<Integer, MinecraftMessageDecoder>();
+    private HashMap<Integer, MinecraftMessageCodec> codecs = new HashMap<Integer, MinecraftMessageCodec>();
 
     public MinecraftBinding() {
         try {
@@ -33,15 +34,17 @@ public class MinecraftBinding {
         }
     }
 
-    public static class MinecraftMessageDecoder {
+    public static class MinecraftMessageCodec {
         private Method decoderMethod;
+        private Method encoderMethod;
         private Object mcInstance;
 
-        public MinecraftMessageDecoder(Object mcInstance) {
+        public MinecraftMessageCodec(Object mcInstance) {
             this.mcInstance = mcInstance;
 
             try {
                 decoderMethod = mcInstance.getClass().getMethod("a", DataInputStream.class );
+                encoderMethod = mcInstance.getClass().getMethod("a", DataOutputStream.class );
 
             } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException(mcInstance+" does not implement a(DataInputStream.class)" );
@@ -57,12 +60,28 @@ public class MinecraftBinding {
                 throw new NetworkException(e);
             }
         }
+        public void encode(DataOutputStream out) {
+            try {
+                encoderMethod.invoke(mcInstance, out);
+            } catch (IllegalAccessException e) {
+                throw new NetworkException(e);
+            } catch (InvocationTargetException e) {
+                throw new NetworkException(e);
+            }
+        }
     }
 
     public void decode( int packetId, DataInputStream in ) {
-        if( decoderMethods.containsKey(packetId) ) {
-            MinecraftMessageDecoder decoder = decoderMethods.get(packetId);
-            decoder.decode(in);
+        if( codecs.containsKey(packetId) ) {
+            MinecraftMessageCodec codec = codecs.get(packetId);
+            codec.decode(in);
+        }
+    }
+
+    public void encode( int packetId, DataOutputStream out ) {
+        if( codecs.containsKey(packetId) ) {
+            MinecraftMessageCodec codec = codecs.get(packetId);
+            codec.encode(out);
         }
     }
 
@@ -89,9 +108,9 @@ public class MinecraftBinding {
 
             for (Integer packetId : PACKET_IDS) {
                 Object mcInstance = method.invoke(null, packetId );
-                decoderMethods.put(packetId, new MinecraftMessageDecoder(mcInstance));
+                codecs.put(packetId, new MinecraftMessageCodec(mcInstance));
             }
-            log.info(decoderMethods.size()+ " packets registered successfully.");
+            log.info(codecs.size()+ " packets registered successfully.");
 
         } catch (ClassNotFoundException e) {
             throw new NetworkException(e);

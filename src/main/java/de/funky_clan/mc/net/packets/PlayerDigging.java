@@ -9,11 +9,13 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class ChunkPreparation extends BasePacket {
-    public static final int ID = 0x32;
+public class PlayerDigging extends BasePacket {
+    public static final int ID = 0x0e;
+    private byte status;
     private int x;
+    private byte y;
     private int z;
-    private boolean mode;
+    private byte face;
 
     @Override
     public int getPacketId() {
@@ -22,27 +24,19 @@ public class ChunkPreparation extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
+        status = in.readByte();
         x = in.readInt();
+        y = in.readByte();
         z = in.readInt();
-        mode = in.readBoolean();
+        face = in.readByte();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
+        out.writeByte(status);
         out.writeInt(x);
+        out.writeByte(y);
         out.writeInt(z);
-        out.writeBoolean(mode);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public boolean isLoad() {
-        return mode;
+        out.writeByte(face);
     }
 }

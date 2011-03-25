@@ -9,10 +9,11 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class EntityAttach extends BasePacket {
-    public static final int ID = 0x27;
-    private int entityId;
-    private int vehicleId;
+public class WindowTransaction extends BasePacket {
+    public static final int ID = 0x6a;
+    private byte windowId;
+    private short actionNumber;
+    private boolean accepted;
 
     @Override
     public int getPacketId() {
@@ -21,21 +22,15 @@ public class EntityAttach extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        entityId = in.readInt();
-        vehicleId = in.readInt();
+        windowId = in.readByte();
+        actionNumber = in.readShort();
+        accepted = in.readBoolean();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(entityId);
-        out.writeInt(vehicleId);
-    }
-
-    public int getEntityId() {
-        return entityId;
-    }
-
-    public int getVehicleId() {
-        return vehicleId;
+        out.writeByte(windowId);
+        out.writeShort(actionNumber);
+        out.writeBoolean(accepted);
     }
 }

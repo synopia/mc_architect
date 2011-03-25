@@ -36,13 +36,10 @@ public abstract class ThreadedEventBus extends EventBus {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<EventHandler> list = new ArrayList<EventHandler>();
                 while (true) {
                     try {
                         Event event = events.take();
-                        list.clear();
-                        getCallbacks(event, list);
-                        handleEvent(list, event);
+                        handleEvent(event);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

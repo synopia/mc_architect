@@ -1,6 +1,9 @@
 package de.funky_clan.mc.net;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.net.packets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +14,16 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class MinecraftServer extends MinecraftNetworkEventBus {
     private final Logger logger = LoggerFactory.getLogger(MinecraftServer.class);
+    @Inject
+    EventDispatcher eventDispatcher;
 
     public MinecraftServer() {
         logger.info("Starting Minecraft Server Network...");
-        addPacketType(BlockMultiUpdate.ID, BlockMultiUpdate.class);
-        addPacketType(BlockUpdate.ID,      BlockUpdate.class);
-        addPacketType(ChunkData.ID,        ChunkData.class);
-        addPacketType(ChunkPreparation.ID, ChunkPreparation.class);
     }
+
+    @Override
+    protected void dispatchIncomingPacket(NetworkEvent packet) {
+        eventDispatcher.fireFromServer(packet);
+    }
+
 }
