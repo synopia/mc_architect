@@ -139,6 +139,9 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
                 packet.decode(in);
+                if( packetId==0x0d && getNetworkType()==NetworkEvent.SERVER ) {
+                    System.out.println("pos update from server");
+                }
                 eventDispatcher.fire(packet);
                 lastPacketId = packetId;
             } else {

@@ -54,7 +54,7 @@ public class StatisticWidgetFactory {
         eventBus.registerCallback(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
             public void handleEvent(OreDisplayUpdate event) {
-                oreText.setText("Ores: "+event.getOre().size());
+                oreText.setText("Ores: "+event.getTotal());
             }
         });
         new Timer(1000, new ActionListener() {

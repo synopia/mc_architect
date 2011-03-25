@@ -39,7 +39,9 @@ public abstract class BaseOreDetectorService {
             public void handleEvent(ModelUpdate event) {
                 Arrays.fill(closedMap,false);
                 ores = new ArrayList<Ore>();
-
+                startX = event.getStartX();
+                startY = event.getStartY();
+                startZ = event.getStartZ();
                 model.interate( event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), new Model.BlockUpdateCallable() {
                     @Override
                     public void updateChunk(Chunk chunk) {

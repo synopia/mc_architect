@@ -3,12 +3,11 @@ package de.funky_clan.mc.ui;
 //~--- non-JDK imports --------------------------------------------------------
 
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
-import bibliothek.gui.dock.common.action.CButton;
-import bibliothek.gui.dock.common.action.CRadioButton;
-import bibliothek.gui.dock.common.action.CRadioGroup;
+import bibliothek.gui.dock.common.action.*;
 import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
@@ -21,6 +20,7 @@ import de.funky_clan.mc.events.swing.ScriptFinished;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.model.Box;
+import de.funky_clan.mc.services.ImageService;
 import de.funky_clan.mc.ui.renderer.*;
 
 import javax.swing.*;
@@ -66,6 +66,8 @@ public class SlicePanel extends ZoomPanel {
     private BoxRenderer boxRenderer;
     @Inject
     private Box selectedBox;
+    @Inject
+    private OrePanel orePanel;
 
     private Position position = new Position();
     public enum MouseMode {
@@ -120,11 +122,11 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
             public void handleEvent(OreDisplayUpdate event) {
-                synchronized (ores) {
+                if( event.getComponent()==SlicePanel.this ) {
                     ores.clear();
                     ores.addAll(event.getOre());
+                    repaint();
                 }
-                repaint();
             }
         });
     }
@@ -298,9 +300,12 @@ public class SlicePanel extends ZoomPanel {
         dockable.addAction(new CButton("focus player", new ImageIcon(Toolkit.getDefaultToolkit().getImage("collapseall.gif"))) {
             @Override
             protected void action() {
-                scrollTo(player.getPositionX(), player.getPositionY(), sliceNo);
+                position.setWorld(player.getPositionX(), player.getPositionY(), player.getPositionZ());
+                scrollTo(position);
             }
         });
+
+        dockable.addAction(orePanel.getMenu(this));
         return dockable;
     }
 }

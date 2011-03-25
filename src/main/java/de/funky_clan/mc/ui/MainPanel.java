@@ -44,7 +44,6 @@ public class MainPanel extends CControl {
     @Inject ColorsPanel       colorsPanel;
     @Inject
     ScriptsPanel scriptsPanel;
-    @Inject OrePanel orePanel;
     @Inject
     PlayerInfoWidgetFactory playerInfoWidgetFactory;
     @Inject
@@ -132,7 +131,6 @@ public class MainPanel extends CControl {
 
         this.getContentArea().getEast().add(new DefaultDockable(colorsPanel, "Colors"), 0);
         this.getContentArea().getEast().add(new DefaultDockable(scriptsPanel, "Scripts"), 1);
-        this.getContentArea().getEast().add(new DefaultDockable(orePanel, "Ore"), 2);
 
         infoBar.addZone( "dir", playerInfoWidgetFactory.getDirection());
         infoBar.addZone( "pos", playerInfoWidgetFactory.getPosition());

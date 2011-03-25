@@ -5,7 +5,7 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.events.model.OreFilterChanged;
+import de.funky_clan.mc.events.swing.OreFilterChanged;
 import de.funky_clan.mc.events.model.OreFound;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
@@ -15,6 +15,7 @@ import de.funky_clan.mc.net.packets.ChunkPreparation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ public class OreDetectorService extends BaseOreDetectorService {
     private EventDispatcher eventDispatcher;
     private HashMap<Long, List<Ore>> ores = new HashMap<Long, List<Ore>>();
     private List<Long> chunksForPlayer = new ArrayList<Long>();
-    private boolean[] oreTypes = new boolean[Ore.OreType.values().length];
+    private HashMap<JComponent, boolean[]> oreTypes = new HashMap<JComponent, boolean[]>();
 
     @Inject
     public OreDetectorService(ModelEventBus eventBus) {
@@ -70,8 +71,8 @@ public class OreDetectorService extends BaseOreDetectorService {
         eventBus.registerCallback(OreFilterChanged.class, new EventHandler<OreFilterChanged>() {
             @Override
             public void handleEvent(OreFilterChanged event) {
-                oreTypes = event.getFilter();
-                sendPlayerList();
+                oreTypes.put(event.getComponent(), event.getFilter());
+                sendPlayerList(event.getComponent());
             }
         });
     }
@@ -89,16 +90,26 @@ public class OreDetectorService extends BaseOreDetectorService {
     }
 
     protected void sendPlayerList() {
+        for (JComponent component : oreTypes.keySet()) {
+            sendPlayerList(component);
+        }
+    }
+    protected void sendPlayerList(JComponent component) {
         List<Ore> all = new ArrayList<Ore>();
+        int total = 0;
         for (Long id : chunksForPlayer) {
             if( ores.containsKey(id) ) {
-                addFiltered(all, ores.get(id) );
+                List<Ore> source = ores.get(id);
+                total += source.size();
+                addFiltered(component, all, source);
             }
         }
-        eventDispatcher.fire(new OreDisplayUpdate(all));
+        eventDispatcher.fire(new OreDisplayUpdate(component, all, total));
     }
 
-    protected void addFiltered( List<Ore> target, List<Ore> source) {
+    protected void addFiltered( JComponent component, List<Ore> target, List<Ore> source) {
+        boolean[] oreTypes = this.oreTypes.get(component);
+
         for (Ore ore : source) {
             if( ore.matches(oreTypes) ) {
                 target.add(ore);
