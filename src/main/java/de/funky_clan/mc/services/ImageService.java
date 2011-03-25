@@ -1,6 +1,7 @@
 package de.funky_clan.mc.services;
 
 import com.google.inject.Singleton;
+import de.funky_clan.mc.Main;
 import de.funky_clan.mc.config.DataValues;
 
 import javax.imageio.ImageIO;
@@ -50,7 +51,7 @@ public class ImageService {
     public void load( String name ) {
         try {
             int[]pixels = new int[1<<16];
-            BufferedImage image = ImageIO.read(new FileInputStream(name ));
+            BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/"+name));
             for (Tile tile : tiles.values()) {
                 PixelGrabber grabber = new PixelGrabber(image,tile.x,tile.y,16,16, pixels, 0, 16);
                 grabber.grabPixels();
