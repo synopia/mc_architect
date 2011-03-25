@@ -1,10 +1,11 @@
 package de.funky_clan.mc.file;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.ChunkUpdate;
-import de.funky_clan.mc.events.PlayerMoved;
+import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.events.model.PlayerPositionUpdate;
+import de.funky_clan.mc.net.packets.ChunkData;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;
@@ -22,19 +23,19 @@ import java.util.List;
  */
 public class RegionFileService {
     private static final int SIZE = 10;
-    private EventBus eventBus;
     private int playerX;
     private int playerZ;
     private ArrayList<String> loadedChunks = new ArrayList<String>();
     private Logger log = LoggerFactory.getLogger(RegionFileService.class);
+    @Inject
+    private EventDispatcher eventDispatcher;
 
     @Inject
-    public RegionFileService(final EventBus eventBus) {
+    public RegionFileService(final ModelEventBus eventBus) {
         System.out.println("Region File Service started");
-        this.eventBus = eventBus;
-        eventBus.registerCallback(PlayerMoved.class, new EventHandler<PlayerMoved>() {
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent(PlayerMoved event) {
+            public void handleEvent(PlayerPositionUpdate event) {
                 updatePlayerPos( (int) event.getX(), (int) event.getZ());
             }
         });
@@ -76,7 +77,7 @@ public class RegionFileService {
                 CompoundTag level = (CompoundTag) root.getValue().get("Level");
                 ByteArrayTag blocks = (ByteArrayTag) level.getValue().get("Blocks");
 
-                eventBus.fireEvent(new ChunkUpdate(chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
+                eventDispatcher.fire(new ChunkData(ChunkData.SERVER, chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7, 1 << 4, blocks.getValue()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

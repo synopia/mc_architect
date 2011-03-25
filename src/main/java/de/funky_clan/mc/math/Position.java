@@ -143,12 +143,12 @@ public final class Position {
                 worldY = -sliceY;
                 worldZ = sliceX;
                 break;
-            case Y:
+            case Z:
                 worldX = sliceX;
                 worldY = -sliceY;
                 worldZ = sliceNo;
                 break;
-            case Z:
+            case Y:
                 worldX = sliceX;
                 worldY = sliceNo;
                 worldZ = sliceY;
@@ -172,12 +172,12 @@ public final class Position {
                 sliceY = -worldY;
                 sliceNo = (int) worldX;
                 break;
-            case Y:
+            case Z:
                 sliceX = worldX;
                 sliceY = -worldY;
                 sliceNo = (int) worldZ;
                 break;
-            case Z:
+            case Y:
                 sliceX = worldX;
                 sliceY = worldZ;
                 sliceNo = (int) worldY;

@@ -109,7 +109,7 @@ public class Configuration {
             images.put( filename, image );
         }
 
-        model.addImage( SliceType.Z, slice+originSlice, image );
+        model.addImage( SliceType.Y, slice+originSlice, image );
 
         return this;
     }

@@ -2,78 +2,82 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CGrid;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import de.funky_clan.mc.config.Configuration;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
-import de.funky_clan.mc.events.*;
-import de.funky_clan.mc.events.mouse.MouseMoved;
-import de.funky_clan.mc.events.mouse.MouseRectangle;
+import de.funky_clan.mc.eventbus.SwingEventBus;
+import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.model.Box;
-import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.SliceType;
-import de.funky_clan.mc.net.MitmThread;
+import de.funky_clan.mc.services.PlayerPositionService;
+import de.funky_clan.mc.ui.widgets.ConnectionWidgetFactory;
+import de.funky_clan.mc.ui.widgets.PlayerInfoWidgetFactory;
+import de.funky_clan.mc.ui.widgets.StatisticWidgetFactory;
+import de.funky_clan.mc.util.StatusBar;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 //~--- JDK imports ------------------------------------------------------------
 
 /**
  * @author synopia
  */
-public class MainPanel extends JPanel {
-    @Inject
-    private MitmThread mitmThread;
+public class MainPanel extends CControl {
     @Inject
     private Configuration    configuration;
 
-    private double           playerX;
-    private double           playerY;
-    private double           playerZ;
-    private float            yaw;
-    private float            pitch;
     @Inject
     private SlicePanel       sideX;
     @Inject
     private SlicePanel       sideY;
     @Inject
     private SlicePanel       topDown;
-    private int              zShift;
-    private JLabel zShiftLabel;
-    private EventBus         eventBus;
+    private int yShift;
+    private JLabel yShiftLabel;
     @Inject ColorsPanel       colorsPanel;
     @Inject
     ScriptsPanel scriptsPanel;
     @Inject OrePanel orePanel;
-    @Inject PlayerInfoToolbar playerInfoToolbar;
-    @Inject StatisticsToolbar statisticsToolbar;
-    @Inject ConnectionToolbar connectionToolbar;
+    @Inject
+    PlayerInfoWidgetFactory playerInfoWidgetFactory;
+    @Inject
+    ConnectionWidgetFactory connectionWidgetFactory;
+    @Inject
+    StatisticWidgetFactory statisticWidgetFactory;
+    @Inject
+    private PlayerPositionService playerPositionService;
+
+    @Inject @Named("Info")
+    private StatusBar infoBar;
+    @Inject @Named("Status")
+    private StatusBar statusBar;
 
     @Inject
     private Box selectionBox;
 
-    private JLabel mousePosInfo;
-    private JLabel selectionInfo;
+    private JLabel statusText;
+    private JToolBar toolBar;
 
     @Inject
-    public MainPanel(final EventBus eventBus) {
-        this.eventBus = eventBus;
+    public MainPanel(final SwingEventBus eventBus) {
         eventBus.registerCallback(MouseRectangle.class, new EventHandler<MouseRectangle>() {
             @Override
             public void handleEvent(MouseRectangle event) {
                 selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getEndX(), event.getEndY(), event.getEndZ() );
-                selectionInfo.setText(String.format(
+                statusText.setText(String.format(
                         "Selection: (%.0f, %.0f, %.0f) -> (%.0f, %.0f, %.0f) = (%.0f, %.0f, %.0f)",
                         selectionBox.getStartX(), selectionBox.getStartY(), selectionBox.getStartZ(),
                         selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
                         selectionBox.getEndX()-selectionBox.getStartX(), selectionBox.getEndY()-selectionBox.getStartY(), selectionBox.getEndZ()-selectionBox.getStartZ()
                 ));
-                repaint();
+                MainPanel.this.getContentArea().repaint();
             }
         });
         eventBus.registerCallback(MouseMoved.class, new EventHandler<MouseMoved>() {
@@ -84,29 +88,13 @@ public class MainPanel extends JPanel {
                 int z = event.getZ();
 
                 String pixelText = DataValues.find(configuration.getModel().getPixel(x,y,z,0)).toString();
-                mousePosInfo.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
+                statusText.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
             }
         });
         eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
             @Override
             public void handleEvent(ColorChanged event) {
-                repaint();
-            }
-        });
-
-        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
-            @Override
-            public void handleEvent(PlayerPositionUpdate event) {
-                updatePlayerPosition(event);
-            }
-        });
-
-
-        eventBus.registerCallback(TargetServerChanged.class, new EventHandler<TargetServerChanged>() {
-            @Override
-            public void handleEvent(TargetServerChanged event) {
-                mitmThread.setTargetHost( event.getHost() );
-                mitmThread.setTargetPort( event.getPort() );
+                MainPanel.this.getContentArea().repaint();
             }
         });
 
@@ -116,60 +104,15 @@ public class MainPanel extends JPanel {
                 onInit();
             }
         });
-    }
+        buildToolBar();
 
-    private void updatePlayerPosition(PlayerPositionUpdate event) {
-        double oldX = playerX;
-        double oldY = playerY;
-        double oldZ = playerZ;
-        playerX = event.getX();
-        playerY = event.getY();
-        playerZ = event.getZ();
-        yaw     = event.getYaw();
-        pitch   = event.getPitch();
-
-        boolean blockChanged = (int)playerX!=(int)oldX || (int)playerY!=(int)oldY || (int)playerZ!=(int)oldZ;
-        boolean chunkChanged = Chunk.getChunkId(oldX, oldZ)!=Chunk.getChunkId(playerX, playerZ);
-
-        firePlayerMoved( blockChanged, chunkChanged );
     }
 
     protected void onInit() {
-        setLayout(new BorderLayout());
 
-        this.setFocusable(true);
-
-        this.addKeyListener( new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        playerX++;
-                        firePlayerMoved(true, false);
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        playerX--;
-                        firePlayerMoved(true, false);
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        playerZ++;
-                        firePlayerMoved(true, false);
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        playerZ--;
-                        firePlayerMoved(true, false);
-                        break;
-                }
-            }
-        });
-
-        playerX            = configuration.getMidX();
-        playerY            = configuration.getMidY();
-        playerZ            = configuration.getMidZ();
-
-        topDown.setSliceType(SliceType.Z);
+        topDown.setSliceType(SliceType.Y);
         sideX.setSliceType(SliceType.X);
-        sideY.setSliceType(SliceType.Y);
+        sideY.setSliceType(SliceType.Z);
 
         topDown.setPreferredSize(new Dimension(800,600));
         sideX.setPreferredSize(new Dimension(400,300));
@@ -179,77 +122,61 @@ public class MainPanel extends JPanel {
         sideX.init();
         sideY.init();
 
-        JSplitPane rootSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-        JSplitPane sliceViewSplitPane  = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-        JSplitPane southSplitPane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
+        CGrid grid = new CGrid(this);
 
-        sliceViewSplitPane.setResizeWeight(0.66);
-        sliceViewSplitPane.setLeftComponent(new JScrollPane(topDown));
-        sliceViewSplitPane.setRightComponent(southSplitPane);
-        southSplitPane.setResizeWeight( 0.5d );
-        southSplitPane.setLeftComponent( new JScrollPane( sideX ));
-        southSplitPane.setRightComponent( new JScrollPane( sideY ));
+        grid.add(0, 0, 2, 1, topDown.getDockable());
+        grid.add(0, 1, 1, 1, sideX.getDockable());
+        grid.add(1, 1, 1, 1, sideY.getDockable());
 
-        rootSplitPane.setResizeWeight(1);
-        rootSplitPane.setLeftComponent(sliceViewSplitPane);
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.setPreferredSize(new Dimension(150,500));
-        rootSplitPane.setRightComponent(tabs);
-        tabs.addTab("Colors", colorsPanel);
-        tabs.addTab("Scripts", scriptsPanel);
-        tabs.addTab("Ore", orePanel);
+        this.getContentArea().deploy(grid);
 
-        JPanel info     = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.X_AXIS));
-        info.add( playerInfoToolbar );
-        info.add( connectionToolbar);
-        info.add( statisticsToolbar );
+        this.getContentArea().getEast().add(new DefaultDockable(colorsPanel, "Colors"), 0);
+        this.getContentArea().getEast().add(new DefaultDockable(scriptsPanel, "Scripts"), 1);
+        this.getContentArea().getEast().add(new DefaultDockable(orePanel, "Ore"), 2);
 
-        JToolBar imageBar = buildToolBar();
+        infoBar.addZone( "dir", playerInfoWidgetFactory.getDirection());
+        infoBar.addZone( "pos", playerInfoWidgetFactory.getPosition());
+        infoBar.addZone( "status", connectionWidgetFactory.getConnectionStatus() );
+        infoBar.addZone( "host", connectionWidgetFactory.getHost() );
 
-        add( rootSplitPane, BorderLayout.CENTER );
-        add( info, BorderLayout.NORTH );
-        add( imageBar, BorderLayout.SOUTH );
+        statusBar.addZone( "statusText", statusText=new JLabel(), "*");
+        statusBar.addZone( "benchmark", statisticWidgetFactory.getBenchmarkText());
+        statusBar.addZone( "chunks", statisticWidgetFactory.getChunksText());
+        statusBar.addZone( "mem", statisticWidgetFactory.getMemoryText());
+        statusBar.addZone( "ore", statisticWidgetFactory.getOreText());
 
-        mitmThread.setSourcePort(12345);
-        mitmThread.start();
     }
 
-    protected void firePlayerMoved(boolean blockChanged, boolean chunkChanged ) {
-        eventBus.fireEvent( new PlayerMoved(playerX, playerY, playerZ, yaw, pitch, zShift, blockChanged, chunkChanged));
-    }
-
-    public void setZShift( int zShift ) {
-        this.zShift = zShift;
-        zShiftLabel.setText("z shift: " + zShift);
-        firePlayerMoved(true, false);
+    public void setYShift(int yShift) {
+        this.yShift = yShift;
+        yShiftLabel.setText("player shift: " + yShift);
+        playerPositionService.setYShift(yShift);
     }
 
     private JToolBar buildToolBar() {
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar(JToolBar.HORIZONTAL);
 
-        zShiftLabel = new JLabel();
-        setZShift( 0 );
-        toolBar.add(zShiftLabel);
+        yShiftLabel = new JLabel("player shift: 0");
+        toolBar.add(yShiftLabel);
         toolBar.addSeparator();
-        toolBar.add(new AbstractAction("raise z") {
+        toolBar.add(new AbstractAction("raise player") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setZShift(zShift + 1);
+                setYShift(yShift + 1);
             }
         });
         toolBar.addSeparator();
-        toolBar.add(new AbstractAction("lower z") {
+        toolBar.add(new AbstractAction("lower player") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setZShift(zShift - 1);
+                setYShift(yShift - 1);
             }
         });
 
-        toolBar.addSeparator();
-        toolBar.add(mousePosInfo = new JLabel("Mouse: "));
-        toolBar.addSeparator();
-        toolBar.add(selectionInfo = new JLabel(""));
+        return toolBar;
+    }
+
+    public JToolBar getToolBar() {
         return toolBar;
     }
 }
