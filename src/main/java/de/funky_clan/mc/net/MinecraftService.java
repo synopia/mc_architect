@@ -9,6 +9,7 @@ import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
+import de.funky_clan.mc.net.packets.Disconnect;
 import de.funky_clan.mc.net.packets.Handshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ public class MinecraftService {
     private MinecraftClient client;
     @Inject
     private MinecraftServer server;
-    private Thread thread;
     private ServerSocket serverSocket;
     private String            targetHost;
     private int               targetPort;
@@ -62,12 +62,19 @@ public class MinecraftService {
         eventBus.registerCallback(Handshake.class, new EventHandler<Handshake>() {
             @Override
             public void handleEvent(Handshake event) {
-                eventDispatcher.fire(new ConnectionEstablished(event.getUsername()) );
+                eventDispatcher.fire(new ConnectionEstablished(event.getUsername()));
             }
         });
         eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
             public void handleEvent(ConnectionLost event) {
+                stop();
+                start();
+            }
+        });
+        eventBus.registerCallback(Disconnect.class, new EventHandler<Disconnect>() {
+            @Override
+            public void handleEvent(Disconnect event) {
                 stop();
                 start();
             }
@@ -108,15 +115,8 @@ public class MinecraftService {
     }
 
     public void stop() {
+        logger.info("Stopping network");
         client.disconnect();
-        if( thread!=null ) {
-            thread.interrupt();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
+        server.disconnect();
     }
 }

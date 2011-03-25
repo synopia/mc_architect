@@ -20,8 +20,7 @@ public class EntitySpawn extends BasePacket{
     private int z;
     private byte pitch;
     private byte yaw;
-    private byte[] meta= new byte[128];
-    private int metaLength;
+    private ArrayList meta;
 
     @Override
     public int getPacketId() {
@@ -37,7 +36,7 @@ public class EntitySpawn extends BasePacket{
         z = in.readInt();
         yaw = in.readByte();
         pitch = in.readByte();
-        metaLength = readMetadata( in, meta );
+        meta = readMetadata( in );
     }
 
     @Override
@@ -49,7 +48,7 @@ public class EntitySpawn extends BasePacket{
         out.writeInt(z);
         out.writeByte(yaw);
         out.writeByte(pitch);
-        writeMetadata(out, meta, metaLength);
+        writeMetadata(out, meta);
     }
 
 }

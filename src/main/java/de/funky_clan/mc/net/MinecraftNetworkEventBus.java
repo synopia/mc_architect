@@ -24,6 +24,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     private DataInputStream realIn;
     private DataOutputStream out;
     private boolean connected;
+    private int lastPacketId;
 
     @Inject
     private EventDispatcher eventDispatcher;
@@ -93,6 +94,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     }
 
     public synchronized void connect( InputStream in, OutputStream out ) {
+        logger.info(this+" connected");
         this.in = new DataInputStream( in );
         this.out = new DataOutputStream(out);
         connected = true;
@@ -136,10 +138,14 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             int packetId = in.readByte() & 0xff;
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
+                if( packetId!=28 && packetId!=31 && packetId!=33 && packetId!=32 ) {
+                    logger.info(this+" processing "+Integer.toHexString(packetId));
+                }
                 packet.decode(in);
                 eventDispatcher.fire(packet);
+                lastPacketId = packetId;
             } else {
-                throw new NetworkException("Unknown packet id 0x"+Integer.toHexString(packetId));
+                throw new NetworkException("Unknown packet id 0x"+Integer.toHexString(packetId)+", last packet id: 0x" + Integer.toHexString(lastPacketId));
             }
         } catch (IOException e) {
             throw new NetworkException(e);

@@ -4,6 +4,7 @@ package de.funky_clan.mc.model;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
@@ -97,8 +98,9 @@ public class Model {
                         byte[] map = chunk.getMap();
                         for (int i = 0; i < CHUNK_ARRAY_SIZE; i++) {
                             byte value = newMap[i];
-                            if( map[i+CHUNK_ARRAY_SIZE ]>0 ) {
-                                value = 1;
+                            byte blueprint = map[i + CHUNK_ARRAY_SIZE];
+                            if( blueprint > 0 && value== DataValues.AIR.getId()) {
+                                value = blueprint;
                             }
                             newMap[i] = value;
                         }
@@ -107,14 +109,15 @@ public class Model {
                     @Override
                     public void updateBlock(Chunk chunk, int x, int y, int z, int index) {
                         byte value = newMap[index];
-                        if( chunk.getPixel(x,y,z,1)>0 ) {
-                            value = 1;
+                        int blueprint = chunk.getPixel(x, y, z, 1);
+                        if( blueprint >0 && value== DataValues.AIR.getId()) {
+                            value = (byte)blueprint;
                         }
                         newMap[index] = value;
                     }
                 });
 
-                eventDispatcher.fire( new ChunkData( event.getSource(), event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap), true);
+                eventDispatcher.fire(new ChunkData(event.getSource(), event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap), true);
             }
         });
     }

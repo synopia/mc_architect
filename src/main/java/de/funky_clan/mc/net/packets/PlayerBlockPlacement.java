@@ -31,8 +31,10 @@ public class PlayerBlockPlacement extends BasePacket {
         z = in.readInt();
         direction = in.readByte();
         blockId = in.readShort();
-        amount = in.readByte();
-        damage = in.readShort();
+        if( blockId>=0 ) {
+            amount = in.readByte();
+            damage = in.readShort();
+        }
     }
 
     @Override
@@ -42,7 +44,9 @@ public class PlayerBlockPlacement extends BasePacket {
         out.writeInt(z);
         out.writeByte(direction);
         out.writeShort(blockId);
-        out.writeByte(amount);
-        out.writeShort(damage);
+        if( blockId>=0 ) {
+            out.writeByte(amount);
+            out.writeShort(damage);
+        }
     }
 }

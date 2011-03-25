@@ -5,6 +5,8 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author synopia
@@ -20,49 +22,83 @@ public abstract class BasePacket implements NetworkEvent {
     protected BasePacket() {
     }
 
-    protected void writeMetadata(DataOutputStream out, byte[] meta, int len) throws IOException {
-        out.write(meta, 0, len);
+    @SuppressWarnings("unchecked")
+    protected void writeMetadata(DataOutputStream out, ArrayList meta) throws IOException {
+        Iterator it = meta.iterator();
+        while( it.hasNext() ){
+            byte r = (Byte)it.next();
+            out.writeByte(r);
+            int i = (r & 0xe0)>>5;
+            switch (i) {
+                case 0:
+                    out.writeByte((Byte)it.next());
+                    break;
+                case 1:
+                    out.writeShort((Short)it.next());
+                    break;
+                case 2:
+                    out.writeInt((Integer)it.next());
+                    break;
+                case 3:
+                    out.writeFloat((Float)it.next());
+                    break;
+                case 4:
+                    out.writeUTF((String)it.next());
+                    break;
+                case 5:
+                    out.writeShort((Short)it.next());
+                    out.writeByte((Byte)it.next());
+                    out.writeShort((Short)it.next());
+                    break;
+                case 6:
+                    out.writeInt((Integer)it.next());
+                    out.writeInt((Integer)it.next());
+                    out.writeInt((Integer)it.next());
+                    break;
+            }
+        }
+        out.writeByte(0x7f);
     }
 
-    protected int readMetadata(DataInputStream in, byte[] meta) throws IOException {
+    @SuppressWarnings("unchecked")
+    protected ArrayList readMetadata(DataInputStream in) throws IOException {
+        ArrayList result = new ArrayList();
         int index = 0;
         for( byte r=in.readByte(); r!=0x7f; r=in.readByte() ) {
             int i = (r & 0xe0)>>5;
             int j = r & 0x1f;
-            meta[index++] = r;
+            result.add( r );
             switch (i) {
                 case 0:
-                    meta[index++] = in.readByte();
+                    result.add(in.readByte());
                     break;
                 case 1:
-//                    in.readFully( meta, index, 2);
-                    in.readShort();
-                    index += 2;
+                    result.add(in.readShort());
                     break;
-                case 2:case 3:
-                    in.readFully( meta, index, 4);
-                    index += 4;
+                case 2:
+                    result.add(in.readInt());
+                    break;
+                case 3:
+                    result.add(in.readFloat());
                     break;
                 case 4:
-                    int len = in.readShort();
-                    meta[index++] = (byte)((len >>> 8) & 0xFF);
-                    meta[index++] = (byte)((len >>> 0) & 0xFF);
-                    in.readFully( meta, index, len);
-                    index+=len;
+                    String texts = in.readUTF();
+                    System.out.println(texts);
+                    result.add(texts);
                     break;
                 case 5:
-                    in.readFully( meta, index, 5);
-                    index += 5;
+                    result.add(in.readShort());
+                    result.add(in.readByte());
+                    result.add(in.readShort());
                     break;
                 case 6:
-                    in.readFully( meta, index, 12);
-                    index += 12;
+                    result.add(in.readInt());
+                    result.add(in.readInt());
+                    result.add(in.readInt());
                     break;
-
             }
         }
-        meta[index++] = 0x7f;
-        return index;
+        return result;
     }
 
     @Override

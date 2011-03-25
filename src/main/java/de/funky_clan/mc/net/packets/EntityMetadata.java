@@ -5,14 +5,15 @@ import de.funky_clan.mc.net.BasePacket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author synopia
  */
 public class EntityMetadata extends BasePacket {
     public static final int ID = 0x28;
-    private byte[] meta = new byte[128];
-    private int metaLength ;
+    private ArrayList meta;
+    private int eid;
 
     @Override
     public int getPacketId() {
@@ -21,11 +22,13 @@ public class EntityMetadata extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        metaLength = readMetadata(in, meta);
+        eid = in.readInt();
+        meta = readMetadata(in);
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
-        writeMetadata(out, meta, metaLength);
+        out.writeInt(eid);
+        writeMetadata(out, meta);
     }
 }

@@ -68,7 +68,7 @@ level = 0
 profile.each do |line|
   line.chars.each_with_index do |c, r|
     next unless c=="X"
-    @slice_z.ellipse mid_x, mid_z, level+mid_y, size_z/2-r-1, size_x/2-r-1, DataValues::STATIONARYLAVA.id
+    @slice_z.ellipse mid_x, mid_z, level+mid_y, size_z/2-r-1, size_x/2-r-1, DataValues::GLASS.id
   end
   level += 1
 end
