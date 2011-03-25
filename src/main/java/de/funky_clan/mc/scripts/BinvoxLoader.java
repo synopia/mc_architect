@@ -1,6 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventBus;
 
 import java.io.*;
@@ -16,11 +17,11 @@ public class BinvoxLoader {
     private Pattern translate = Pattern.compile("translate (-?\\d+.\\d*) (-?\\d+.\\d*) (-?\\d+.\\d*)");
     private Pattern scale = Pattern.compile("scale (-?\\d+.\\d*)");
     private Pattern data = Pattern.compile("data");
-    private EventBus eventBus;
+    private EventDispatcher eventDispatcher;
 
     @Inject
-    public BinvoxLoader(final EventBus eventBus) {
-        this.eventBus = eventBus;
+    public BinvoxLoader(final EventDispatcher eventDispatcher) {
+        this.eventDispatcher = eventDispatcher;
     }
 
     public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez ) {

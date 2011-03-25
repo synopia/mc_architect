@@ -15,12 +15,11 @@ import java.util.List;
  * Subscribers (EventHandler) may register to specific events. Events with a specified topic
  * are only handled by subscribers of the same topic.
  *
- * This basic implementation runs all subscribers as the event is published (fired).
- *
  * @author synopia
  */
-public class EventBus {
+public abstract class EventBus {
     private HashMap<Class<? extends Event>, List<EventHandler<?>>> handlers = new HashMap<Class<? extends Event>, List<EventHandler<?>>>();
+    private HashMap<Class<? extends Event>, VetoHandler<?>> vetoHandlers = new HashMap<Class<? extends Event>, VetoHandler<?>>();
 
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
@@ -28,6 +27,13 @@ public class EventBus {
     private Benchmark benchmark;
 
     public EventBus() {
+        registerCallback(VetoEvent.class, new EventHandler<VetoEvent>() {
+            @Override
+            public void handleEvent(VetoEvent event) {
+                Event realEvent = event.getEvent();
+                handleVeto(realEvent);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -40,14 +46,41 @@ public class EventBus {
         }
     }
 
-    public void fireEvent( final Event event ) {
-        handleEvent(event);
+    @SuppressWarnings("unchecked")
+    public boolean isVeto( Event event ) {
+        Class<? extends Event> cls = event.getClass();
+        if( vetoHandlers.containsKey(cls) ) {
+            VetoHandler handler = vetoHandlers.get(cls);
+            return handler.isVeto(event);
+        }
+        return false;
     }
+
+    @SuppressWarnings("unchecked")
+    public void handleVeto( Event event ) {
+        Class<? extends Event> cls = event.getClass();
+        if( vetoHandlers.containsKey(cls) ) {
+            VetoHandler handler = vetoHandlers.get(cls);
+            handler.handleVeto(event);
+        }
+    }
+
+    public void fireEvent(final Event event) {
+        if( !isVeto(event) ) {
+            forceFireEvent(event);
+        } else {
+            forceFireEvent(new VetoEvent(event));
+        }
+    }
+
+    public abstract void forceFireEvent(final Event event);
 
     public synchronized boolean hasCallbacks( Event event ) {
         return handlers.containsKey(event.getClass());
     }
-
+    public synchronized <T extends Event> void registerVetoHandler( Class<T> cls, VetoHandler<T> handler ) {
+        vetoHandlers.put(cls, handler);
+    }
     public synchronized <T extends Event> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
         addCallback(handlers, cls, callback);
     }

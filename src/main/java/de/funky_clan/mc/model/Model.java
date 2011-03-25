@@ -7,8 +7,10 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.VetoHandler;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.math.Position;
+import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import de.funky_clan.mc.net.packets.BlockUpdate;
 import de.funky_clan.mc.net.packets.ChunkData;
@@ -33,12 +35,12 @@ public class Model {
     private EventDispatcher eventDispatcher;
 
     public interface BlockUpdateCallable {
-        void updateChunk( Chunk chunk, byte[] data );
-        void updateBlock( Chunk chunk, int x, int y, int z, int value );
+        void updateChunk( Chunk chunk );
+        void updateBlock( Chunk chunk, int x, int y, int z, int index );
     }
 
     @Inject
-    public Model(final ModelEventBus eventBus) {
+    public Model(final ModelEventBus eventBus, final MinecraftServer server) {
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
@@ -73,51 +75,47 @@ public class Model {
                 removeChunk(chunkX,chunkZ);
             }
         });
+
+        server.registerVetoHandler(ChunkData.class, new VetoHandler<ChunkData>() {
+            @Override
+            public boolean isVeto(ChunkData event) {
+                return true;
+            }
+
+            @Override
+            public void handleVeto(ChunkData event) {
+                server.forceFireEvent(event);
+            }
+        });
     }
 
-    public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data, BlockUpdateCallable callable ) {
+    public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, BlockUpdateCallable callable ) {
         if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
             Chunk chunk = getOrCreateChunk(sx, sy, sz);
-            callable.updateChunk(chunk, data);
+            callable.updateChunk(chunk);
         } else {
             for( int x=0; x<sizeX; x++ ) {
                 for( int y=0; y<sizeY; y++ ) {
                     for( int z=0; z<sizeZ; z++ ) {
                         int i = y + (z*sizeY) + x * sizeY * sizeZ;
                         Chunk chunk = getOrCreateChunk(sx + x, sy + y, sz + z);
-                        callable.updateBlock(chunk, sx + x, sy + y, sz + z, data[i]);
+                        callable.updateBlock(chunk, sx + x, sy + y, sz + z, i);
                     }
                 }
             }
         }
     }
 
-    public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, BlockUpdateCallable callable ) {
-        if( sizeX==16 && sizeY==128 && sizeZ==16 ) {
-            Chunk chunk = getOrCreateChunk(sx, sy, sz);
-            callable.updateChunk(chunk, chunk.getMap());
-        } else {
-            for( int x=0; x<sizeX; x++ ) {
-                for( int y=0; y<sizeY; y++ ) {
-                    for( int z=0; z<sizeZ; z++ ) {
-                        Chunk chunk = getOrCreateChunk(sx + x, sy + y, sz + z);
-                        callable.updateBlock(chunk, sx + x, sy + y, sz + z, chunk.getPixel(sx+x,sy+y,sz+z,0));
-                    }
-                }
-            }
-        }
-    }
-
-    public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, byte[] data ) {
-        interate(sx, sy, sz, sizeX, sizeY, sizeZ, data, new BlockUpdateCallable() {
+    public void setBlock( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, final byte[] data ) {
+        interate(sx, sy, sz, sizeX, sizeY, sizeZ, new BlockUpdateCallable() {
             @Override
-            public void updateChunk(Chunk chunk, byte[] data) {
+            public void updateChunk(Chunk chunk) {
                 chunk.updateFullBlock(0, data);
             }
 
             @Override
-            public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
-                chunk.setPixel(x, y, z, 0, value);
+            public void updateBlock(Chunk chunk, int x, int y, int z, int index) {
+                chunk.setPixel(x, y, z, 0, data[index]);
             }
         });
 

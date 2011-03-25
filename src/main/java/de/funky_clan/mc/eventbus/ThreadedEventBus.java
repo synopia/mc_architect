@@ -51,7 +51,7 @@ public abstract class ThreadedEventBus extends EventBus {
     }
 
     @Override
-    public void fireEvent(final Event event) {
+    public void forceFireEvent(final Event event) {
         if( Thread.currentThread()==thread ) {
             handleEvent(event);
         } else {

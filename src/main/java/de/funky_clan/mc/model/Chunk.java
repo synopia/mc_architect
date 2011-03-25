@@ -100,7 +100,7 @@ public final class Chunk {
         Arrays.fill(map, CHUNK_ARRAY_SIZE, 2*CHUNK_ARRAY_SIZE, (byte)0);
     }
 
-    byte[] getMap() {
+    public byte[] getMap() {
         return map;
     }
 }

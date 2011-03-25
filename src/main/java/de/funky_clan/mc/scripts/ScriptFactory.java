@@ -1,7 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.eventbus.EventBus;
+import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.swing.ScriptFinished;
@@ -22,6 +22,8 @@ public class ScriptFactory {
     @Inject private Model model;
     @Inject
     BinvoxLoader binvoxLoader;
+    @Inject
+    EventDispatcher eventDispatcher;
 
 
     @Inject
@@ -48,7 +50,7 @@ public class ScriptFactory {
                 } else {
                     container.runScriptlet(PathType.ABSOLUTE, event.getFileName() );
                 }
-                eventBus.fireEvent(new ScriptFinished(event.getFileName()));
+                eventDispatcher.fire(new ScriptFinished(event.getFileName()));
             }
         });
     }

@@ -32,7 +32,7 @@ public class SwingEventBus extends EventBus {
     }
 
     @Override
-    public void fireEvent(final Event event) {
+    public void forceFireEvent(final Event event) {
         if( SwingUtilities.isEventDispatchThread() ) {
             handleEvent(event);
         } else {

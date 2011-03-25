@@ -3,7 +3,6 @@ package de.funky_clan.mc.config;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.net.MinecraftClient;
