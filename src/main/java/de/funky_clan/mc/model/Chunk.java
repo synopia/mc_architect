@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public final class Chunk {
     private static final int NO_PIXEL_TYPES = 2;
-    private static final int CHUNK_ARRAY_SIZE = 16 * 16 * 128;
+    public static final int CHUNK_ARRAY_SIZE = 16 * 16 * 128;
     private final byte map[];
     private final int sizeX;
     private final int sizeY;
@@ -103,4 +103,5 @@ public final class Chunk {
     public byte[] getMap() {
         return map;
     }
+
 }

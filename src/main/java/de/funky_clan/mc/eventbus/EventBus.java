@@ -19,7 +19,6 @@ import java.util.List;
  */
 public abstract class EventBus {
     private HashMap<Class<? extends Event>, List<EventHandler<?>>> handlers = new HashMap<Class<? extends Event>, List<EventHandler<?>>>();
-    private HashMap<Class<? extends Event>, VetoHandler<?>> vetoHandlers = new HashMap<Class<? extends Event>, VetoHandler<?>>();
 
     private final Logger log = LoggerFactory.getLogger(EventBus.class);
 
@@ -31,7 +30,8 @@ public abstract class EventBus {
             @Override
             public void handleEvent(VetoEvent event) {
                 Event realEvent = event.getEvent();
-                handleVeto(realEvent);
+                VetoHandler vetoHandler = event.getHandler();
+                vetoHandler.handleVeto(realEvent);
             }
         });
     }
@@ -46,31 +46,8 @@ public abstract class EventBus {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean isVeto( Event event ) {
-        Class<? extends Event> cls = event.getClass();
-        if( vetoHandlers.containsKey(cls) ) {
-            VetoHandler handler = vetoHandlers.get(cls);
-            return handler.isVeto(event);
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void handleVeto( Event event ) {
-        Class<? extends Event> cls = event.getClass();
-        if( vetoHandlers.containsKey(cls) ) {
-            VetoHandler handler = vetoHandlers.get(cls);
-            handler.handleVeto(event);
-        }
-    }
-
     public void fireEvent(final Event event) {
-        if( !isVeto(event) ) {
-            forceFireEvent(event);
-        } else {
-            forceFireEvent(new VetoEvent(event));
-        }
+        forceFireEvent(event);
     }
 
     public abstract void forceFireEvent(final Event event);
@@ -78,9 +55,7 @@ public abstract class EventBus {
     public synchronized boolean hasCallbacks( Event event ) {
         return handlers.containsKey(event.getClass());
     }
-    public synchronized <T extends Event> void registerVetoHandler( Class<T> cls, VetoHandler<T> handler ) {
-        vetoHandlers.put(cls, handler);
-    }
+
     public synchronized <T extends Event> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
         addCallback(handlers, cls, callback);
     }

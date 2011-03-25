@@ -26,9 +26,6 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     private boolean connected;
 
     @Inject
-    private MinecraftBinding minecraftBinding;
-
-    @Inject
     private EventDispatcher eventDispatcher;
 
     protected MinecraftNetworkEventBus() {
@@ -121,11 +118,13 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     protected void handleEvent(Event event) {
         if (event instanceof NetworkEvent) {
             NetworkEvent networkEvent = (NetworkEvent) event;
-            try {
-                out.writeByte(networkEvent.getPacketId());
-                networkEvent.encode(out);
-            } catch (IOException e) {
-                throw new NetworkException(e);
+            if( networkEvent.getSource()==getNetworkType() ) {
+                try {
+                    out.writeByte(networkEvent.getPacketId());
+                    networkEvent.encode(out);
+                } catch (IOException e) {
+                    throw new NetworkException(e);
+                }
             }
         }
         super.handleEvent(event);
@@ -138,21 +137,13 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
                 packet.decode(in);
-                dispatchIncomingPacket(packet);
+                eventDispatcher.fire(packet);
             } else {
                 throw new NetworkException("Unknown packet id 0x"+Integer.toHexString(packetId));
             }
         } catch (IOException e) {
             throw new NetworkException(e);
         }
-    }
-
-    protected abstract void dispatchIncomingPacket(NetworkEvent packet);
-
-    protected void handleUnknownPacket(int packetId) throws IOException {
-        minecraftBinding.decode(packetId, in);
-        out.writeByte(packetId);
-        minecraftBinding.encode(packetId, out);
     }
 
     @Override
@@ -186,14 +177,23 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         if( !packetTypes.containsKey(packetId) ) {
             return null;
         }
+        Class<? extends NetworkEvent> eventClass = packetTypes.get(packetId);
+        return preparePacket(eventClass);
+    }
+
+    protected NetworkEvent preparePacket(Class<? extends NetworkEvent> eventClass) {
+        NetworkEvent packet = null;
         try {
-            Class<? extends NetworkEvent> eventClass = packetTypes.get(packetId);
-            return eventClass.newInstance();
+            packet = eventClass.newInstance();
+            packet.setSource(getNetworkType());
+            return packet;
         } catch (InstantiationException e) {
             throw new NetworkException(e);
         } catch (IllegalAccessException e) {
             throw new NetworkException(e);
         }
     }
+
+    protected abstract byte getNetworkType();
 
 }

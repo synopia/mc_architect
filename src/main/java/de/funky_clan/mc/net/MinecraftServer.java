@@ -22,8 +22,7 @@ public class MinecraftServer extends MinecraftNetworkEventBus {
     }
 
     @Override
-    protected void dispatchIncomingPacket(NetworkEvent packet) {
-        eventDispatcher.fireFromServer(packet);
+    protected byte getNetworkType() {
+        return NetworkEvent.SERVER;
     }
-
 }

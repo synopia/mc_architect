@@ -24,7 +24,7 @@ public class MinecraftClient extends MinecraftNetworkEventBus {
     }
 
     @Override
-    protected void dispatchIncomingPacket(NetworkEvent packet) {
-        eventDispatcher.fireFromClient(packet);
+    protected byte getNetworkType() {
+        return NetworkEvent.CLIENT;
     }
 }

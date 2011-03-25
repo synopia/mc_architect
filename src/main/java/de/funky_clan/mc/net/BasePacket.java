@@ -10,6 +10,16 @@ import java.io.IOException;
  * @author synopia
  */
 public abstract class BasePacket implements NetworkEvent {
+
+    private byte source;
+
+    protected BasePacket(byte source) {
+        this.source = source;
+    }
+
+    protected BasePacket() {
+    }
+
     protected void writeMetadata(DataOutputStream out, byte[] meta, int len) throws IOException {
         out.write(meta, 0, len);
     }
@@ -53,5 +63,15 @@ public abstract class BasePacket implements NetworkEvent {
         }
         meta[index++] = 0x7f;
         return index;
+    }
+
+    @Override
+    public byte getSource() {
+        return source;
+    }
+
+    @Override
+    public void setSource(byte source) {
+        this.source = source;
     }
 }

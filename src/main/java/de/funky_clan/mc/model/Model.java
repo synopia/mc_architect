@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 
+import static de.funky_clan.mc.model.Chunk.CHUNK_ARRAY_SIZE;
 import static de.funky_clan.mc.model.Chunk.getChunkId;
 
 /**
@@ -31,7 +32,6 @@ public class Model {
     private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
     private final Logger log = LoggerFactory.getLogger(Model.class);
 
-    @Inject
     private EventDispatcher eventDispatcher;
 
     public interface BlockUpdateCallable {
@@ -40,7 +40,9 @@ public class Model {
     }
 
     @Inject
-    public Model(final ModelEventBus eventBus, final MinecraftServer server) {
+    public Model(final EventDispatcher eventDispatcher, final ModelEventBus eventBus, final MinecraftServer server) {
+        this.eventDispatcher = eventDispatcher;
+
         eventBus.registerCallback(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
             public void handleEvent(BlockUpdate event) {
@@ -70,21 +72,49 @@ public class Model {
         eventBus.registerCallback(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
             @Override
             public void handleEvent(ChunkPreparation event) {
-                int chunkX = event.getX();
-                int chunkZ = event.getZ();
-                removeChunk(chunkX,chunkZ);
+                if( !event.isLoad() ) {
+                    int chunkX = event.getX();
+                    int chunkZ = event.getZ();
+                    removeChunk(chunkX,chunkZ);
+                }
             }
         });
 
-        server.registerVetoHandler(ChunkData.class, new VetoHandler<ChunkData>() {
+        eventDispatcher.registerVetoHandler(eventBus, ChunkData.class, new VetoHandler<ChunkData>() {
             @Override
             public boolean isVeto(ChunkData event) {
                 return true;
             }
 
             @Override
-            public void handleVeto(ChunkData event) {
-                server.forceFireEvent(event);
+            public void handleVeto(final ChunkData event) {
+
+                final byte newMap[] = event.getData();
+
+                interate(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), new BlockUpdateCallable() {
+                    @Override
+                    public void updateChunk(Chunk chunk) {
+                        byte[] map = chunk.getMap();
+                        for (int i = 0; i < CHUNK_ARRAY_SIZE; i++) {
+                            byte value = newMap[i];
+                            if( map[i+CHUNK_ARRAY_SIZE ]>0 ) {
+                                value = 1;
+                            }
+                            newMap[i] = value;
+                        }
+                    }
+
+                    @Override
+                    public void updateBlock(Chunk chunk, int x, int y, int z, int index) {
+                        byte value = newMap[index];
+                        if( chunk.getPixel(x,y,z,1)>0 ) {
+                            value = 1;
+                        }
+                        newMap[index] = value;
+                    }
+                });
+
+                eventDispatcher.fire( new ChunkData( event.getSource(), event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap), true);
             }
         });
     }
