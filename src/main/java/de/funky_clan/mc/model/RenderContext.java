@@ -5,6 +5,8 @@ package de.funky_clan.mc.model;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.math.Point2i;
 import de.funky_clan.mc.math.Position;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
@@ -18,6 +20,7 @@ import java.awt.*;
  * @author synopia
  */
 public class RenderContext {
+    private final Logger logger = LoggerFactory.getLogger(RenderContext.class);
     private Colors colors;
     private Graphics2D           g;
     private Slice slice;
@@ -118,10 +121,23 @@ public class RenderContext {
     }
 
     public void calculateSizes() {
+        if( windowSizeX>windowSizeY ) {
+            windowSizeX = windowSizeY;
+        }
+        if( windowSizeX<windowSizeY ) {
+            windowSizeY = windowSizeX;
+        }
+        if( screenSizeX!=0 && screenSizeY!=0) {
+            if( screenSizeX>screenSizeY ) {
+                windowSizeX *= (double) screenSizeX/screenSizeY;
+            } else {
+                windowSizeY *= (double) screenSizeY/screenSizeX;
+
+            }
+        }
         if( windowSizeX>0 && windowSizeY>0 ) {
             pixelSizeX = screenSizeX / windowSizeX;
             pixelSizeY = screenSizeY / windowSizeY;
-            pixelSizeY = pixelSizeX;
         } else {
             pixelSizeX = 0;
             pixelSizeY = 0;

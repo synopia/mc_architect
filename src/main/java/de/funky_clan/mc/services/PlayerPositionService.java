@@ -131,6 +131,16 @@ public class PlayerPositionService {
 
             }
         });
+        eventBus.registerCallback(PlayerSpawnPosition.class, new EventHandler<PlayerSpawnPosition>() {
+            @Override
+            public void handleEvent(PlayerSpawnPosition event) {
+                x = event.getX();
+                y = event.getY();
+                z = event.getZ();
+                firePositionUpdate();
+
+            }
+        });
     }
 
     private void firePositionUpdate() {

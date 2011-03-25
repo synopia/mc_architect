@@ -16,6 +16,7 @@ import de.funky_clan.mc.events.swing.Initialize;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.MinecraftService;
+import de.funky_clan.mc.net.packets.PlayerSpawnPosition;
 import de.funky_clan.mc.services.OreDetectorService;
 import de.funky_clan.mc.scripts.ScriptFactory;
 import de.funky_clan.mc.ui.MainPanel;
@@ -77,9 +78,11 @@ public class Main extends JFrame {
         swingEventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
             @Override
             public void handleEvent(Initialize event) {
-                setBounds(20,20,600,500);
+                setBounds(20, 20, 600, 500);
+                eventDispatcher.fire(new PlayerSpawnPosition());
             }
         });
+
         eventDispatcher.fire(new Initialize());
         if( isDebug() ) {
             eventDispatcher.fire(new ConnectionDetailsChanged(12345,"localhost"));

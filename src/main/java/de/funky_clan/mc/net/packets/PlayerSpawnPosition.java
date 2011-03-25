@@ -33,4 +33,16 @@ public class PlayerSpawnPosition extends BasePacket {
         out.writeInt(y);
         out.writeInt(z);
     }
+
+    public int getZ() {
+        return z;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getX() {
+        return x;
+    }
 }

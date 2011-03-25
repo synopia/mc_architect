@@ -174,7 +174,7 @@ public abstract class ZoomPanel extends JPanel {
         int w = Math.abs(width);
         int h = Math.abs(height);
 
-        if( x<10 || y<10 ) {
+        if( w<10 || h<10 ) {
             return;
         }
 

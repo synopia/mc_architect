@@ -138,9 +138,6 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
             int packetId = in.readByte() & 0xff;
             NetworkEvent packet = createPacket(packetId);
             if( packet!=null ) {
-                if( packetId!=28 && packetId!=31 && packetId!=33 && packetId!=32 ) {
-                    logger.info(this+" processing "+Integer.toHexString(packetId));
-                }
                 packet.decode(in);
                 eventDispatcher.fire(packet);
                 lastPacketId = packetId;
