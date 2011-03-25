@@ -21,5 +21,5 @@ mid_z = 188
 #@slice_x.set_origin 0, -32, 0
 @slice_x.set_scale 1, -1, -1
 
-@binvox.load @slice_x, "akw.binvox", 155, 166, 108, 379, 225, 309
+@binvox.load @slice_x, "akw.binvox", 155, 166, 108, 379, 225, 309, DataValues::STONE.id
 

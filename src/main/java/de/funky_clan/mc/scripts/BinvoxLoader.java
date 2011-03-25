@@ -24,7 +24,7 @@ public class BinvoxLoader {
         this.eventDispatcher = eventDispatcher;
     }
 
-    public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez ) {
+    public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez, int blockId ) {
         try {
             FileInputStream fileInput = new FileInputStream(filename);
             DataInputStream input = new DataInputStream( new BufferedInputStream(fileInput));
@@ -55,7 +55,7 @@ public class BinvoxLoader {
                 int count = input.readByte() & 0xff;
                 for( int i=0; i<count; i++ ) {
                     if( value>0 && x>=sx && y>=sy && z>=sz && x<=ex && y<=ey && z<=ez ) {
-                        g.setPixel(x - sx - halfSizeX, y - sy - halfSizeY, z - sz - halfSizeZ, value);
+                        g.setPixel(x - sx - halfSizeX, y - sy - halfSizeY, z - sz - halfSizeZ, blockId);
 //                        g.setPixel(2 * sz - (z - sz), y - sy, x - sx, value);
                     }
 
