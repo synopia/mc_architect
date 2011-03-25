@@ -2,9 +2,13 @@ package de.funky_clan.mc.ui;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CGrid;
+import bibliothek.gui.dock.common.action.CButton;
+import bibliothek.gui.dock.common.intern.CDockable;
+import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.funky_clan.mc.config.Configuration;
@@ -62,8 +66,8 @@ public class MainPanel extends CControl {
     @Inject
     private Box selectionBox;
 
-    private JLabel mousePosInfo;
-    private JLabel selectionInfo;
+    private JLabel statusText;
+    private JToolBar toolBar;
 
     @Inject
     public MainPanel(final SwingEventBus eventBus) {
@@ -71,13 +75,13 @@ public class MainPanel extends CControl {
             @Override
             public void handleEvent(MouseRectangle event) {
                 selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getEndX(), event.getEndY(), event.getEndZ() );
-                selectionInfo.setText(String.format(
+                statusText.setText(String.format(
                         "Selection: (%.0f, %.0f, %.0f) -> (%.0f, %.0f, %.0f) = (%.0f, %.0f, %.0f)",
                         selectionBox.getStartX(), selectionBox.getStartY(), selectionBox.getStartZ(),
                         selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
                         selectionBox.getEndX()-selectionBox.getStartX(), selectionBox.getEndY()-selectionBox.getStartY(), selectionBox.getEndZ()-selectionBox.getStartZ()
                 ));
-//                repaint();
+                MainPanel.this.getContentArea().repaint();
             }
         });
         eventBus.registerCallback(MouseMoved.class, new EventHandler<MouseMoved>() {
@@ -88,13 +92,13 @@ public class MainPanel extends CControl {
                 int z = event.getZ();
 
                 String pixelText = DataValues.find(configuration.getModel().getPixel(x,y,z,0)).toString();
-//                mousePosInfo.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
+                statusText.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
             }
         });
         eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
             @Override
             public void handleEvent(ColorChanged event) {
-//                repaint();
+                MainPanel.this.getContentArea().repaint();
             }
         });
 
@@ -104,6 +108,8 @@ public class MainPanel extends CControl {
                 onInit();
             }
         });
+        buildToolBar();
+
     }
 
     protected void onInit() {
@@ -128,35 +134,33 @@ public class MainPanel extends CControl {
 
         this.getContentArea().deploy(grid);
 
-
         this.getContentArea().getEast().add(new DefaultDockable(colorsPanel, "Colors"), 0);
         this.getContentArea().getEast().add(new DefaultDockable(scriptsPanel, "Scripts"), 1);
         this.getContentArea().getEast().add(new DefaultDockable(orePanel, "Ore"), 2);
 
         infoBar.addZone( "dir", playerInfoWidgetFactory.getDirection());
         infoBar.addZone( "pos", playerInfoWidgetFactory.getPosition());
-        infoBar.addZone( "space", new JLabel(), "50");
+        infoBar.addZone( "status", connectionWidgetFactory.getConnectionStatus() );
+        infoBar.addZone( "host", connectionWidgetFactory.getHost() );
 
-        statusBar.addZone( "statusText", new JLabel(), "*");
+        statusBar.addZone( "statusText", statusText=new JLabel(), "*");
         statusBar.addZone( "benchmark", statisticWidgetFactory.getBenchmarkText());
         statusBar.addZone( "chunks", statisticWidgetFactory.getChunksText());
         statusBar.addZone( "mem", statisticWidgetFactory.getMemoryText());
         statusBar.addZone( "ore", statisticWidgetFactory.getOreText());
 
-        buildToolBar();
     }
 
     public void setZShift( int zShift ) {
         this.zShift = zShift;
-        zShiftLabel.setText("z shift: " + zShift);
+        zShiftLabel.setText("player shift: " + zShift);
         playerPositionService.setZShift(zShift);
     }
 
     private JToolBar buildToolBar() {
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar(JToolBar.HORIZONTAL);
 
-        zShiftLabel = new JLabel();
-        setZShift( 0 );
+        zShiftLabel = new JLabel("player shift: 0");
         toolBar.add(zShiftLabel);
         toolBar.addSeparator();
         toolBar.add(new AbstractAction("raise z") {
@@ -173,10 +177,10 @@ public class MainPanel extends CControl {
             }
         });
 
-        toolBar.addSeparator();
-        toolBar.add(mousePosInfo = new JLabel("Mouse: "));
-        toolBar.addSeparator();
-        toolBar.add(selectionInfo = new JLabel(""));
+        return toolBar;
+    }
+
+    public JToolBar getToolBar() {
         return toolBar;
     }
 }

@@ -9,6 +9,7 @@ import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
+import de.funky_clan.mc.net.packets.Disconnect;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,16 +32,21 @@ public class ConnectionWidgetFactory {
         eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
             @Override
             public void handleEvent(ConnectionEstablished event) {
-                host.setEditable(false);
-                connectionStatus.setText("connected as "+event.getUsername());
+                updateStatus(true, "connected");
             }
         });
 
         eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
             public void handleEvent(ConnectionLost event) {
-                host.setEditable(true);
-                connectionStatus.setText("disconnected");
+                updateStatus(false, "disconnected");
+            }
+        });
+
+        eventBus.registerCallback(Disconnect.class, new EventHandler<Disconnect>() {
+            @Override
+            public void handleEvent(Disconnect event) {
+                updateStatus( false, "disconnected");
             }
         });
 
@@ -50,6 +56,11 @@ public class ConnectionWidgetFactory {
                 host.setText( event.getReadableHost() );
             }
         });
+    }
+
+    protected void updateStatus( boolean connected, String msg ) {
+        host.setEditable(!connected);
+        connectionStatus.setText(msg);
     }
 
     private void build() {

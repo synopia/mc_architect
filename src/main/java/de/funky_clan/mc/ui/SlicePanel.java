@@ -5,6 +5,10 @@ package de.funky_clan.mc.ui;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.action.CButton;
+import bibliothek.gui.dock.common.action.CCheckBox;
+import bibliothek.gui.dock.common.action.CRadioButton;
+import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
@@ -19,8 +23,10 @@ import de.funky_clan.mc.events.swing.OreDisplayUpdate;
 import de.funky_clan.mc.events.swing.ScriptFinished;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
+import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.ui.renderer.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -33,7 +39,6 @@ import java.util.List;
  * @author synopia
  */
 public class SlicePanel extends ZoomPanel {
-    private BackgroundImage image;
     @Inject
     private Model           model;
     @Inject
@@ -66,6 +71,11 @@ public class SlicePanel extends ZoomPanel {
     private Box selectedBox;
 
     private Position position = new Position();
+    public enum MouseMode {
+        ZOOM,
+        SELECTION
+    }
+    private MouseMode mouseMode;
 
     private int lastMouseX;
     private int lastMouseY;
@@ -124,7 +134,7 @@ public class SlicePanel extends ZoomPanel {
 
     @Override
     protected void onMouseRectangle(MouseEvent e, int x, int y, int width, int height) {
-        if( e.isShiftDown() || e.isControlDown()) {
+        if( e.isShiftDown() || e.isControlDown() || mouseMode==MouseMode.ZOOM) {
             applyWindow(x,y,width,height);
         } else {
             position.setScreen(x,y);
@@ -154,7 +164,7 @@ public class SlicePanel extends ZoomPanel {
 
     @Override
     protected void onMouseWheel(MouseWheelEvent e, int x, int y, int wheelRotation) {
-        if( e.isShiftDown() || e.isControlDown()) {
+        if( e.isShiftDown() || e.isControlDown() || mouseMode==MouseMode.ZOOM) {
             double scale = 1 + wheelRotation * 0.05;
             context.zoom(scale, scale, e.getPoint());
             repaint();
@@ -219,23 +229,14 @@ public class SlicePanel extends ZoomPanel {
 
     @Override
     public boolean isRectMode(MouseEvent e) {
-        return super.isRectMode(e) && (e.isShiftDown()||e.isControlDown());
+        return super.isRectMode(e) && (e.isShiftDown()||e.isControlDown()||mouseMode==MouseMode.ZOOM);
     }
 
     @Override
     protected void paintContent( Graphics2D g ) {
-        BackgroundImage image = this.image;
-
-        if( image == null ) {
-            image = model.getImage( slice.getType(), sliceNo );
-        }
-
         g.setColor( context.getColors().getBackgroundColor() );
         g.fillRect( 0, 0, getWidth(), getHeight() );
 
-        if( image != null ) {
-            imageRenderer.render(image, context );
-        }
         if( slice != null ) {
             slice.setSlice(sliceNo);
             sliceRenderer.render(slice, context);
@@ -254,11 +255,6 @@ public class SlicePanel extends ZoomPanel {
         }
     }
 
-
-    public void setImage( BackgroundImage image ) {
-        this.image = image;
-        repaint();
-    }
 
     private void setSliceNo( int wz ) {
         if( sliceNo != wz ) {
@@ -279,6 +275,35 @@ public class SlicePanel extends ZoomPanel {
     }
 
     public CDockable getDockable() {
-        return new DefaultSingleCDockable(slice.getType().toString(),this);
+        DefaultSingleCDockable dockable = new DefaultSingleCDockable(slice.getType().toString(), slice.getType().toString(), this);
+        CRadioButton selectionMode = new CRadioButton("selection mode", new ImageIcon(Toolkit.getDefaultToolkit().getImage("disabled_co.gif"))) {
+            @Override
+            protected void changed() {
+                if( this.isSelected() ) {
+                    mouseMode = MouseMode.SELECTION;
+                }
+            }
+        };
+        CRadioButton zoomMode = new CRadioButton("zoom mode", new ImageIcon(Toolkit.getDefaultToolkit().getImage("insp_sbook.gif"))) {
+            @Override
+            protected void changed() {
+                if( this.isSelected() ) {
+                    mouseMode = MouseMode.ZOOM;
+                }
+            }
+        };
+        CRadioGroup g = new CRadioGroup();
+        g.add(selectionMode);
+        g.add(zoomMode);
+
+        dockable.addAction(selectionMode);
+        dockable.addAction(zoomMode);
+        dockable.addAction(new CButton("focus player", new ImageIcon(Toolkit.getDefaultToolkit().getImage("collapseall.gif"))) {
+            @Override
+            protected void action() {
+                scrollTo(player.getPositionX(), player.getPositionY(), sliceNo);
+            }
+        });
+        return dockable;
     }
 }

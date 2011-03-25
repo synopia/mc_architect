@@ -144,7 +144,6 @@ public class PlayerPositionService {
     }
 
     private void firePositionUpdate() {
-        z += zShift;
         double oldX = lastX;
         double oldY = lastY;
         double oldZ = lastZ;
@@ -155,7 +154,7 @@ public class PlayerPositionService {
         boolean blockChanged = (int)lastX!=(int)oldX || (int)lastY!=(int)oldY || (int)lastZ!=(int)oldZ;
         boolean chunkChanged = Chunk.getChunkId(oldX, oldZ)!=Chunk.getChunkId(lastX, lastZ);
 
-        eventDispatcher.fire(new PlayerPositionUpdate(x, y, z, yaw, pitch, blockChanged, chunkChanged));
+        eventDispatcher.fire(new PlayerPositionUpdate(x, y+zShift, z, yaw, pitch, blockChanged, chunkChanged));
     }
 
     public void setZShift(int zShift) {

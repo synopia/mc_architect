@@ -39,7 +39,7 @@ public class PlayerInfoWidgetFactory {
     }
 
     private void build() {
-        direction     = new JLabel("W");
+        direction     = new JLabel("WE");
         position      = new JLabel("Position: 1600, 1600, 1000");
     }
 

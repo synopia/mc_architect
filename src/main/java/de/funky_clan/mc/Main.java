@@ -74,7 +74,14 @@ public class Main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(mainPanel.getContentArea(), BorderLayout.CENTER);
         add(info, BorderLayout.NORTH);
-        add(status, BorderLayout.SOUTH);
+        JPanel south = new JPanel();
+        south.setLayout(new BoxLayout(south,BoxLayout.Y_AXIS));
+        JToolBar toolBar = mainPanel.getToolBar();
+        toolBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+        status.setAlignmentX(Component.LEFT_ALIGNMENT);
+        south.add(toolBar);
+        south.add(status);
+        add(south, BorderLayout.SOUTH);
         swingEventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
             @Override
             public void handleEvent(Initialize event) {
