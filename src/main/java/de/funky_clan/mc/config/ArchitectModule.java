@@ -28,7 +28,6 @@ public class ArchitectModule implements Module {
         binder.bind(BlockRenderer.class).in(Singleton.class);
         binder.bind(ImageRenderer.class).in(Singleton.class);
         binder.bind(PlayerRenderer.class).in(Singleton.class);
-        binder.bind(SliceRenderer.class).in(Singleton.class);
         binder.bind(BoxRenderer.class).in(Singleton.class);
 
         binder.bind(Box.class).in(Singleton.class);

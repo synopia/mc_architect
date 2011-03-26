@@ -258,6 +258,7 @@ public class SlicePanel extends ZoomPanel {
     private void setSliceNo( int wz ) {
         if( sliceNo != wz ) {
             sliceNo = wz;
+            sliceRenderer.invalidate();
             repaint();
         }
     }

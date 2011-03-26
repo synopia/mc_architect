@@ -11,7 +11,7 @@ import java.awt.*;
 public class Colors {
     public static final Color EMPTY = new Color(255,255,255,0);
     private static final Color BLUEPRINT = new Color(40, 40, 255, 255);
-    private Color[] colorData = new Color[255];
+    private final Color[] colorData = new Color[255];
 
     public Colors() {
         colorData[DataValues.AIR.getId()] = new Color(0,0,0,15);
@@ -131,7 +131,15 @@ public class Colors {
         colorData[DataValues.SLABCOBBLE.getId()] = colorData[DataValues.COBBLESTONE.getId()];
     }
 
-    public Color getColorForBlock( int id ) {
+    public final float[] getColorForBlock( int id, float[] color ) {
+        Color c = getColorForBlock(id);
+        color[0] = c.getRed()/255.f;
+        color[1] = c.getGreen()/255.f;
+        color[2] = c.getBlue()/255.f;
+        color[3] = c.getAlpha()/255.f;
+        return color;
+    }
+    public final Color getColorForBlock( int id ) {
         return colorData[id]!=null?colorData[id]:EMPTY;
     }
 
