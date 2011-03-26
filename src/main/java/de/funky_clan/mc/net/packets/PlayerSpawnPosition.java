@@ -15,6 +15,15 @@ public class PlayerSpawnPosition extends BasePacket {
     private int y;
     private int x;
 
+    public PlayerSpawnPosition() {
+    }
+
+    public PlayerSpawnPosition(int z, int y, int x) {
+        this.z = z;
+        this.y = y;
+        this.x = x;
+    }
+
     @Override
     public int getPacketId() {
         return ID;

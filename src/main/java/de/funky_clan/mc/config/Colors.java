@@ -1,17 +1,20 @@
 package de.funky_clan.mc.config;
 
+import com.google.inject.Singleton;
+
 import java.awt.*;
 
 /**
 * @author synopia
 */
+@Singleton
 public class Colors {
     public static final Color EMPTY = new Color(255,255,255,0);
     private static final Color BLUEPRINT = new Color(40, 40, 255, 255);
     private Color[] colorData = new Color[255];
 
     public Colors() {
-        colorData[DataValues.AIR.getId()] = new Color(255,255,255,0);
+        colorData[DataValues.AIR.getId()] = new Color(0,0,0,15);
         colorData[DataValues.STONE.getId()] = new Color(120,120,120,255);
         colorData[DataValues.GRASS.getId()] = new Color(100, 150, 62, 255);
         colorData[DataValues.DIRT.getId()] = new Color(134,96,67,255);

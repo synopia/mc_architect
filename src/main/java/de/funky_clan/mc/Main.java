@@ -87,7 +87,7 @@ public class Main extends JFrame {
             @Override
             public void handleEvent(Initialize event) {
                 setBounds(20, 20, 600, 500);
-                eventDispatcher.fire(new PlayerSpawnPosition());
+                eventDispatcher.fire(new PlayerSpawnPosition(600,64,-15));
             }
         });
 
