@@ -118,7 +118,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     @Override
     protected void handleEvent(Event event) {
-        if (event instanceof NetworkEvent) {
+        if (event instanceof NetworkEvent && out!=null ) {
             NetworkEvent networkEvent = (NetworkEvent) event;
             if( networkEvent.getSource()==getNetworkType() ) {
                 try {

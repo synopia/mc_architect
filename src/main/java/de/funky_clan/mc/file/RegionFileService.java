@@ -1,11 +1,14 @@
 package de.funky_clan.mc.file;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.net.packets.ChunkData;
+import de.funky_clan.mc.net.packets.ChunkPreparation;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;
@@ -18,21 +21,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.funky_clan.mc.model.Chunk.getChunkId;
+import static de.funky_clan.mc.model.Chunk.getChunkXForId;
+import static de.funky_clan.mc.model.Chunk.getChunkYForId;
+
 /**
  * @author synopia
  */
+@Singleton
 public class RegionFileService {
+    private final Logger logger = LoggerFactory.getLogger(RegionFileService.class);
+
     private static final int SIZE = 10;
-    private int playerX;
-    private int playerZ;
-    private ArrayList<String> loadedChunks = new ArrayList<String>();
+    private ArrayList<Long> loadedChunks = new ArrayList<Long>();
     private Logger log = LoggerFactory.getLogger(RegionFileService.class);
     @Inject
     private EventDispatcher eventDispatcher;
 
     @Inject
     public RegionFileService(final ModelEventBus eventBus) {
-        System.out.println("Region File Service started");
+        logger.info("Region File Service started");
         eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {
@@ -42,28 +50,26 @@ public class RegionFileService {
     }
 
     protected void updatePlayerPos(int x, int z) {
-        playerX = x;
-        playerZ = z;
 
         int playerChunkX = x>>4;
         int playerChunkZ = z>>4;
 
-        List<String> toRemove = new ArrayList<String>(loadedChunks);
+        List<Long> toRemove = new ArrayList<Long>(loadedChunks);
 
         for( int chunkX=playerChunkX-SIZE; chunkX<=playerChunkX+SIZE; chunkX++) {
             for( int chunkZ=playerChunkZ-SIZE; chunkZ<=playerChunkZ+SIZE; chunkZ++) {
-                String chunkName = getChunkName(chunkX, chunkZ );
-                if( loadedChunks.contains(chunkName) ) {
-                    toRemove.remove(chunkName);
+                long id = getChunkId(chunkX, chunkZ);
+                if( loadedChunks.contains(id) ) {
+                    toRemove.remove(id);
                 } else {
                     load(chunkX, chunkZ);
-                    loadedChunks.add(chunkName);
+                    loadedChunks.add(id);
                 }
             }
         }
-        log.info("removing "+toRemove.size()+" chunks");
-        for (String s : toRemove) {
-
+        log.info("unloading "+toRemove.size()+" chunks");
+        for (Long id : toRemove) {
+            eventDispatcher.fire(new ChunkPreparation(NetworkEvent.SERVER, getChunkXForId(id), getChunkYForId(id), false));
         }
         loadedChunks.removeAll(toRemove);
     }

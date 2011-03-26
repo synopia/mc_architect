@@ -13,6 +13,7 @@ import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 import de.funky_clan.mc.events.swing.Initialize;
+import de.funky_clan.mc.file.RegionFileService;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.MinecraftService;
@@ -35,8 +36,8 @@ public class Main extends JFrame {
     @Inject
     MainPanel mainPanel;
 
-//    @Inject
-//    RegionFileService regionFileService;
+    @Inject
+    RegionFileService regionFileService;
 
     @Inject
     OreDetectorService oreDetectorService;

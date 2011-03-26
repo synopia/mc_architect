@@ -15,6 +15,16 @@ public class ChunkPreparation extends BasePacket {
     private int z;
     private boolean mode;
 
+    public ChunkPreparation() {
+    }
+
+    public ChunkPreparation(byte source, int x, int z, boolean mode) {
+        super(source);
+        this.x = x;
+        this.z = z;
+        this.mode = mode;
+    }
+
     @Override
     public int getPacketId() {
         return ID;

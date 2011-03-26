@@ -34,9 +34,15 @@ public final class Chunk {
         map = new byte[CHUNK_ARRAY_SIZE * NO_PIXEL_TYPES];
     }
 
+    public static int getChunkXForId( long id ) {
+        return (int)(id>>32);
+    }
+    public static int getChunkYForId( long id ) {
+        return (int)(id);
+    }
+
     public static long getChunkId(int x, int y) {
-        // todo notice, only y-values below -0xffff will work :-(
-        return ((long)x<<32) | (y&0xffff);
+        return ((long)(x)<<32) | (y&0xffffffffL);
     }
     public static long getChunkId(double x, double y) {
         return getChunkId( (int)x>>4, (int)y>>4 );

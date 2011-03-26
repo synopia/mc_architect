@@ -40,6 +40,7 @@ public class ScriptsPanel extends JPanel {
         addScriptButton("akw.rb", !Main.isDebug());
         addScriptButton("sphere.rb", !Main.isDebug());
         addScriptButton("glaskugel.rb", !Main.isDebug());
+        addScriptButton("superformula.rb", !Main.isDebug());
         if( Main.isDebug() ) {
             addScriptButton("test.rb", false);
         }

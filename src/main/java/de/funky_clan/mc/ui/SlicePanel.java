@@ -275,6 +275,7 @@ public class SlicePanel extends ZoomPanel {
 
     public CDockable getDockable() {
         DefaultSingleCDockable dockable = new DefaultSingleCDockable(slice.getType().toString(), slice.getType().name, this);
+        dockable.setExternalizable(false);
         CRadioButton selectionMode = new CRadioButton("selection mode", new ImageIcon(Toolkit.getDefaultToolkit().getImage("disabled_co.gif"))) {
             @Override
             protected void changed() {
