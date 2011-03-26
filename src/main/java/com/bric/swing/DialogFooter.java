@@ -630,17 +630,20 @@ public class DialogFooter extends JPanel {
 			Window window = SwingUtilities.getWindowAncestor(DialogFooter.this);
 			if(window==null) return;
 			
+/*
 			window.setFocusTraversalPolicy(new DelegateFocusTraversalPolicy(window.getFocusTraversalPolicy()) {
 				private static final long serialVersionUID = 1L;
 				
 				public Component getDefaultComponent(Container focusCycleRoot) {
-					/** If the default component would naturally be in the footer *anyway*:
+					*/
+/** If the default component would naturally be in the footer *anyway*:
 					 * Make sure the default component is the default button.
 					 * 
 					 * However if the default component lies elsewhere (a text field or
 					 * check box in the dialog): that should retain the default focus.
 					 * 
-					 */
+					 *//*
+
 					Component defaultComponent = super.getDefaultComponent(focusCycleRoot);
 					if(DialogFooter.this.isAncestorOf(defaultComponent)) {
 						JButton button = DialogFooter.this.defaultButton;
@@ -650,6 +653,7 @@ public class DialogFooter extends JPanel {
 					return defaultComponent;
 				}
 			} );
+*/
 		}
 	};
 	
