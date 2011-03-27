@@ -10,6 +10,8 @@ import de.funky_clan.mc.ui.renderer.ColorRenderer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 
 /**
@@ -25,9 +27,11 @@ public class ColorsPanel extends JPanel {
     public ColorsPanel() {
         super(new GridLayout(1,0));
 
-        JTable table = new JTable(new ColorTableModel());
+        ColorTableModel model = new ColorTableModel();
+        JTable table = new JTable(model);
         table.setPreferredScrollableViewportSize(new Dimension(500,70));
         table.setFillsViewportHeight(true);
+        table.setRowSorter( new TableRowSorter<TableModel>(model));
 
         JScrollPane scrollPane = new JScrollPane(table);
         table.setDefaultEditor(Color.class, new ColorEditor());
@@ -39,7 +43,7 @@ public class ColorsPanel extends JPanel {
     class ColorTableModel extends AbstractTableModel {
         @Override
         public int getRowCount() {
-            return DataValues.values().length;
+            return DataValues.values().length-1;
         }
 
         @Override

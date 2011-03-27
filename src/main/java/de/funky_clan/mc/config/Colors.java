@@ -95,40 +95,6 @@ public class Colors {
         colorData[DataValues.BED.getId()] = new Color(142, 22, 22, 255);
         // colorData[DataValues.NEWORE.getId()] =  Color(25, 29, 70, 256);
 
-        // Wools color
-        colorData[DataValues.WOOLWHITE.getId()] = colorData[DataValues.WOOL.getId()];
-        colorData[DataValues.WOOLORANGE.getId()] = new Color(235,128,56,255);
-        colorData[DataValues.WOOLMAGENTA.getId()] = new Color(192,76,202,255);
-        colorData[DataValues.WOOLLIGHTBLUE.getId()] = new Color(105,140,210,255);
-        colorData[DataValues.WOOLYELLOW.getId()] = new Color(195,182,29,255);
-        colorData[DataValues.WOOLLIMEGREEN.getId()] = new Color(60,189,48,255);
-        colorData[DataValues.WOOLPINK.getId()] = new Color(218,133,156,255);
-        colorData[DataValues.WOOLGRAY.getId()] = new Color(67,67,67,255);
-        colorData[DataValues.WOOLLIGHTGRAY.getId()] = new Color(159,166,166,255);
-        colorData[DataValues.WOOLCYAN.getId()] = new Color(40,117,150,255);
-        colorData[DataValues.WOOLBLUE.getId()] = new Color(39,52,155,255);
-        colorData[DataValues.WOOLBROWN.getId()] = new Color(86,52,28,255);
-        colorData[DataValues.WOOLGREEN.getId()] = new Color(56,77,25,255);
-        colorData[DataValues.WOOLRED.getId()] = new Color(165,45,41,255);
-        colorData[DataValues.WOOLBLACK.getId()] = new Color(28,24,24,255);
-        colorData[DataValues.WOOLPURPLE.getId()] = new Color(130,54,197,255);
-        colorData[DataValues.WOOLUNKNOWN.getId()] = colorData[DataValues.WOOL.getId()];
-
-        // Log color
-        colorData[DataValues.LOGNORMAL.getId()] = colorData[DataValues.LOG.getId()];
-        colorData[DataValues.LOGREDWOOD.getId()] = new Color(45,28,12,255);
-        colorData[DataValues.LOGBIRCH.getId()] = new Color(206,206,200,255);
-
-        // Leaf color
-        colorData[DataValues.LEAFNORMAL.getId()] = colorData[DataValues.LEAVES.getId()];
-        colorData[DataValues.LEAFREDWOOD.getId()] = colorData[DataValues.LEAVES.getId()];
-        colorData[DataValues.LEAFBIRCH.getId()] = colorData[DataValues.LEAVES.getId()];
-
-        // Slab color
-        colorData[DataValues.SLABSTONE.getId()] = colorData[DataValues.STONE.getId()];
-        colorData[DataValues.SLABSAND.getId()] = colorData[DataValues.SAND.getId()];
-        colorData[DataValues.SLABWOOD.getId()] = colorData[DataValues.WOOD.getId()];
-        colorData[DataValues.SLABCOBBLE.getId()] = colorData[DataValues.COBBLESTONE.getId()];
     }
 
     public final float[] getColorForBlock( int id, float[] color ) {
@@ -140,7 +106,7 @@ public class Colors {
         return color;
     }
     public final Color getColorForBlock( int id ) {
-        return colorData[id]!=null?colorData[id]:EMPTY;
+        return id>=0&&id<colorData.length&& colorData[id]!=null?colorData[id]:EMPTY;
     }
 
     public Color getBlockColor() {
