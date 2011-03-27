@@ -83,34 +83,34 @@ h1. Development environment
 
 h1. History
 
-h2. 0.3.2
+h4. 0.3.2
 * improved script running
 * improved script api
 
-h2. 0.3.1
+h4. 0.3.1
 * HUGE performance improvment using backbuffers
 * fixed color picker
 
-h2. 0.3
+h4. 0.3
 * new eventbus (every network packet goes through eventbus)
 * you can see your blueprint INGAME
 * new "docking framework":http://dock.javaforge.com/
 * lot of gui tweaks
 
- h2. 0.2.4
+h4. 0.2.4
 * included new project 'glaskugel' ;-)
 * fixed rounding bug
 
-h2. 0.2.3
+h4. 0.2.3
 * loading of binvox files
 * nuclear plant included
 
-h2. 0.2.2
+h4. 0.2.2
 * ore filter
 
-h2. 0.2.1
+h4. 0.2.1
 * player is 1x2x1 blocks
 
-h2. 0.2
+h4. 0.2
 
 * numerous fixes and features ;-)
