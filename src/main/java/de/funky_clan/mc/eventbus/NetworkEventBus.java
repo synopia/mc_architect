@@ -8,9 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This eventbus adds another thread to a ThreadedEventBus, to process any incoming network data.
@@ -22,16 +19,17 @@ public abstract class NetworkEventBus extends ThreadedEventBus{
     private final Logger logger = LoggerFactory.getLogger(NetworkEventBus.class);
     @Inject
     private Benchmark benchmark;
+    private Thread netThread;
 
     @Override
     public void start() {
         super.start();
-        Thread thread = new Thread(new Runnable() {
+        netThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while( true ) {
                     try {
-                        if( isConnected() ) {
+                            if( isConnected() ) {
                             processNetwork();
                         } else {
                             try {
@@ -46,8 +44,12 @@ public abstract class NetworkEventBus extends ThreadedEventBus{
                 }
             }
         });
-        thread.start();
-        benchmark.addThreadId("net", thread.getId() );
+        netThread.start();
+        benchmark.addThreadId("net", netThread.getId());
+    }
+
+    protected void disconnect() {
+        netThread.interrupt();
     }
 
     protected abstract void disconnect(NetworkException e);

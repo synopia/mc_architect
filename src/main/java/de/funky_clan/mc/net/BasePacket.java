@@ -106,6 +106,10 @@ public abstract class BasePacket implements NetworkEvent {
         return source;
     }
 
+    public String getSourceName() {
+        return source== NetworkEvent.CLIENT?"client":"server";
+    }
+
     @Override
     public void setSource(byte source) {
         this.source = source;

@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
@@ -62,21 +63,24 @@ public class MinecraftService {
         eventBus.registerCallback(Handshake.class, new EventHandler<Handshake>() {
             @Override
             public void handleEvent(Handshake event) {
-                eventDispatcher.fire(new ConnectionEstablished(event.getUsername()));
+                logger.info("Received handshake signal from "+event.getSourceName()+". ("+event.getUsername()+")");
+                if( event.getSource()==NetworkEvent.CLIENT ) {
+                    eventDispatcher.fire(new ConnectionEstablished(event.getUsername()));
+                }
             }
         });
         eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
             public void handleEvent(ConnectionLost event) {
-                stop();
+                logger.info("Received connection lost signal.");
                 start();
             }
         });
         eventBus.registerCallback(Disconnect.class, new EventHandler<Disconnect>() {
             @Override
             public void handleEvent(Disconnect event) {
+                logger.info("Received disconnect signal from "+event.getSourceName() +".");
                 stop();
-                start();
             }
         });
     }

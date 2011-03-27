@@ -105,7 +105,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     }
 
     protected void addPacketType( Class<? extends NetworkEvent> cls ) {
-        int packetId = -1;
+        int packetId;
         try {
             packetId = cls.getField("ID").getInt(null);
             packetTypes.put(packetId, cls);
@@ -156,12 +156,22 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     protected synchronized void disconnect(NetworkException e) {
         e.printStackTrace();
         eventDispatcher.fire(new ConnectionLost());
-
-        connected = false;
+        disconnect();
     }
 
     protected synchronized void disconnect() {
+        try {
+            if( in!=null ) {
+                in.close();
+            }
+            if( out!=null ) {
+                out.close();
+            }
+        } catch (IOException e) {
+            // ignore
+        }
         connected = false;
+        super.disconnect();
     }
 
     @Override
@@ -188,7 +198,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     }
 
     protected NetworkEvent preparePacket(Class<? extends NetworkEvent> eventClass) {
-        NetworkEvent packet = null;
+        NetworkEvent packet;
         try {
             packet = eventClass.newInstance();
             packet.setSource(getNetworkType());
