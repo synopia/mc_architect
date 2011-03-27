@@ -51,7 +51,7 @@ public class PlayerPositionService {
             public void handleEvent(PlayerPositionUpdate event) {
 
                 if( event.isBlockChanged() ) {
-                    removeBlueprintAroundPlayer(event);
+//                    removeBlueprintAroundPlayer(event);
                 }
             }
         });

@@ -26,7 +26,8 @@ public class BinvoxLoader {
 
     public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez, int blockId ) {
         try {
-            FileInputStream fileInput = new FileInputStream(filename);
+//            FileInputStream fileInput = new FileInputStream(filename);
+            InputStream fileInput = getClass().getResourceAsStream("/"+filename);
             DataInputStream input = new DataInputStream( new BufferedInputStream(fileInput));
 
             boolean done = false;
