@@ -9,7 +9,7 @@ construction sliced by levels and your current position in a running minecraft c
 
 h1. Download and Installation
 
- * "mc_architect-0.3.jar, latest, 0.3":http://mc.funky-clan.de/mc_architect-0.3.jar (~ 4.2mb)
+ * "mc_architect-0.3.2.jar, latest, 0.3.2":http://mc.funky-clan.de/mc_architect-0.3.2.jar (~ 4.2mb)
  * "mc_architect.jar, stable":http://mc.funky-clan.de/mc_architect.jar (~ 1.6mb)
  * "Dependency file for mc_architect.jar":http://mc.funky-clan.de/jruby-complete-1.5.2.jar (~ 11mb)
 
@@ -24,38 +24,68 @@ h1. Download and Installation
 
 h1. Scripting
 
-For simplicity there is no 3d rasterization unit, but you are forced to "program" your structure using a simple ruby script.
-
 <pre><code>
-  java_import "de.funky_clan.mc.config.DataValues"
+    # you have access to the following objects:
+    #
+    #  * @model
+    #       full access to the world model (be careful...)
+    #  * @world
+    #       a "graphics" object, with some neat stuff like set_origin or ellipse
+    #  * @slice_x, @slice_y, @slice_z
+    #       works the same like @world, but with switched coordinate systems
+    #       when you set a pixel using @slice_y.set_pixel(x,y,z,1), it will be placed at x,z,y in world coordinates
+    #       y in world coordinate means up
+    #  * @binvox
+    #       experimental binvox loader
+    #
+    java_import "de.funky_clan.mc.config.DataValues"
 
-  profile = <<EOP
-    XXXX
-    X  X
-    X  X
-    XXXX
-  EOP
+    @mid_x = 1217
+    @mid_y = 64
+    @mid_z = -50
 
-  profile.split("\n").each_with_index do |line, slice|
-    line.chars.each_with_index do |char, index|
-      next if char==" "
-      @slice_z.ellipse 10, 10, slice, 20-index, 15-index, DataValues::STATIONARYLAVA.id
+    # this method gets called to gather some info about this script
+    def info
+      {
+        :name   => "Glaskugel",
+        :author => "synopia",
+        :mid    => [@mid_x, @mid_y, @mid_z]
+      }
     end
-  end
-</code></pre>
 
-Which will generate an elliptic ring with a squarish profile.
+    # this is called when "running" the script
+    def run
+      @world.set_origin @mid_x, @mid_y, @mid_z
+      sphere @world, 63, DataValues::GLASS.id
+    end
+
+    # a simple sphere
+    def sphere g, r, type
+      (-r..+r).each do |x|
+        (-r..+r).each do |y|
+          (-r..+r).each do |z|
+            dist = Math.sqrt( x**2 + y**2 + z**2 )
+            if (r-dist).abs<0.5
+              g.set_pixel x,y,z, type
+            end
+          end
+        end
+      end
+    end
+</code></pre>
 
 h1. Development environment
 
 <pre><code>
-  $HOME/.minecraft/bin> mvn install:install-file -Dfile=minecraft.jar -DgroupId=net.minecraft -DartifactId=minecraft-client -Dversion=1.3.01 -Dpackaging=jar
-
   mc_architect> mvn install
   mc_architect_patch> mvn package
 </code></pre>
 
 h1. History
+
+h2. 0.3.2
+* improved script running
+* improved script api
 
 h2. 0.3.1
 * HUGE performance improvment using backbuffers
