@@ -12,6 +12,8 @@ import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author synopia
@@ -26,6 +28,7 @@ public class ScriptFactory {
     BinvoxLoader binvoxLoader;
     @Inject
     EventDispatcher eventDispatcher;
+    private final Logger logger = LoggerFactory.getLogger(ScriptFactory.class);
 
 
     @Inject
@@ -42,6 +45,7 @@ public class ScriptFactory {
                 } else {
                     script = event.getScript();
                 }
+                logger.info("Loading script "+event.getFileName());
                 script.load();
                 eventDispatcher.fire(new ScriptLoaded(script) );
             }
@@ -63,6 +67,7 @@ public class ScriptFactory {
                 script.put("@binvox", binvoxLoader);
                 script.put("@model", model);
 
+                logger.info("Running script "+script.getName());
                 script.run();
 
                 model.fireUpdates();

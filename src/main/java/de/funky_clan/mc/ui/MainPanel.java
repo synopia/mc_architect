@@ -60,6 +60,8 @@ public class MainPanel extends CControl {
 
     @Inject
     private Box selectionBox;
+    @Inject
+    private ConsolePanel consolePanel;
 
     private JLabel statusText;
     private JToolBar toolBar;
@@ -125,6 +127,8 @@ public class MainPanel extends CControl {
 
         this.getContentArea().getEast().add(new DefaultDockable(colorsPanel, "Colors"), 0);
         this.getContentArea().getEast().add(new DefaultDockable(scriptsPanel, "Scripts"), 1);
+        this.getContentArea().getSouth().add(new DefaultDockable(consolePanel, "Console"), 0);
+
 
         infoBar.addZone( "dir", playerInfoWidgetFactory.getDirection());
         infoBar.addZone( "pos", playerInfoWidgetFactory.getPosition());

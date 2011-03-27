@@ -1,7 +1,8 @@
 java_import "de.funky_clan.mc.model.SliceType"
 java_import "de.funky_clan.mc.config.DataValues"
 
-
+puts "Loading kolloseum"
+puts "Hehe"
 @mid_x = 607
 @mid_y = 64
 @mid_z = -15

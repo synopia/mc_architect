@@ -5,7 +5,7 @@ import org.jruby.RubyHash;
 import org.jruby.RubySymbol;
 import org.jruby.embed.*;
 
-import java.io.PrintStream;
+import java.io.*;
 
 /**
  * @author synopia
@@ -23,6 +23,7 @@ public class Script {
     private boolean finished = false;
 
     ScriptingContainer container;
+    private StringWriter writer;
 
     public Script(String filename, boolean useClasspath) {
         this.filename = filename;
@@ -31,6 +32,7 @@ public class Script {
 
     public void init() {
         if( container==null ) {
+            writer = new StringWriter();
             container = new ScriptingContainer();
         }
     }
@@ -42,7 +44,7 @@ public class Script {
 
     public void load() {
         init();
-        Object result = null;
+        Object result;
         try {
             result = interalRun("info");
             RubyHash hash = (RubyHash) result;
@@ -78,7 +80,7 @@ public class Script {
     }
 
     public String getName() {
-        return name;
+        return name!=null?name:filename;
     }
 
     public boolean isLoaded() {
@@ -86,7 +88,7 @@ public class Script {
     }
 
     public String getStatusText() {
-        String result = "unknown";
+        String result;
         if( !loaded ) {
             result = "not loaded";
         } else {
@@ -96,7 +98,7 @@ public class Script {
                 if( finished ) {
                     result = "finished";
                 } else {
-                    result = "";
+                    result = "loaded";
                 }
             }
         }
@@ -107,17 +109,23 @@ public class Script {
         return hasError;
     }
 
+    public String getOutput() {
+        return writer.toString();
+    }
+
     protected Object interalRun( String methodCall ) {
         Object result;
         container.put("@dummy", this);
-
+        writer = new StringWriter();
+        container.setWriter(writer);
+        container.setErrorWriter(writer);
         container.runScriptlet("def info\nraise 'Script must implement "+methodCall+"()!'\nend\n");
         if( useClasspath ) {
             container.runScriptlet(PathType.CLASSPATH, filename);
         } else {
             container.runScriptlet(PathType.ABSOLUTE, filename);
-        }
 
+        }
         return container.runScriptlet(methodCall);
     }
 
