@@ -5,11 +5,15 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.model.Chunk;
+import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.net.packets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * @author synopia
@@ -32,13 +36,25 @@ public class PlayerPositionService {
     private int attachedId = -1;
 
     private int yShift = 0;
+    @Inject
+    private Model model;
 
     @Inject
     private EventDispatcher eventDispatcher;
+    private HashMap<Long, BlockMultiUpdate> updates = new HashMap<Long, BlockMultiUpdate>();
 
     @Inject
     public PlayerPositionService(final ModelEventBus eventBus) {
         logger.info("Starting PlayerPositionService...");
+        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+            @Override
+            public void handleEvent(PlayerPositionUpdate event) {
+
+                if( event.isBlockChanged() ) {
+                    removeBlueprintAroundPlayer(event);
+                }
+            }
+        });
         eventBus.registerCallback(LoginRequest.class, new EventHandler<LoginRequest>() {
             @Override
             public void handleEvent(LoginRequest event) {
@@ -139,6 +155,58 @@ public class PlayerPositionService {
 
             }
         });
+    }
+
+    private void removeBlueprintAroundPlayer(PlayerPositionUpdate event) {
+        int px = (int) Math.floor(event.getX());
+        int py = (int) Math.floor(event.getY());
+        int pz = (int) Math.floor(event.getZ());
+
+        for( int x=-3; x<=3; x++ ) {
+            for( int y=-3; y<=3; y++ ) {
+                for( int z=-3; z<=3; z++ ) {
+                    int rx = x+px;
+                    int ry = y+py;
+                    int rz = z+pz;
+                    if( ry<0 || ry>127 ) {
+                        continue;
+                    }
+
+                    int pixel     = model.getPixel(rx, ry, rz, 0);
+                    int blueprint = model.getPixel(rx, ry, rz, 1);
+                    if( blueprint<1 || pixel<0 ) {
+                        continue;
+                    }
+
+                    BlockMultiUpdate update = getUpdate(rx,ry,rz);
+                    if( x==-3 || x==3 || y==-3 || y==3 || z==-3 || z==3 ) {
+                        update.add(rx, ry, rz, (byte) (pixel>0?pixel:blueprint), (byte) 0);
+                    } else {
+                        update.add(rx, ry, rz, (byte) pixel, (byte) 0);
+                    }
+                }
+            }
+        }
+        for (BlockMultiUpdate update : updates.values()) {
+            if( update.getSize()>0 ) {
+                eventDispatcher.fire(update);
+            }
+        }
+        updates.clear();
+    }
+
+    private BlockMultiUpdate getUpdate(int rx, int ry, int rz) {
+        int chunkX = rx >> 4;
+        int chunkZ = rz >> 4;
+        long id = Chunk.getChunkId(chunkX, chunkZ);
+        BlockMultiUpdate update;
+        if( updates.containsKey(id) ) {
+            update = updates.get(id);
+        } else {
+            update = new BlockMultiUpdate(NetworkEvent.SERVER, chunkX, chunkZ );
+            updates.put(id, update);
+        }
+        return update;
     }
 
     private void firePositionUpdate() {

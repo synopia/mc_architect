@@ -165,21 +165,26 @@ public class SliceRenderer implements Renderer<Slice> {
     private void renderBlock(WritableRaster raster, Chunk chunk, int cx, int cy, int cz, int pixelX, int pixelY, boolean useAlpha) {
         byte[] map = chunk.getMap();
         int offset = (cz *128) + (cx *128*16);
+        float[] color = null;
         if( map[offset+cy]>=0 ) {
-            float[] color = findColor( chunk, cx, cy, cz, useAlpha);
-            if( color!=null ) {
-                colori[0] = (int)(color[0]*255);
-                colori[1] = (int)(color[1]*255);
-                colori[2] = (int)(color[2]*255);
-                colori[3] = (int)(color[3]*255);
-                raster.setPixel(pixelX,pixelY, colori);
+            color = findColor( chunk, cx, cy, cz, useAlpha);
+        }
+        if( map[offset+cy+Chunk.CHUNK_ARRAY_SIZE]>0 && map[offset+cy]==0 ) {
+            if( color == null ) {
+                color = this.color;
             }
+             color[0] = 0;
+             color[1] = 0;
+             color[2] = 200;
+             color[3] = 200;
         }
-/*
-        if( map[offset+cy+Chunk.CHUNK_ARRAY_SIZE]>0 ) {
-            // blueprint
+        if( color!=null ) {
+            colori[0] = (int)(color[0]*255);
+            colori[1] = (int)(color[1]*255);
+            colori[2] = (int)(color[2]*255);
+            colori[3] = (int)(color[3]*255);
+            raster.setPixel(pixelX,pixelY, colori);
         }
-*/
     }
 
     protected float[] findColor( Chunk chunk, int x, int wy, int z, boolean useAlpha) {

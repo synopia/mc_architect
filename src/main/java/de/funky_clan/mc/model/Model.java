@@ -8,6 +8,7 @@ import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
+import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.VetoHandler;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.math.Position;
@@ -32,6 +33,7 @@ public class Model {
     private HashMap<Integer, BackgroundImage> zSliceImages = new HashMap<Integer, BackgroundImage>();
     private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
     private final Logger log = LoggerFactory.getLogger(Model.class);
+    private HashMap<Long, BlockMultiUpdate> updates = new HashMap<Long, BlockMultiUpdate>();
 
     private EventDispatcher eventDispatcher;
 
@@ -156,8 +158,22 @@ public class Model {
 
     public void setPixel(int x, int y, int z, int type, int value) {
         if( y<0 || y>=128 ) return;
+        if( type==1 && getPixel(x,y,z,0)==0 ) {
+            int chunkX = x>>4;
+            int chunkZ = z>>4;
+            long id = Chunk.getChunkId(chunkX, chunkZ);
+            BlockMultiUpdate update;
+            if( updates.containsKey(id) ) {
+                update = updates.get(id);
+            } else {
+                update = new BlockMultiUpdate(NetworkEvent.SERVER, chunkX, chunkZ );
+                updates.put(id, update);
+            }
+            update.add(x,y,z,(byte) value, (byte) 0);
+        }
         getOrCreateChunk(x,y,z).setPixel(x, y, z, type, value);
     }
+
     public int getPixel(int x, int y, int z, int type) {
         int chunkX = x>>4;
         int chunkZ = z>>4;
@@ -235,5 +251,12 @@ public class Model {
         for (Chunk chunk : chunks.values()) {
             chunk.clearBlueprint();
         }
+    }
+
+    public void fireUpdates() {
+        for (BlockMultiUpdate update : updates.values()) {
+            eventDispatcher.fire(update);
+        }
+        updates.clear();
     }
 }

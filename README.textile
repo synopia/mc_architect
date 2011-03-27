@@ -61,7 +61,7 @@ h2. 0.3.1
 * HUGE performance improvment using backbuffers
 * fixed color picker
 
- h2. 0.3
+h2. 0.3
 * new eventbus (every network packet goes through eventbus)
 * you can see your blueprint INGAME
 * new "docking framework":http://dock.javaforge.com/

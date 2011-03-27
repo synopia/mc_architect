@@ -115,6 +115,7 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(ModelUpdate.class, new EventHandler<ModelUpdate>() {
             @Override
             public void handleEvent(ModelUpdate event) {
+                sliceRenderer.invalidate();
                 repaint();
             }
         });
@@ -166,6 +167,7 @@ public class SlicePanel extends ZoomPanel {
         if( e.isShiftDown() || e.isControlDown() || mouseMode==MouseMode.ZOOM) {
             double scale = 1 + wheelRotation * 0.05;
             context.zoom(scale, scale, e.getPoint());
+            sliceRenderer.invalidate();
             repaint();
         } else {
             if( e.getWheelRotation()>0 ) {

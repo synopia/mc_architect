@@ -22,15 +22,14 @@ public abstract class BaseRenderer<T> implements Renderer<T>{
         double sizeZ = 0;
         if( centered ) {
             sizeX = worldEndX-worldStartX;
-            sizeY = worldEndY-worldStartY;
             sizeZ = worldEndZ-worldStartZ;
         }
 
-        position.setWorld(worldEndX-sizeX/2, worldEndY-sizeY/2, worldEndZ-sizeZ/2 );
+        position.setWorld(worldEndX-sizeX/2, worldEndY, worldEndZ-sizeZ/2 );
         int endX = position.getScreenX();
         int endY = position.getScreenY();
 
-        position.setWorld(worldStartX-sizeX/2, worldStartY-sizeY/2, worldStartZ-sizeZ/2 );
+        position.setWorld(worldStartX-sizeX/2, worldStartY, worldStartZ-sizeZ/2 );
         int startX = position.getScreenX();
         int startY = position.getScreenY();
 

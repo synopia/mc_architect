@@ -50,6 +50,7 @@ public class ScriptFactory {
                 } else {
                     container.runScriptlet(PathType.ABSOLUTE, event.getFileName() );
                 }
+                model.fireUpdates();
                 eventDispatcher.fire(new ScriptFinished(event.getFileName()));
             }
         });

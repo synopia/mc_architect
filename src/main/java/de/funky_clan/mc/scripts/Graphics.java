@@ -1,5 +1,9 @@
 package de.funky_clan.mc.scripts;
 
+import de.funky_clan.mc.net.packets.BlockMultiUpdate;
+
+import java.util.HashMap;
+
 /**
  * Contains methods to "draw" into the model
  *
@@ -33,7 +37,7 @@ public abstract class Graphics {
         int a2  = a * a;
         int b2  = b * b;
         int err = b2 - ( 2 * b - 1 ) * a2;
-        int e2  = 0;
+        int e2;
 
         do {
             setPixel( xm + dx, ym + dy, z, value);
