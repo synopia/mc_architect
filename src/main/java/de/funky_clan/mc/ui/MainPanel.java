@@ -90,12 +90,6 @@ public class MainPanel extends CControl {
                 statusText.setText("Mouse: "+ x +", "+ y +", "+ z + " " + pixelText);
             }
         });
-        eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
-            @Override
-            public void handleEvent(ColorChanged event) {
-                MainPanel.this.getContentArea().repaint();
-            }
-        });
 
         eventBus.registerCallback(Initialize.class, new EventHandler<Initialize>() {
             @Override

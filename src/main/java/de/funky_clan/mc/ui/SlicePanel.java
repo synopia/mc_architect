@@ -13,10 +13,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
-import de.funky_clan.mc.events.swing.MouseMoved;
-import de.funky_clan.mc.events.swing.MouseRectangle;
-import de.funky_clan.mc.events.swing.OreDisplayUpdate;
-import de.funky_clan.mc.events.swing.ScriptFinished;
+import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.model.Box;
@@ -130,7 +127,13 @@ public class SlicePanel extends ZoomPanel {
                 }
             }
         });
-    }
+        eventBus.registerCallback(ColorChanged.class, new EventHandler<ColorChanged>() {
+            @Override
+            public void handleEvent(ColorChanged event) {
+                sliceRenderer.invalidate();
+                repaint();
+            }
+        });    }
 
     @Override
     protected void onMouseRectangle(MouseEvent e, int x, int y, int width, int height) {
