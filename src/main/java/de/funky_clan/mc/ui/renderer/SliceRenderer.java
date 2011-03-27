@@ -2,6 +2,7 @@ package de.funky_clan.mc.ui.renderer;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class SliceRenderer implements Renderer<Slice> {
     private boolean cacheValid = false;
     private float color[] = new float[4];
     private int colori[] = new int[4];
+    private float blueprint[] = new float[4];
 
     public void invalidate() {
         cacheValid = false;
@@ -67,6 +69,11 @@ public class SliceRenderer implements Renderer<Slice> {
         if( sliceType==SliceType.Y && (slice.getSlice()<0 || slice.getSlice()>127 )) {
             return;
         }
+        Color bc = colors.getColorForBlock(DataValues.BLUEPRINT.getId());
+        blueprint[0] = bc.getRed()/255.f;
+        blueprint[1] = bc.getGreen()/255.f;
+        blueprint[2] = bc.getBlue()/255.f;
+        blueprint[3] = bc.getAlpha()/255.f;
 
         for(int chunkX=chunkStartX; chunkX<=chunkEndX; chunkX++ ) {
             for( int chunkZ=chunkStartZ; chunkZ<=chunkEndZ; chunkZ++ ) {
@@ -170,13 +177,7 @@ public class SliceRenderer implements Renderer<Slice> {
             color = findColor( chunk, cx, cy, cz, useAlpha);
         }
         if( map[offset+cy+Chunk.CHUNK_ARRAY_SIZE]>0 && map[offset+cy]==0 ) {
-            if( color == null ) {
-                color = this.color;
-            }
-             color[0] = 0;
-             color[1] = 0;
-             color[2] = 200;
-             color[3] = 200;
+            color = blueprint;
         }
         if( color!=null ) {
             colori[0] = (int)(color[0]*255);

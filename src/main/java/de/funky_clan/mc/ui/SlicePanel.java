@@ -95,6 +95,7 @@ public class SlicePanel extends ZoomPanel {
         eventBus.registerCallback(ScriptFinished.class, new EventHandler<ScriptFinished>() {
             @Override
             public void handleEvent(ScriptFinished event) {
+                sliceRenderer.invalidate();
                 repaint();
             }
         });

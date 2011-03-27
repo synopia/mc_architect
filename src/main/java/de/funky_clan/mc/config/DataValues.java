@@ -92,7 +92,8 @@ public enum DataValues
     REPEATEROFF,
     REPEATERON,
 
-    NOT_LOADED
+    BLUEPRINT,
+    NOT_LOADED,
     ;
 
     private int id;

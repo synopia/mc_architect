@@ -10,7 +10,6 @@ import java.awt.*;
 @Singleton
 public class Colors {
     public static final Color EMPTY = new Color(255,255,255,0);
-    private static final Color BLUEPRINT = new Color(40, 40, 255, 255);
     private final Color[] colorData = new Color[255];
 
     public Colors() {
@@ -93,6 +92,7 @@ public class Colors {
         colorData[DataValues.REPEATEROFF.getId()] = colorData[DataValues.REDSTONETORCHOFF.getId()];
 
         colorData[DataValues.BED.getId()] = new Color(142, 22, 22, 255);
+        colorData[DataValues.BLUEPRINT.getId()] = new Color(40, 40, 255, 255);
         // colorData[DataValues.NEWORE.getId()] =  Color(25, 29, 70, 256);
 
     }
@@ -129,7 +129,4 @@ public class Colors {
         colorData[rowIndex] = aValue;
     }
 
-    public Color getBlueprintColor() {
-        return BLUEPRINT;
-    }
 }
