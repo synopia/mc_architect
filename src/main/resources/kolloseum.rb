@@ -1,4 +1,35 @@
-profile = <<EOL
+java_import "de.funky_clan.mc.model.SliceType"
+java_import "de.funky_clan.mc.config.DataValues"
+
+
+@mid_x = 607
+@mid_y = 64
+@mid_z = -15
+
+@size_x  = 187
+@size_z  = 155
+
+def info
+  {
+    :name   => "Kolloseum",
+    :author => "synopia",
+    :mid    => [@mid_x, @mid_y, @mid_z]
+  }
+end
+
+def run
+    level = 0
+    @profile.each do |line|
+      line.chars.each_with_index do |c, r|
+        next unless c=="X"
+        @slice_z.ellipse @mid_x, @mid_z, level+@mid_y, @size_z/2-r-1, @size_x/2-r-1, DataValues::GLASS.id
+      end
+      level += 1
+    end
+end
+
+
+@profile = <<EOL
  XXXXXXXXXXX
  XXX     XX
  XXX     XX
@@ -47,31 +78,4 @@ X                                               X
 X                                               X
 EOL
 
-java_import "de.funky_clan.mc.model.SliceType"
-java_import "de.funky_clan.mc.config.DataValues"
-
-profile = profile.split("\n").reverse
-
-mid_x = 607
-mid_y = 64
-mid_z = -15
-
-size_x  = 187
-size_z  = 155
-
-#@builder.image  4,  7, mid_x-size_z/2, mid_z-size_x/2, "level1.png"
-#@builder.image  8, 15, mid_x-size_z/2, mid_z-size_x/2,"level2.png"
-#@builder.image 16, 32, mid_x-size_z/2, mid_z-size_x/2,"level3.png"
-#@builder.image 26, 41, mid_x-size_z/2, mid_z-size_x/2,"level4.png"
-
-level = 0
-profile.each do |line|
-  line.chars.each_with_index do |c, r|
-    next unless c=="X"
-    @slice_z.ellipse mid_x, mid_z, level+mid_y, size_z/2-r-1, size_x/2-r-1, DataValues::GLASS.id
-  end
-  level += 1
-end
-
-puts "done"
-#@builder.axis mid_x, mid_y
+@profile = @profile.split("\n").reverse

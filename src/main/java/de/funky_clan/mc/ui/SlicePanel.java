@@ -7,17 +7,16 @@ import bibliothek.gui.dock.common.action.*;
 import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
-import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
+import de.funky_clan.mc.events.script.ScriptFinished;
 import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.*;
 import de.funky_clan.mc.model.Box;
-import de.funky_clan.mc.services.ImageService;
 import de.funky_clan.mc.ui.renderer.*;
 
 import javax.swing.*;

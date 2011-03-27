@@ -11,6 +11,7 @@ import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
+import de.funky_clan.mc.events.script.LoadScript;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 import de.funky_clan.mc.events.swing.Initialize;
 import de.funky_clan.mc.file.RegionFileService;
@@ -96,6 +97,14 @@ public class Main extends JFrame {
             eventDispatcher.fire(new ConnectionDetailsChanged(12345,"localhost"));
         } else {
             eventDispatcher.fire(new ConnectionDetailsChanged(12345,"mc.funky-clan.de"));
+        }
+
+        eventDispatcher.fire( new LoadScript("kolloseum.rb", !Main.isDebug()));
+        eventDispatcher.fire( new LoadScript("akw.rb", !Main.isDebug()));
+        eventDispatcher.fire( new LoadScript("glaskugel.rb", !Main.isDebug()));
+        eventDispatcher.fire( new LoadScript("superformula.rb", !Main.isDebug()));
+        if( Main.isDebug() ) {
+            eventDispatcher.fire( new LoadScript("test.rb", false));
         }
     }
 
