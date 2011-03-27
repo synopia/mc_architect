@@ -37,6 +37,10 @@ public class Model {
 
     private EventDispatcher eventDispatcher;
 
+    public int getNumberOfChunks() {
+        return chunks.size();
+    }
+
     public interface BlockUpdateCallable {
         void updateChunk( Chunk chunk );
         void updateBlock( Chunk chunk, int x, int y, int z, int index );
@@ -251,6 +255,10 @@ public class Model {
         for (Chunk chunk : chunks.values()) {
             chunk.clearBlueprint();
         }
+    }
+
+    public HashMap<Long, BlockMultiUpdate> getUpdates() {
+        return updates;
     }
 
     public void fireUpdates() {

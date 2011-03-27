@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
+import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.net.packets.ChunkData;
 import de.funky_clan.mc.net.packets.ChunkPreparation;
 import de.funky_clan.mc.util.Benchmark;
@@ -24,12 +25,13 @@ import java.util.HashMap;
 public class StatisticWidgetFactory {
     private JLabel           chunksText;
     private int              chunksLoaded;
-    private int              chunksUnloaded;
     private JLabel           memoryText;
     private JLabel           benchmarkText;
     private JLabel           oreText;
     @Inject
     private Benchmark benchmark;
+    @Inject
+    private  Model model ;
 
     @Inject
     public StatisticWidgetFactory(SwingEventBus eventBus) {
@@ -39,15 +41,6 @@ public class StatisticWidgetFactory {
             @Override
             public void handleEvent(ChunkData event) {
                 chunksLoaded++;
-            }
-        });
-        eventBus.registerCallback(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
-            @Override
-            public void handleEvent(ChunkPreparation event) {
-                if( !event.isLoad() ) {
-                    chunksUnloaded++;
-                    chunksLoaded--;
-                }
             }
         });
 
@@ -73,7 +66,7 @@ public class StatisticWidgetFactory {
     }
 
     protected void updateStats() {
-        chunksText.setText("Chunks: " + chunksLoaded + "/"+chunksUnloaded );
+        chunksText.setText("Chunks: " + model.getNumberOfChunks() + "/"+chunksLoaded );
         long max = Runtime.getRuntime().maxMemory();
         long free = Runtime.getRuntime().freeMemory();
         memoryText.setText("Mem: " + ((max-free)/1024/1024) + "/" + (max/1024/1024) );

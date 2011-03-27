@@ -1,11 +1,12 @@
 package de.funky_clan.mc.scripts;
 
-import org.jruby.Ruby;
+import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import org.jruby.RubyHash;
 import org.jruby.RubySymbol;
 import org.jruby.embed.*;
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * @author synopia
@@ -16,11 +17,13 @@ public class Script {
 
     private String author;
     private String name;
+    private HashMap<Long, BlockMultiUpdate> updates;
 
     private EvalFailedException hasError;
     private boolean loaded;
     private boolean running = false;
     private boolean finished = false;
+    private boolean sent = false;
 
     ScriptingContainer container;
     private StringWriter writer;
@@ -87,6 +90,10 @@ public class Script {
         return loaded;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
     public String getStatusText() {
         String result;
         if( !loaded ) {
@@ -96,13 +103,43 @@ public class Script {
                 result = "running";
             } else {
                 if( finished ) {
-                    result = "finished";
+                    if( sent ) {
+                        result = "sent";
+                    } else {
+                        result = "ready";
+                    }
                 } else {
                     result = "loaded";
                 }
             }
         }
         return result;
+    }
+
+    public int getChunksUpdated() {
+        return updates!=null?updates.size():0;
+    }
+
+    public int getPixelsUpdated() {
+        int total = 0;
+        if( updates!=null ) {
+            for (BlockMultiUpdate update : updates.values()) {
+                total += update.getSize();
+            }
+        }
+        return total;
+    }
+
+    public void setChunkUpdates(HashMap<Long, BlockMultiUpdate> updates) {
+        this.updates = updates;
+    }
+
+    public HashMap<Long, BlockMultiUpdate> getChunkUpdates() {
+        return updates;
+    }
+
+    public void setSent( boolean sent ) {
+        this.sent = sent;
     }
 
     public EvalFailedException getError() {

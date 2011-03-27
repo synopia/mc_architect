@@ -1,17 +1,14 @@
 package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.Main;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
-import de.funky_clan.mc.events.script.LoadScript;
-import de.funky_clan.mc.events.script.RunScript;
-import de.funky_clan.mc.events.script.ScriptFinished;
-import de.funky_clan.mc.events.script.ScriptLoaded;
+import de.funky_clan.mc.events.script.*;
 import de.funky_clan.mc.scripts.Script;
 import de.funky_clan.mc.ui.renderer.ButtonEditor;
 import de.funky_clan.mc.ui.renderer.ButtonRenderer;
+import org.jruby.RubyZlib;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -39,8 +36,11 @@ public class ScriptsPanel extends JPanel {
     class ScriptsTableModel extends AbstractTableModel {
         public static final int NAME   = 0;
         public static final int RUN    = 1;
-        public static final int STATUS = 2;
-        public static final int NUMBER = 3;
+        public static final int SEND   = 2;
+        public static final int STATUS = 3;
+        public static final int CHUNK_UPDATES = 4;
+        public static final int PIXEL_UPDATES = 5;
+        public static final int NUMBER = 6;
 
         private List<Script> scripts = new ArrayList<Script>();
 
@@ -50,6 +50,9 @@ public class ScriptsPanel extends JPanel {
                 case NAME:   return "Name";
                 case RUN:    return "Run";
                 case STATUS: return "Status";
+                case CHUNK_UPDATES: return "Chunks";
+                case PIXEL_UPDATES: return "Pixels";
+                case SEND: return "Send";
             }
             return null;
         }
@@ -66,7 +69,12 @@ public class ScriptsPanel extends JPanel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex==RUN;
+            Script script = scripts.get(rowIndex);
+            switch (columnIndex) {
+                case RUN : return true;
+                case SEND: return script.isLoaded() && script.isFinished() && script.getError()==null;
+            }
+            return false;
         }
 
         @Override
@@ -87,6 +95,15 @@ public class ScriptsPanel extends JPanel {
                 case STATUS:
                     result = script.getStatusText();
                     break;
+                case CHUNK_UPDATES:
+                    result = script.getChunksUpdated();
+                    break;
+                case PIXEL_UPDATES:
+                    result = script.getPixelsUpdated();
+                    break;
+                case SEND:
+                    result = "send";
+                    break;
             }
             return result;
         }
@@ -94,15 +111,24 @@ public class ScriptsPanel extends JPanel {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             Script script = scripts.get(rowIndex);
-            if( columnIndex==RUN && aValue!=null ) {
-                String cmd = aValue.toString();
-                if( "reload".equals(cmd) ) {
+            if( aValue==null ) {
+                return;
+            }
+            switch( columnIndex ){
+                case RUN :
+                    String cmd = aValue.toString();
+                    if( "reload".equals(cmd) ) {
+                        eventDispatcher.fire( new LoadScript(script) );
+                        fireTableDataChanged();
+                    } else if( "run".equals(cmd) ) {
+                        eventDispatcher.fire( new RunScript(script) );
+                        fireTableDataChanged();
+                    }
+                    break;
+                case SEND:
+                    eventDispatcher.fire(new SendScriptData(script));
                     fireTableDataChanged();
-                    eventDispatcher.fire( new LoadScript(script) );
-                } else if( "run".equals(cmd) ) {
-                    fireTableDataChanged();
-                    eventDispatcher.fire( new RunScript(script) );
-                }
+                    break;
             }
         }
     }
@@ -139,6 +165,8 @@ public class ScriptsPanel extends JPanel {
         table.setRowSorter(new TableRowSorter<TableModel>(model));
         table.getColumn("Run").setCellEditor(new ButtonEditor(new JCheckBox()));
         table.getColumn("Run").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Send").setCellEditor(new ButtonEditor(new JCheckBox()));
+        table.getColumn("Send").setCellRenderer(new ButtonRenderer());
 
         JScrollPane scrollPane = new JScrollPane(table);
 

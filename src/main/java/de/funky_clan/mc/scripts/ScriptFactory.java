@@ -4,16 +4,14 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.events.script.LoadScript;
-import de.funky_clan.mc.events.script.RunScript;
-import de.funky_clan.mc.events.script.ScriptFinished;
-import de.funky_clan.mc.events.script.ScriptLoaded;
+import de.funky_clan.mc.events.script.*;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
-import org.jruby.embed.PathType;
-import org.jruby.embed.ScriptingContainer;
+import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * @author synopia
@@ -45,7 +43,7 @@ public class ScriptFactory {
                 } else {
                     script = event.getScript();
                 }
-                logger.info("Loading script "+event.getFileName());
+                logger.info("Loading script " + event.getFileName());
                 script.load();
                 eventDispatcher.fire(new ScriptLoaded(script) );
             }
@@ -70,8 +68,22 @@ public class ScriptFactory {
                 logger.info("Running script "+script.getName());
                 script.run();
 
-                model.fireUpdates();
+                script.setChunkUpdates(new HashMap<Long, BlockMultiUpdate>(model.getUpdates()));
+                model.getUpdates().clear();
+
                 eventDispatcher.fire(new ScriptFinished(script));
+            }
+        });
+
+        eventBus.registerCallback(SendScriptData.class, new EventHandler<SendScriptData>() {
+            @Override
+            public void handleEvent(SendScriptData event) {
+                Script script = event.getScript();
+                HashMap<Long,BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
+                for (BlockMultiUpdate update : chunkUpdates.values()) {
+                    eventDispatcher.fire(update);
+                }
+                script.setSent( true );
             }
         });
     }
