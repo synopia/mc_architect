@@ -13,10 +13,7 @@ import de.funky_clan.mc.eventbus.VetoHandler;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.net.MinecraftServer;
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
-import de.funky_clan.mc.net.packets.BlockUpdate;
-import de.funky_clan.mc.net.packets.ChunkData;
-import de.funky_clan.mc.net.packets.ChunkPreparation;
+import de.funky_clan.mc.net.packets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +83,17 @@ public class Model {
                 }
             }
         });
+        eventDispatcher.registerVetoHandler(eventBus, BlockSignUpdate.class, new VetoHandler<BlockSignUpdate>() {
+            @Override
+            public boolean isVeto(BlockSignUpdate event) {
+                return true;
+            }
 
+            @Override
+            public void handleVeto(BlockSignUpdate event) {
+                eventDispatcher.fire(event, true);
+            }
+        });
         eventDispatcher.registerVetoHandler(eventBus, ChunkData.class, new VetoHandler<ChunkData>() {
             @Override
             public boolean isVeto(ChunkData event) {
