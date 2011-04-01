@@ -82,6 +82,10 @@ h1. Development environment
 
 h1. History
 
+h4. 0.3.3
+* rounding bug fixed
+* several code quality fixups
+
 h4. 0.3.2
 * improved script running
 * improved script api
