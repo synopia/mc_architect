@@ -33,11 +33,13 @@ import de.funky_clan.mc.ui.renderer.OreRenderer;
 import de.funky_clan.mc.ui.renderer.PlayerRenderer;
 import de.funky_clan.mc.ui.renderer.SliceRenderer;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -293,8 +295,7 @@ public class SlicePanel extends ZoomPanel {
 
         dockable.setExternalizable( false );
 
-        CRadioButton selectionMode = new CRadioButton( "selection mode",
-                                         new ImageIcon( Toolkit.getDefaultToolkit().getImage( "disabled_co.gif" ))) {
+        CRadioButton selectionMode = new CRadioButton( "selection mode", loadIcon("/disabled_co.gif")) {
             @Override
             protected void changed() {
                 if( this.isSelected() ) {
@@ -302,8 +303,7 @@ public class SlicePanel extends ZoomPanel {
                 }
             }
         };
-        CRadioButton zoomMode = new CRadioButton( "zoom mode",
-                                    new ImageIcon( Toolkit.getDefaultToolkit().getImage( "insp_sbook.gif" ))) {
+        CRadioButton zoomMode = new CRadioButton( "zoom mode", loadIcon( "/insp_sbook.gif" )) {
             @Override
             protected void changed() {
                 if( this.isSelected() ) {
@@ -317,8 +317,7 @@ public class SlicePanel extends ZoomPanel {
         g.add( zoomMode );
         dockable.addAction( selectionMode );
         dockable.addAction( zoomMode );
-        dockable.addAction( new CButton( "focus player",
-                                         new ImageIcon( Toolkit.getDefaultToolkit().getImage( "collapseall.gif" ))) {
+        dockable.addAction( new CButton( "focus player", loadIcon( "/collapseall.gif" )) {
             @Override
             protected void action() {
                 position.setWorld( playerBlock.getPositionX(), playerBlock.getPositionY(), playerBlock.getPositionZ() );
@@ -328,5 +327,14 @@ public class SlicePanel extends ZoomPanel {
         dockable.addAction( orePanel.getMenu( this ));
 
         return dockable;
+    }
+
+    private ImageIcon loadIcon(String name) {
+        try {
+            return new ImageIcon(ImageIO.read(getClass().getResourceAsStream(name)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
