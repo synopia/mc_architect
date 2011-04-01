@@ -1,6 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 /**
  * @author synopia
  */
+@Singleton
 public class ScriptFactory {
     private final Logger  logger = LoggerFactory.getLogger( ScriptFactory.class );
     @Inject
