@@ -22,14 +22,14 @@ public class PlayerInfoWidgetFactory {
     @Inject
     public PlayerInfoWidgetFactory( final SwingEventBus eventBus ) {
         build();
-        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent( PlayerPositionUpdate event ) {
-                direction.setText( formatDirection( (int) event.getYaw() ));
-                position.setText( "Position: "
-                                  + formatCoord( (int) event.getX(), (int) event.getY(), (int) event.getZ() ));
+            public void handleEvent(PlayerPositionUpdate event) {
+                direction.setText(formatDirection((int) event.getYaw()));
+                position.setText("Position: "
+                        + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
             }
-        } );
+        });
     }
 
     private void build() {

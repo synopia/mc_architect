@@ -2,7 +2,7 @@ package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.NetworkEvent;
@@ -52,70 +52,71 @@ public class PlayerPositionService {
     @Inject
     public PlayerPositionService( final ModelEventBus eventBus ) {
         logger.info( "Starting PlayerPositionService..." );
-        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent( PlayerPositionUpdate event ) {
-                if( event.isBlockChanged() ) {
+            public void handleEvent(PlayerPositionUpdate event) {
+                if (event.isBlockChanged()) {
 
 //                  removeBlueprintAroundPlayer(event);
                 }
             }
-        } );
-        eventBus.registerCallback( LoginRequest.class, new EventHandler<LoginRequest>() {
+        });
+        eventBus.subscribe(LoginRequest.class, new EventHandler<LoginRequest>() {
             @Override
-            public void handleEvent( LoginRequest event ) {
+            public void handleEvent(LoginRequest event) {
                 entityId = event.getEntityId();
             }
-        } );
-        eventBus.registerCallback( EntityAttach.class, new EventHandler<EntityAttach>() {
+        });
+        eventBus.subscribe(EntityAttach.class, new EventHandler<EntityAttach>() {
             @Override
-            public void handleEvent( EntityAttach event ) {
-                if( event.getEntityId() == entityId ) {
+            public void handleEvent(EntityAttach event) {
+                if (event.getEntityId() == entityId) {
                     attachedId = event.getVehicleId();
                 }
             }
-        } );
-        eventBus.registerCallback( EntityLook.class, new EventHandler<EntityLook>() {
+        });
+        eventBus.subscribe(EntityLook.class, new EventHandler<EntityLook>() {
             @Override
-            public void handleEvent( EntityLook event ) {}
-        } );
-        eventBus.registerCallback( EntityRelativeMove.class, new EventHandler<EntityRelativeMove>() {
+            public void handleEvent(EntityLook event) {
+            }
+        });
+        eventBus.subscribe(EntityRelativeMove.class, new EventHandler<EntityRelativeMove>() {
             @Override
-            public void handleEvent( EntityRelativeMove event ) {
-                if( event.getEid() == attachedId ) {
+            public void handleEvent(EntityRelativeMove event) {
+                if (event.getEid() == attachedId) {
                     x += event.getDx() / 32.;
                     y += event.getDy() / 32.;
                     z += event.getDz() / 32.;
                     firePositionUpdate();
                 }
             }
-        } );
-        eventBus.registerCallback( EntityRelativeMoveAndLook.class, new EventHandler<EntityRelativeMoveAndLook>() {
+        });
+        eventBus.subscribe(EntityRelativeMoveAndLook.class, new EventHandler<EntityRelativeMoveAndLook>() {
             @Override
-            public void handleEvent( EntityRelativeMoveAndLook event ) {
-                if( event.getEid() == attachedId ) {
+            public void handleEvent(EntityRelativeMoveAndLook event) {
+                if (event.getEid() == attachedId) {
                     x += event.getDx() / 32.;
                     y += event.getDy() / 32.;
                     z += event.getDz() / 32.;
                     firePositionUpdate();
                 }
             }
-        } );
-        eventBus.registerCallback( EntityTeleport.class, new EventHandler<EntityTeleport>() {
+        });
+        eventBus.subscribe(EntityTeleport.class, new EventHandler<EntityTeleport>() {
             @Override
-            public void handleEvent( EntityTeleport event ) {
-                if( event.getEid() == attachedId ) {
+            public void handleEvent(EntityTeleport event) {
+                if (event.getEid() == attachedId) {
                     x = event.getX() / 32.;
                     y = event.getY() / 32.;
                     z = event.getZ() / 32.;
                     firePositionUpdate();
                 }
             }
-        } );
-        eventBus.registerCallback( PlayerPosition.class, new EventHandler<PlayerPosition>() {
+        });
+        eventBus.subscribe(PlayerPosition.class, new EventHandler<PlayerPosition>() {
             @Override
-            public void handleEvent( PlayerPosition event ) {
-                if( event.getY() != -999 ) {
+            public void handleEvent(PlayerPosition event) {
+                if (event.getY() != -999) {
                     x = event.getX();
                     y = event.getY();
                     z = event.getZ();
@@ -123,22 +124,22 @@ public class PlayerPositionService {
 
                 firePositionUpdate();
             }
-        } );
-        eventBus.registerCallback( PlayerLook.class, new EventHandler<PlayerLook>() {
+        });
+        eventBus.subscribe(PlayerLook.class, new EventHandler<PlayerLook>() {
             @Override
-            public void handleEvent( PlayerLook event ) {
-                yaw   = event.getYaw();
+            public void handleEvent(PlayerLook event) {
+                yaw = event.getYaw();
                 pitch = event.getPitch();
                 firePositionUpdate();
             }
-        } );
-        eventBus.registerCallback( PlayerPositionAndLook.class, new EventHandler<PlayerPositionAndLook>() {
+        });
+        eventBus.subscribe(PlayerPositionAndLook.class, new EventHandler<PlayerPositionAndLook>() {
             @Override
-            public void handleEvent( PlayerPositionAndLook event ) {
-                yaw   = event.getYaw();
+            public void handleEvent(PlayerPositionAndLook event) {
+                yaw = event.getYaw();
                 pitch = event.getPitch();
 
-                if( event.getY() != -999 ) {
+                if (event.getY() != -999) {
                     x = event.getX();
                     y = event.getY();
                     z = event.getZ();
@@ -146,16 +147,16 @@ public class PlayerPositionService {
 
                 firePositionUpdate();
             }
-        } );
-        eventBus.registerCallback( PlayerSpawnPosition.class, new EventHandler<PlayerSpawnPosition>() {
+        });
+        eventBus.subscribe(PlayerSpawnPosition.class, new EventHandler<PlayerSpawnPosition>() {
             @Override
-            public void handleEvent( PlayerSpawnPosition event ) {
+            public void handleEvent(PlayerSpawnPosition event) {
                 x = event.getX();
                 y = event.getY();
                 z = event.getZ();
                 firePositionUpdate();
             }
-        } );
+        });
     }
 
     private void removeBlueprintAroundPlayer( PlayerPositionUpdate event ) {
@@ -196,7 +197,7 @@ public class PlayerPositionService {
 
         for( BlockMultiUpdate update : updates.values() ) {
             if( update.getSize() > 0 ) {
-                eventDispatcher.fire( update );
+                eventDispatcher.publish(update);
             }
         }
 
@@ -231,7 +232,7 @@ public class PlayerPositionService {
         boolean blockChanged = (int) lastX != (int) oldX || (int) lastY != (int) oldY || (int) lastZ != (int) oldZ;
         boolean chunkChanged = Chunk.getChunkId( oldX, oldZ ) != Chunk.getChunkId( lastX, lastZ );
 
-        eventDispatcher.fire( new PlayerPositionUpdate( x, y + yShift, z, yaw, pitch, blockChanged, chunkChanged ));
+        eventDispatcher.publish(new PlayerPositionUpdate(x, y + yShift, z, yaw, pitch, blockChanged, chunkChanged));
     }
 
     public void setYShift( int yShift ) {

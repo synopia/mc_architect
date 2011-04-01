@@ -4,7 +4,7 @@ import bibliothek.gui.dock.common.action.CCheckBox;
 import bibliothek.gui.dock.common.action.CMenu;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.events.swing.OreFilterChanged;
 import de.funky_clan.mc.model.Ore;
 import de.funky_clan.mc.services.ImageService;
@@ -42,7 +42,7 @@ public class OrePanel {
                 @Override
                 protected void changed() {
                     filter[oreType.ordinal()] = this.isSelected();
-                    eventDispatcher.fire( new OreFilterChanged( component, filter ));
+                    eventDispatcher.publish(new OreFilterChanged(component, filter));
                 }
             } );
         }

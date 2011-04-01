@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 import java.util.List;
 
 /**
- * Whenever an event is fired to the swing eventbus, it is checked, which thread fired the event:
+ * Whenever an event is published on the swing eventbus, it is checked, which thread fired the event:
  * If its fired on the Swing EventDispatchThread, the event is handled imediately.
  * Otherwise invokeLater is used, to queue the eventhandling.
  *
@@ -29,7 +29,7 @@ public class SwingEventBus extends EventBus {
     }
 
     @Override
-    public void forceFireEvent( final Event event ) {
+    public void publish(final Event event) {
         if( SwingUtilities.isEventDispatchThread() ) {
             handleEvent( event );
         } else {
@@ -39,7 +39,7 @@ public class SwingEventBus extends EventBus {
 
     @SuppressWarnings( "unchecked" )
     protected void handleEventInEdt( final Event event ) {
-        if(( event != null ) && hasCallbacks( event )) {
+        if(( event != null ) && hasSubscribers(event)) {
             List<EventHandler> callbacks = getCallbacks( event );
 
             for( final EventHandler callback : callbacks ) {

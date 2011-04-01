@@ -10,7 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 /**
- * This eventbus adds another thread to a ThreadedEventBus, to process any incoming network data.
+ * <p>This eventbus adds another thread to a ThreadedEventBus, to process any incoming network data.</p>
  *
  *
  * @author synopia

@@ -3,7 +3,7 @@ package de.funky_clan.mc.model;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.NetworkEvent;
@@ -24,6 +24,12 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 
 /**
+ * <p>The world model works basically the same as in minecraft. There are chunks of blocks of a fixed size (16x128x16).
+ * All currently loaded chunks are stored in a hashmap (chunkId => chunk).</p>
+ *
+ * <p>This class handles all chunk update packets sent from the server and publishes <code>ModelUpdate</code> events,
+ * after the data is processed.</p>
+ *
  * @author synopia
  */
 @Singleton
@@ -36,97 +42,100 @@ public class Model {
     @Inject
     public Model( final EventDispatcher eventDispatcher, final ModelEventBus eventBus, final MinecraftServer server ) {
         this.eventDispatcher = eventDispatcher;
-        eventBus.registerCallback( BlockUpdate.class, new EventHandler<BlockUpdate>() {
+        eventBus.subscribe(BlockUpdate.class, new EventHandler<BlockUpdate>() {
             @Override
-            public void handleEvent( BlockUpdate event ) {
-                setPixel( event.getX(), event.getY(), event.getZ(), 0, event.getType() );
-                eventDispatcher.fire( new ModelUpdate( event.getX(), event.getY(), event.getZ(), 1, 1, 1 ));
+            public void handleEvent(BlockUpdate event) {
+                setPixel(event.getX(), event.getY(), event.getZ(), 0, event.getType());
+                eventDispatcher.publish(new ModelUpdate(event.getX(), event.getY(), event.getZ(), 1, 1, 1));
             }
-        } );
-        eventBus.registerCallback( BlockMultiUpdate.class, new EventHandler<BlockMultiUpdate>() {
+        });
+        eventBus.subscribe(BlockMultiUpdate.class, new EventHandler<BlockMultiUpdate>() {
             @Override
-            public void handleEvent( BlockMultiUpdate event ) {
-                event.each( new BlockMultiUpdate.Each() {
+            public void handleEvent(BlockMultiUpdate event) {
+                event.each(new BlockMultiUpdate.Each() {
                     @Override
-                    public void update( int x, int y, int z, int type, int meta ) {
-                        setPixel( x, y, z, 0, type );
-                        eventDispatcher.fire( new ModelUpdate( x, y, z, 1, 1, 1 ));
+                    public void update(int x, int y, int z, int type, int meta) {
+                        setPixel(x, y, z, 0, type);
+                        eventDispatcher.publish(new ModelUpdate(x, y, z, 1, 1, 1));
                     }
-                } );
+                });
             }
-        } );
-        eventBus.registerCallback( ChunkData.class, new EventHandler<ChunkData>() {
+        });
+        eventBus.subscribe(ChunkData.class, new EventHandler<ChunkData>() {
             @Override
-            public void handleEvent( ChunkData event ) {
-                setBlock( event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
-                          event.getSizeZ(), event.getData() );
-                eventDispatcher.fire( new ModelUpdate( event.getX(), event.getY(), event.getZ(), event.getSizeX(),
-                        event.getSizeY(), event.getSizeZ() ));
+            public void handleEvent(ChunkData event) {
+                setBlock(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
+                        event.getSizeZ(), event.getData());
+                eventDispatcher.publish(new ModelUpdate(event.getX(), event.getY(), event.getZ(), event.getSizeX(),
+                        event.getSizeY(), event.getSizeZ()));
             }
-        } );
-        eventBus.registerCallback( ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
+        });
+        eventBus.subscribe(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
             @Override
-            public void handleEvent( ChunkPreparation event ) {
-                if( !event.isLoad() ) {
+            public void handleEvent(ChunkPreparation event) {
+                if (!event.isLoad()) {
                     int chunkX = event.getX();
                     int chunkZ = event.getZ();
 
-                    removeChunk( chunkX, chunkZ );
+                    removeChunk(chunkX, chunkZ);
                 }
             }
-        } );
-        eventDispatcher.registerVetoHandler( eventBus, BlockSignUpdate.class, new VetoHandler<BlockSignUpdate>() {
+        });
+        eventDispatcher.subscribeVeto(eventBus, BlockSignUpdate.class, new VetoHandler<BlockSignUpdate>() {
             @Override
-            public boolean isVeto( BlockSignUpdate event ) {
+            public boolean isVeto(BlockSignUpdate event) {
                 return true;
             }
+
             @Override
-            public void handleVeto( BlockSignUpdate event ) {
-                eventDispatcher.fire( event, true );
+            public void handleVeto(BlockSignUpdate event) {
+                eventDispatcher.publish(event, true);
             }
-        } );
-        eventDispatcher.registerVetoHandler( eventBus, ChunkData.class, new VetoHandler<ChunkData>() {
+        });
+        eventDispatcher.subscribeVeto(eventBus, ChunkData.class, new VetoHandler<ChunkData>() {
             @Override
-            public boolean isVeto( ChunkData event ) {
+            public boolean isVeto(ChunkData event) {
                 return true;
             }
+
             @Override
-            public void handleVeto( final ChunkData event ) {
+            public void handleVeto(final ChunkData event) {
                 final byte newMap[] = event.getData();
 
-                interate( event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
-                          event.getSizeZ(), new BlockUpdateCallable() {
-                    @Override
-                    public void updateChunk( Chunk chunk ) {
-                        byte[] map = chunk.getMap();
+                interate(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
+                        event.getSizeZ(), new BlockUpdateCallable() {
+                            @Override
+                            public void updateChunk(Chunk chunk) {
+                                byte[] map = chunk.getMap();
 
-                        for( int i = 0; i < CHUNK_ARRAY_SIZE; i++ ) {
-                            byte value     = newMap[i];
-                            byte blueprint = map[i + CHUNK_ARRAY_SIZE];
+                                for (int i = 0; i < CHUNK_ARRAY_SIZE; i++) {
+                                    byte value = newMap[i];
+                                    byte blueprint = map[i + CHUNK_ARRAY_SIZE];
 
-                            if(( blueprint > 0 ) && ( value == DataValues.AIR.getId() )) {
-                                value = blueprint;
+                                    if ((blueprint > 0) && (value == DataValues.AIR.getId())) {
+                                        value = blueprint;
+                                    }
+
+                                    newMap[i] = value;
+                                }
                             }
 
-                            newMap[i] = value;
-                        }
-                    }
-                    @Override
-                    public void updateBlock( Chunk chunk, int x, int y, int z, int index ) {
-                        byte value     = newMap[index];
-                        int  blueprint = chunk.getPixel( x, y, z, 1 );
+                            @Override
+                            public void updateBlock(Chunk chunk, int x, int y, int z, int index) {
+                                byte value = newMap[index];
+                                int blueprint = chunk.getPixel(x, y, z, 1);
 
-                        if(( blueprint > 0 ) && ( value == DataValues.AIR.getId() )) {
-                            value = (byte) blueprint;
-                        }
+                                if ((blueprint > 0) && (value == DataValues.AIR.getId())) {
+                                    value = (byte) blueprint;
+                                }
 
-                        newMap[index] = value;
-                    }
-                } );
-                eventDispatcher.fire( new ChunkData( event.getSource(), event.getX(), event.getY(), event.getZ(),
-                        event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap ), true );
+                                newMap[index] = value;
+                            }
+                        });
+                eventDispatcher.publish(new ChunkData(event.getSource(), event.getX(), event.getY(), event.getZ(),
+                        event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap), true);
             }
-        } );
+        });
     }
 
     public int getNumberOfChunks() {
@@ -135,7 +144,7 @@ public class Model {
 
     public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, BlockUpdateCallable callable ) {
         if(( sizeX == 16 ) && ( sizeY == 128 ) && ( sizeZ == 16 )) {
-            Chunk chunk = getOrCreateChunk( sx, sy, sz );
+            Chunk chunk = getOrCreateChunkByCoords(sx, sy, sz);
 
             callable.updateChunk( chunk );
         } else {
@@ -143,7 +152,7 @@ public class Model {
                 for( int y = 0; y < sizeY; y++ ) {
                     for( int z = 0; z < sizeZ; z++ ) {
                         int   i     = y + ( z * sizeY ) + x * sizeY * sizeZ;
-                        Chunk chunk = getOrCreateChunk( sx + x, sy + y, sz + z );
+                        Chunk chunk = getOrCreateChunkByCoords(sx + x, sy + y, sz + z);
 
                         callable.updateBlock( chunk, sx + x, sy + y, sz + z, i );
                     }
@@ -186,7 +195,7 @@ public class Model {
             update.add( x, y, z, (byte) value, (byte) 0 );
         }
 
-        getOrCreateChunk( x, y, z ).setPixel( x, y, z, type, value );
+        getOrCreateChunkByCoords(x, y, z).setPixel( x, y, z, type, value );
     }
 
     public int getPixel( int x, int y, int z, int type ) {
@@ -225,24 +234,24 @@ public class Model {
     }
 
     public Chunk getOrCreateChunk( Position pos ) {
-        return getOrCreateChunk( (int) pos.getWorldX(), (int) pos.getWorldY(), (int) pos.getWorldZ() );
+        return getOrCreateChunkByCoords((int) pos.getWorldX(), (int) pos.getWorldY(), (int) pos.getWorldZ());
     }
 
-    public Chunk getOrCreateChunk( int x, int y, int z ) {
+    public Chunk getOrCreateChunkByCoords(int x, int y, int z) {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
 
         return getOrCreateChunk( chunkX, chunkZ );
     }
 
-    public Chunk getOrCreateChunk( int x, int z ) {
+    public Chunk getOrCreateChunk( int chunkX, int chunkZ ) {
         Chunk chunk;
-        long  id = getChunkId( x, z );
+        long  id = getChunkId( chunkX, chunkZ );
 
         if( chunks.containsKey( id )) {
             chunk = chunks.get( id );
         } else {
-            chunk = new Chunk( x << 4, z << 4, 1 << 4, 1 << 7, 1 << 4 );
+            chunk = new Chunk( chunkX << 4, chunkZ << 4, 1 << 4, 1 << 7, 1 << 4 );
             chunks.put( id, chunk );
         }
 
@@ -261,7 +270,7 @@ public class Model {
 
     public void fireUpdates() {
         for( BlockMultiUpdate update : updates.values() ) {
-            eventDispatcher.fire( update );
+            eventDispatcher.publish(update);
         }
 
         updates.clear();

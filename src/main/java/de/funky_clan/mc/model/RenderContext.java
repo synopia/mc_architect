@@ -9,9 +9,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 
 /**
- * Represents a viewport.
- *
- * A viewport
+ * A render context contains all information needed for rendering. These are:
+ * <ul>
+ *     <li>size of the screen in pixel</li>
+ *     <li>the window to display on screen in 2d slice coordinates</li>
+ * </ul>
+ * So panning and zooming may be realized by modifing the window to display and request a repaint.
  *
  * @author synopia
  */

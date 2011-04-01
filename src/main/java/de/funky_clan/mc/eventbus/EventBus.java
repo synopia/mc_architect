@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * An eventbus using a publish/subscribe mechanism.
  *
- * Subscribers (EventHandler) may register to specific events. Events with a specified topic
- * are only handled by subscribers of the same topic.
+ * Subscribers (EventHandler) may register to specific events and get called, whenever this event is published
+ * into this event bus
  *
  * @author synopia
  */
@@ -25,16 +25,16 @@ public abstract class EventBus {
     private Benchmark    benchmark;
 
     public EventBus() {
-        registerCallback( VetoEvent.class, new EventHandler<VetoEvent>() {
+        subscribe(VetoEvent.class, new EventHandler<VetoEvent>() {
             @Override
-            @SuppressWarnings( "unchecked" )
-            public void handleEvent( VetoEvent event ) {
-                Event       realEvent   = event.getEvent();
+            @SuppressWarnings("unchecked")
+            public void handleEvent(VetoEvent event) {
+                Event realEvent = event.getEvent();
                 VetoHandler vetoHandler = event.getHandler();
 
-                vetoHandler.handleVeto( realEvent );
+                vetoHandler.handleVeto(realEvent);
             }
-        } );
+        });
     }
 
     @SuppressWarnings( "unchecked" )
@@ -48,17 +48,13 @@ public abstract class EventBus {
         }
     }
 
-    public void fireEvent( final Event event ) {
-        forceFireEvent( event );
-    }
+    public abstract void publish(final Event event);
 
-    public abstract void forceFireEvent( final Event event );
-
-    public synchronized boolean hasCallbacks( Event event ) {
+    public synchronized boolean hasSubscribers(Event event) {
         return handlers.containsKey( event.getClass() );
     }
 
-    public synchronized <T extends Event> void registerCallback( Class<T> cls, EventHandler<T> callback ) {
+    public synchronized <T extends Event> void subscribe(Class<T> cls, EventHandler<T> callback) {
         addCallback( handlers, cls, callback );
     }
 

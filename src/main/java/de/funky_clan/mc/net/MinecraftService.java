@@ -2,7 +2,7 @@ package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.NetworkEvent;
@@ -31,7 +31,7 @@ public class MinecraftService {
     @Inject
     private MinecraftClient       client;
     @Inject
-    private EventDispatcher       eventDispatcher;
+    private EventDispatcher eventDispatcher;
     private final ExecutorService pool;
     private int                   port;
     @Inject
@@ -44,41 +44,41 @@ public class MinecraftService {
     public MinecraftService( ModelEventBus eventBus ) {
         logger.info( "Starting MinecraftService..." );
         pool = Executors.newFixedThreadPool( 1 );
-        eventBus.registerCallback( ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
+        eventBus.subscribe(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
-            public void handleEvent( ConnectionDetailsChanged event ) {
+            public void handleEvent(ConnectionDetailsChanged event) {
                 stop();
-                port       = event.getListeningPort();
+                port = event.getListeningPort();
                 targetHost = event.getHost();
                 targetPort = event.getPort();
                 start();
             }
-        } );
-        eventBus.registerCallback( Handshake.class, new EventHandler<Handshake>() {
+        });
+        eventBus.subscribe(Handshake.class, new EventHandler<Handshake>() {
             @Override
-            public void handleEvent( Handshake event ) {
-                logger.info( "Received handshake signal from " + event.getSourceName() + ". (" + event.getUsername()
-                             + ")" );
+            public void handleEvent(Handshake event) {
+                logger.info("Received handshake signal from " + event.getSourceName() + ". (" + event.getUsername()
+                        + ")");
 
-                if( event.getSource() == NetworkEvent.CLIENT ) {
-                    eventDispatcher.fire( new ConnectionEstablished( event.getUsername() ));
+                if (event.getSource() == NetworkEvent.CLIENT) {
+                    eventDispatcher.publish(new ConnectionEstablished(event.getUsername()));
                 }
             }
-        } );
-        eventBus.registerCallback( ConnectionLost.class, new EventHandler<ConnectionLost>() {
+        });
+        eventBus.subscribe(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
-            public void handleEvent( ConnectionLost event ) {
-                logger.info( "Received connection lost signal." );
+            public void handleEvent(ConnectionLost event) {
+                logger.info("Received connection lost signal.");
                 start();
             }
-        } );
-        eventBus.registerCallback( Disconnect.class, new EventHandler<Disconnect>() {
+        });
+        eventBus.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
             @Override
-            public void handleEvent( Disconnect event ) {
-                logger.info( "Received disconnect signal from " + event.getSourceName() + "." );
+            public void handleEvent(Disconnect event) {
+                logger.info("Received disconnect signal from " + event.getSourceName() + ".");
                 stop();
             }
-        } );
+        });
     }
 
     public void start() {

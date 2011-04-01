@@ -4,6 +4,9 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.math.Position;
 
 /**
+ * <p>A slice is the projection world coordinate (3d) to one specific slice (2d). A slice is defined by the used
+ * plane (X-Z, Y-Z, X-Y) and the "height" of the slice (sliceNo).</p>
+ *
  * @author synopia
  */
 public class Slice {

@@ -2,7 +2,7 @@ package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.model.OreFound;
@@ -37,43 +37,43 @@ public class OreDetectorService extends BaseOreDetectorService {
     public OreDetectorService( ModelEventBus eventBus ) {
         super( eventBus );
         logger.info( "Starting OreDetectorService..." );
-        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent( PlayerPositionUpdate event ) {
-                if( event.isChunkChanged() ) {
-                    buildPlayerList( (int) event.getX(), (int) event.getZ() );
+            public void handleEvent(PlayerPositionUpdate event) {
+                if (event.isChunkChanged()) {
+                    buildPlayerList((int) event.getX(), (int) event.getZ());
                     sendPlayerList();
                 }
             }
-        } );
-        eventBus.registerCallback( ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
+        });
+        eventBus.subscribe(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
             @Override
-            public void handleEvent( ChunkPreparation event ) {
-                if( !event.isLoad() ) {
-                    ores.remove( Chunk.getChunkId( event.getX(), event.getZ() ));
+            public void handleEvent(ChunkPreparation event) {
+                if (!event.isLoad()) {
+                    ores.remove(Chunk.getChunkId(event.getX(), event.getZ()));
                 }
             }
-        } );
-        eventBus.registerCallback( OreFound.class, new EventHandler<OreFound>() {
+        });
+        eventBus.subscribe(OreFound.class, new EventHandler<OreFound>() {
             @Override
-            public void handleEvent( OreFound event ) {
-                List<Ore> list = getOre( event.getChunkId() );
+            public void handleEvent(OreFound event) {
+                List<Ore> list = getOre(event.getChunkId());
 
                 list.clear();
-                list.addAll( event.getOres() );
+                list.addAll(event.getOres());
 
-                if( chunksForPlayer.contains( event.getChunkId() )) {
+                if (chunksForPlayer.contains(event.getChunkId())) {
                     sendPlayerList();
                 }
             }
-        } );
-        eventBus.registerCallback( OreFilterChanged.class, new EventHandler<OreFilterChanged>() {
+        });
+        eventBus.subscribe(OreFilterChanged.class, new EventHandler<OreFilterChanged>() {
             @Override
-            public void handleEvent( OreFilterChanged event ) {
-                oreTypes.put( event.getComponent(), event.getFilter() );
-                sendPlayerList( event.getComponent() );
+            public void handleEvent(OreFilterChanged event) {
+                oreTypes.put(event.getComponent(), event.getFilter());
+                sendPlayerList(event.getComponent());
             }
-        } );
+        });
     }
 
     protected void buildPlayerList( int x, int z ) {
@@ -110,7 +110,7 @@ public class OreDetectorService extends BaseOreDetectorService {
             }
         }
 
-        eventDispatcher.fire( new OreDisplayUpdate( component, all, total ));
+        eventDispatcher.publish(new OreDisplayUpdate(component, all, total));
     }
 
     protected void addFiltered( JComponent component, List<Ore> target, List<Ore> source ) {

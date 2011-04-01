@@ -2,7 +2,7 @@ package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.model.ModelUpdate;
@@ -31,54 +31,55 @@ public abstract class BaseOreDetectorService {
 
     @Inject
     public BaseOreDetectorService( final ModelEventBus eventBus ) {
-        eventBus.registerCallback( ModelUpdate.class, new EventHandler<ModelUpdate>() {
+        eventBus.subscribe(ModelUpdate.class, new EventHandler<ModelUpdate>() {
             @Override
-            public void handleEvent( ModelUpdate event ) {
-                Arrays.fill( closedMap, false );
-                ores   = new ArrayList<Ore>();
+            public void handleEvent(ModelUpdate event) {
+                Arrays.fill(closedMap, false);
+                ores = new ArrayList<Ore>();
                 startX = event.getStartX();
                 startY = event.getStartY();
                 startZ = event.getStartZ();
-                model.interate( event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(),
-                                event.getSizeY(), event.getSizeZ(), new Model.BlockUpdateCallable() {
-                    @Override
-                    public void updateChunk( Chunk chunk ) {
-                        BaseOreDetectorService.this.data = chunk.getMap();
+                model.interate(event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(),
+                        event.getSizeY(), event.getSizeZ(), new Model.BlockUpdateCallable() {
+                            @Override
+                            public void updateChunk(Chunk chunk) {
+                                BaseOreDetectorService.this.data = chunk.getMap();
 
-                        int len = 16 * 128 * 16;
+                                int len = 16 * 128 * 16;
 
-                        for( int i = 0; i < len; i++ ) {
-                            int x = ( i >> 11 );
-                            int y = i & 0x7f;
-                            int z = (( i & 0x780 ) >> 7 );
+                                for (int i = 0; i < len; i++) {
+                                    int x = (i >> 11);
+                                    int y = i & 0x7f;
+                                    int z = ((i & 0x780) >> 7);
 
-                            if( isOre( data[i] )) {
-                                if( !closedMap[i] ) {
-                                    Ore ore = findOre( startX + x, startY + y, startZ + z );
+                                    if (isOre(data[i])) {
+                                        if (!closedMap[i]) {
+                                            Ore ore = findOre(startX + x, startY + y, startZ + z);
 
-                                    if( ore == null ) {
-                                        ore = new Ore( startX + x, startY + y, startZ + z );
-                                    }
+                                            if (ore == null) {
+                                                ore = new Ore(startX + x, startY + y, startZ + z);
+                                            }
 
-                                    ore = followOre( x, y, z, ore );
+                                            ore = followOre(x, y, z, ore);
 
-                                    if(( ore != null ) && !ores.contains( ore )) {
-                                        ores.add( ore );
+                                            if ((ore != null) && !ores.contains(ore)) {
+                                                ores.add(ore);
+                                            }
+                                        }
                                     }
                                 }
+
+                                eventDispatcher.publish(new OreFound(chunk.getId(), ores));
                             }
-                        }
 
-                        eventDispatcher.fire( new OreFound( chunk.getId(), ores ));
-                    }
-                    @Override
-                    public void updateBlock( Chunk chunk, int x, int y, int z, int value ) {
+                            @Override
+                            public void updateBlock(Chunk chunk, int x, int y, int z, int value) {
 
-                        // todo
-                    }
-                } );
+                                // todo
+                            }
+                        });
             }
-        } );
+        });
     }
 
     public boolean isOre(int data) {

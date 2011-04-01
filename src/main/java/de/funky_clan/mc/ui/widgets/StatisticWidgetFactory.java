@@ -33,18 +33,18 @@ public class StatisticWidgetFactory {
     @Inject
     public StatisticWidgetFactory( SwingEventBus eventBus ) {
         build();
-        eventBus.registerCallback( ChunkData.class, new EventHandler<ChunkData>() {
+        eventBus.subscribe(ChunkData.class, new EventHandler<ChunkData>() {
             @Override
-            public void handleEvent( ChunkData event ) {
+            public void handleEvent(ChunkData event) {
                 chunksLoaded++;
             }
-        } );
-        eventBus.registerCallback( OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
+        });
+        eventBus.subscribe(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
-            public void handleEvent( OreDisplayUpdate event ) {
-                oreText.setText( "Ores: " + event.getTotal() );
+            public void handleEvent(OreDisplayUpdate event) {
+                oreText.setText("Ores: " + event.getTotal());
             }
-        } );
+        });
         new Timer( 1000, new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent e ) {

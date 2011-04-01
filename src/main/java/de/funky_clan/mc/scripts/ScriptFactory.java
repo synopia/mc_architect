@@ -1,7 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.script.LoadScript;
@@ -25,7 +25,7 @@ public class ScriptFactory {
     @Inject
     BinvoxLoader          binvoxLoader;
     @Inject
-    EventDispatcher       eventDispatcher;
+    EventDispatcher eventDispatcher;
     @Inject
     private Model         model;
     @Inject
@@ -39,60 +39,60 @@ public class ScriptFactory {
 
     @Inject
     public ScriptFactory( final ModelEventBus eventBus ) {
-        eventBus.registerCallback( LoadScript.class, new EventHandler<LoadScript>() {
+        eventBus.subscribe(LoadScript.class, new EventHandler<LoadScript>() {
             @Override
-            public void handleEvent( LoadScript event ) {
+            public void handleEvent(LoadScript event) {
                 Script script;
 
-                if( !event.hasScript() ) {
-                    if( !event.getFileName().endsWith( ".rb" )) {
+                if (!event.hasScript()) {
+                    if (!event.getFileName().endsWith(".rb")) {
                         return;
                     }
 
-                    script = new Script( event.getFileName(), event.isUseClasspath() );
+                    script = new Script(event.getFileName(), event.isUseClasspath());
                 } else {
                     script = event.getScript();
                 }
 
-                logger.info( "Loading script " + event.getFileName() );
+                logger.info("Loading script " + event.getFileName());
                 script.load();
-                eventDispatcher.fire( new ScriptLoaded( script ));
+                eventDispatcher.publish(new ScriptLoaded(script));
             }
-        } );
-        eventBus.registerCallback( RunScript.class, new EventHandler<RunScript>() {
+        });
+        eventBus.subscribe(RunScript.class, new EventHandler<RunScript>() {
             @Override
-            public void handleEvent( RunScript event ) {
-                sliceGraphicsX.setSliceType( SliceType.X );
-                sliceGraphicsY.setSliceType( SliceType.Y );
-                sliceGraphicsZ.setSliceType( SliceType.Z );
+            public void handleEvent(RunScript event) {
+                sliceGraphicsX.setSliceType(SliceType.X);
+                sliceGraphicsY.setSliceType(SliceType.Y);
+                sliceGraphicsZ.setSliceType(SliceType.Z);
 
                 Script script = event.getScript();
 
-                script.put( "@slice_x", sliceGraphicsX );
-                script.put( "@slice_y", sliceGraphicsY );
-                script.put( "@slice_z", sliceGraphicsZ );
-                script.put( "@world", worldGraphics );
-                script.put( "@binvox", binvoxLoader );
-                script.put( "@model", model );
-                logger.info( "Running script " + script.getName() );
+                script.put("@slice_x", sliceGraphicsX);
+                script.put("@slice_y", sliceGraphicsY);
+                script.put("@slice_z", sliceGraphicsZ);
+                script.put("@world", worldGraphics);
+                script.put("@binvox", binvoxLoader);
+                script.put("@model", model);
+                logger.info("Running script " + script.getName());
                 script.run();
-                script.setChunkUpdates( new HashMap<Long, BlockMultiUpdate>( model.getUpdates() ));
+                script.setChunkUpdates(new HashMap<Long, BlockMultiUpdate>(model.getUpdates()));
                 model.getUpdates().clear();
-                eventDispatcher.fire( new ScriptFinished( script ));
+                eventDispatcher.publish(new ScriptFinished(script));
             }
-        } );
-        eventBus.registerCallback( SendScriptData.class, new EventHandler<SendScriptData>() {
+        });
+        eventBus.subscribe(SendScriptData.class, new EventHandler<SendScriptData>() {
             @Override
-            public void handleEvent( SendScriptData event ) {
-                Script                          script       = event.getScript();
+            public void handleEvent(SendScriptData event) {
+                Script script = event.getScript();
                 HashMap<Long, BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
 
-                for( BlockMultiUpdate update : chunkUpdates.values() ) {
-                    eventDispatcher.fire( update );
+                for (BlockMultiUpdate update : chunkUpdates.values()) {
+                    eventDispatcher.publish(update);
                 }
 
-                script.setSent( true );
+                script.setSent(true);
             }
-        } );
+        });
     }
 }

@@ -7,7 +7,7 @@ import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.ModelUpdate;
@@ -21,7 +21,7 @@ import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Ore;
-import de.funky_clan.mc.model.Player;
+import de.funky_clan.mc.model.PlayerBlock;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.SelectedBlock;
 import de.funky_clan.mc.model.Slice;
@@ -70,7 +70,7 @@ public class SlicePanel extends ZoomPanel {
     @Inject
     private OreRenderer                  oreRenderer;
     @Inject
-    private Player                       player;
+    private PlayerBlock playerBlock;
     @Inject
     private PlayerRenderer               playerRenderer;
     @Inject
@@ -93,46 +93,46 @@ public class SlicePanel extends ZoomPanel {
         setAutoscrolls( true );
         context.setColors( colors );
         context.setWindowSize( 50, 50 );
-        eventBus.registerCallback( ScriptFinished.class, new EventHandler<ScriptFinished>() {
+        eventBus.subscribe(ScriptFinished.class, new EventHandler<ScriptFinished>() {
             @Override
-            public void handleEvent( ScriptFinished event ) {
+            public void handleEvent(ScriptFinished event) {
                 sliceRenderer.invalidate();
                 repaint();
             }
-        } );
-        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        });
+        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent( PlayerPositionUpdate event ) {
-                player.setPosition( event.getX(), event.getY(), event.getZ() );
-                player.setDirection( (int) event.getYaw() );
-                position.setWorld( event.getX(), event.getY(), event.getZ() );
-                scrollTo( position );
+            public void handleEvent(PlayerPositionUpdate event) {
+                playerBlock.setPosition(event.getX(), event.getY(), event.getZ());
+                playerBlock.setDirection((int) event.getYaw());
+                position.setWorld(event.getX(), event.getY(), event.getZ());
+                scrollTo(position);
             }
-        } );
-        eventBus.registerCallback( ModelUpdate.class, new EventHandler<ModelUpdate>() {
+        });
+        eventBus.subscribe(ModelUpdate.class, new EventHandler<ModelUpdate>() {
             @Override
-            public void handleEvent( ModelUpdate event ) {
+            public void handleEvent(ModelUpdate event) {
                 sliceRenderer.invalidate();
                 repaint();
             }
-        } );
-        eventBus.registerCallback( OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
+        });
+        eventBus.subscribe(OreDisplayUpdate.class, new EventHandler<OreDisplayUpdate>() {
             @Override
-            public void handleEvent( OreDisplayUpdate event ) {
-                if( event.getComponent() == SlicePanel.this ) {
+            public void handleEvent(OreDisplayUpdate event) {
+                if (event.getComponent() == SlicePanel.this) {
                     ores.clear();
-                    ores.addAll( event.getOre() );
+                    ores.addAll(event.getOre());
                     repaint();
                 }
             }
-        } );
-        eventBus.registerCallback( ColorChanged.class, new EventHandler<ColorChanged>() {
+        });
+        eventBus.subscribe(ColorChanged.class, new EventHandler<ColorChanged>() {
             @Override
-            public void handleEvent( ColorChanged event ) {
+            public void handleEvent(ColorChanged event) {
                 sliceRenderer.invalidate();
                 repaint();
             }
-        } );
+        });
     }
 
     @Override
@@ -155,7 +155,7 @@ public class SlicePanel extends ZoomPanel {
             int sizeY = ey - sy;
             int sizeZ = ez - sz;
 
-            eventDispatcher.fire( new MouseRectangle( sx, sy, sz, sizeX, sizeY, sizeZ ));
+            eventDispatcher.publish(new MouseRectangle(sx, sy, sz, sizeX, sizeY, sizeZ));
         }
     }
 
@@ -196,7 +196,7 @@ public class SlicePanel extends ZoomPanel {
         int blockZ = position.getBlockZ();
 
         if(( lastMouseX != blockX ) || ( lastMouseY != blockY ) || ( lastMouseZ != blockZ )) {
-            eventDispatcher.fire( new MouseMoved( blockX, blockY, blockZ ));
+            eventDispatcher.publish(new MouseMoved(blockX, blockY, blockZ));
         }
 
         lastMouseX = blockX;
@@ -204,8 +204,8 @@ public class SlicePanel extends ZoomPanel {
         lastMouseZ = blockZ;
 
         if( selectionBoxMode ) {
-            eventDispatcher.fire( new MouseRectangle( blockStartX, blockStartY, blockStartZ, blockX + 1, blockY + 1,
-                    blockZ + 1 ));
+            eventDispatcher.publish(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockX + 1, blockY + 1,
+                    blockZ + 1));
             repaint();
         }
     }
@@ -216,8 +216,8 @@ public class SlicePanel extends ZoomPanel {
         blockStartX = position.getBlockX();
         blockStartY = position.getBlockY();
         blockStartZ = position.getBlockZ();
-        eventDispatcher.fire( new MouseRectangle( blockStartX, blockStartY, blockStartZ, blockStartX + 1,
-                blockStartY + 1, blockStartZ + 1 ));
+        eventDispatcher.publish(new MouseRectangle(blockStartX, blockStartY, blockStartZ, blockStartX + 1,
+                blockStartY + 1, blockStartZ + 1));
         selectionBoxMode = true;
         repaint();
     }
@@ -260,8 +260,8 @@ public class SlicePanel extends ZoomPanel {
             boxRenderer.render( selectedBox, context );
         }
 
-        if( player != null ) {
-            playerRenderer.render( player, context );
+        if( playerBlock != null ) {
+            playerRenderer.render(playerBlock, context );
         }
     }
 
@@ -283,7 +283,7 @@ public class SlicePanel extends ZoomPanel {
         slice.setMaxRenderDepth(( type == SliceType.Y )
                                 ? 20
                                 : 1 );
-        player.setDrawViewCone( type == SliceType.Y );
+        playerBlock.setDrawViewCone( type == SliceType.Y );
     }
 
     public CDockable getDockable() {
@@ -320,7 +320,7 @@ public class SlicePanel extends ZoomPanel {
                                          new ImageIcon( Toolkit.getDefaultToolkit().getImage( "collapseall.gif" ))) {
             @Override
             protected void action() {
-                position.setWorld( player.getPositionX(), player.getPositionY(), player.getPositionZ() );
+                position.setWorld( playerBlock.getPositionX(), playerBlock.getPositionY(), playerBlock.getPositionZ() );
                 scrollTo( position );
             }
         } );

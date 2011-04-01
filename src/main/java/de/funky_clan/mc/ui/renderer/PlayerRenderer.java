@@ -1,7 +1,7 @@
 package de.funky_clan.mc.ui.renderer;
 
 import de.funky_clan.mc.math.Position;
-import de.funky_clan.mc.model.Player;
+import de.funky_clan.mc.model.PlayerBlock;
 import de.funky_clan.mc.model.RenderContext;
 
 import java.awt.Graphics2D;
@@ -9,9 +9,9 @@ import java.awt.Graphics2D;
 /**
  * @author synopia
  */
-public class PlayerRenderer extends BlockRenderer<Player> {
+public class PlayerRenderer extends BlockRenderer<PlayerBlock> {
     @Override
-    public void render( Player object, RenderContext c ) {
+    public void render( PlayerBlock object, RenderContext c ) {
         super.render( object, c );
 
         Position position = c.getPosition();

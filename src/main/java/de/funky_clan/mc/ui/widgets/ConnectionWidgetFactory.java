@@ -2,7 +2,7 @@ package de.funky_clan.mc.ui.widgets;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
@@ -28,30 +28,30 @@ public class ConnectionWidgetFactory {
     @Inject
     public ConnectionWidgetFactory( SwingEventBus eventBus ) {
         build();
-        eventBus.registerCallback( ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
+        eventBus.subscribe(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
             @Override
-            public void handleEvent( ConnectionEstablished event ) {
-                updateStatus( true, "connected" );
+            public void handleEvent(ConnectionEstablished event) {
+                updateStatus(true, "connected");
             }
-        } );
-        eventBus.registerCallback( ConnectionLost.class, new EventHandler<ConnectionLost>() {
+        });
+        eventBus.subscribe(ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
-            public void handleEvent( ConnectionLost event ) {
-                updateStatus( false, "disconnected" );
+            public void handleEvent(ConnectionLost event) {
+                updateStatus(false, "disconnected");
             }
-        } );
-        eventBus.registerCallback( Disconnect.class, new EventHandler<Disconnect>() {
+        });
+        eventBus.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
             @Override
-            public void handleEvent( Disconnect event ) {
-                updateStatus( false, "disconnected" );
+            public void handleEvent(Disconnect event) {
+                updateStatus(false, "disconnected");
             }
-        } );
-        eventBus.registerCallback( ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
+        });
+        eventBus.subscribe(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
-            public void handleEvent( ConnectionDetailsChanged event ) {
-                host.setText( event.getReadableHost() );
+            public void handleEvent(ConnectionDetailsChanged event) {
+                host.setText(event.getReadableHost());
             }
-        } );
+        });
     }
 
     protected void updateStatus( boolean connected, String msg ) {
@@ -65,7 +65,7 @@ public class ConnectionWidgetFactory {
         host.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent e ) {
-                eventDispatcher.fire( new ConnectionDetailsChanged( 12345, host.getText() ));
+                eventDispatcher.publish(new ConnectionDetailsChanged(12345, host.getText()));
             }
         } );
     }

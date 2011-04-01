@@ -3,7 +3,7 @@ package de.funky_clan.mc.ui;
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.config.DataValues;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.events.swing.ColorChanged;
 import de.funky_clan.mc.ui.renderer.ColorEditor;
 import de.funky_clan.mc.ui.renderer.ColorRenderer;
@@ -77,7 +77,7 @@ public class ColorsPanel extends JPanel {
 
                 if( !colors.getColorForBlock( id ).equals( aValue )) {
                     colors.setColorForBlock( id, (Color) aValue );
-                    eventDispatcher.fire( new ColorChanged( id, (Color) aValue ));
+                    eventDispatcher.publish(new ColorChanged(id, (Color) aValue));
                 }
             }
         }

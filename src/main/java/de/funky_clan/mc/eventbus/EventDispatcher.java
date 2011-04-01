@@ -1,20 +1,15 @@
-package de.funky_clan.mc.config;
+package de.funky_clan.mc.eventbus;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.EventBus;
-import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.eventbus.SwingEventBus;
-import de.funky_clan.mc.eventbus.VetoEvent;
-import de.funky_clan.mc.eventbus.VetoHandler;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 
 import java.util.HashMap;
 
 /**
- *
+ * Events published to the event dispatcher are publish to each event bus. In addition one may set veto handlers
+ * to intercept the dispatching process.
  *
  * @author synopia
  */
@@ -31,8 +26,20 @@ public class EventDispatcher {
     @Inject
     private SwingEventBus   swingEventBus;
 
-    public synchronized <T extends Event> void registerVetoHandler( EventBus bus, Class<T> cls,
-            VetoHandler<T> handler ) {
+    /**
+     * <p>Assigns a veto handler to events. Whenever an event of class <code>cls</code> is published, the vetohandler
+     * <code>handler</code> controls the dispatching process.</p>
+     * <p>First, <code>handler.isVeto</code> is called <i>from current thread</i>. If this call returns false, the event
+     * is dispatched as if no veto handler is assigned. Otherwise, <code>handler.handleVeto</code> is called using the
+     * specified eventbus (actually, an envelope event (<code>VetoEvent</code>) is published to <code>bus</code>).
+     *
+     * @param bus The event bus, to "run" the handleVeto method on
+     * @param cls The event type to veto
+     * @param handler handles the veto
+     * @param <T> The event type to veto
+     */
+    public synchronized <T extends Event> void subscribeVeto(EventBus bus, Class<T> cls,
+                                                             VetoHandler<T> handler) {
         vetoHandlers.put( cls, new HandlerBus( handler, bus ));
     }
 
@@ -49,20 +56,20 @@ public class EventDispatcher {
         return false;
     }
 
-    public void fire( Event event ) {
-        fire( event, false );
+    public void publish(Event event) {
+        publish(event, false);
     }
 
-    public void fire( Event event, boolean ignoreVeto ) {
+    public void publish(Event event, boolean ignoreVeto) {
         if( ignoreVeto || !isVeto( event )) {
-            modelEventBus.fireEvent( event );
-            swingEventBus.fireEvent( event );
-            client.fireEvent( event );
-            server.fireEvent( event );
+            modelEventBus.publish(event);
+            swingEventBus.publish(event);
+            client.publish(event);
+            server.publish(event);
         } else {
             HandlerBus handlerBus = vetoHandlers.get( event.getClass() );
 
-            handlerBus.bus.fireEvent( new VetoEvent( event, handlerBus.vetoHandler ));
+            handlerBus.bus.publish(new VetoEvent(event, handlerBus.vetoHandler));
         }
     }
 

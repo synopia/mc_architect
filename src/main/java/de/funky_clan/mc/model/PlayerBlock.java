@@ -6,9 +6,10 @@ import de.funky_clan.mc.config.Colors;
 import java.awt.Color;
 
 /**
- * @author paul.fritsche@googlemail.com
+ *
+ * @author synopia
  */
-public class Player extends SelectedBlock {
+public class PlayerBlock extends SelectedBlock {
     @Inject
     private Colors  colors;
     private int     direction;

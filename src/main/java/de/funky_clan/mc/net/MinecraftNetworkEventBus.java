@@ -1,7 +1,7 @@
 package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.Event;
 import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.NetworkEventBus;
@@ -82,7 +82,6 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     private DataInputStream  in;
     private int              lastPacketId;
     private DataOutputStream out;
-    private DataInputStream  realIn;
 
     protected MinecraftNetworkEventBus() {
         addPacketType( KeepAlive.class );
@@ -189,12 +188,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
             if( packet != null ) {
                 packet.decode( in );
-
-                if(( packetId == 0x0d ) && ( getNetworkType() == NetworkEvent.SERVER )) {
-                    System.out.println( "pos update from server" );
-                }
-
-                eventDispatcher.fire( packet );
+                eventDispatcher.publish(packet);
                 lastPacketId = packetId;
             } else {
                 throw new NetworkException( "Unknown packet id 0x" + Integer.toHexString( packetId )
@@ -208,7 +202,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     @Override
     protected synchronized void disconnect( NetworkException e ) {
         e.printStackTrace();
-        eventDispatcher.fire( new ConnectionLost() );
+        eventDispatcher.publish(new ConnectionLost());
         disconnect();
     }
 

@@ -2,7 +2,7 @@ package de.funky_clan.mc.net;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.NetworkEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

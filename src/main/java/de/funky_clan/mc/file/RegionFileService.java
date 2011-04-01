@@ -2,7 +2,7 @@ package de.funky_clan.mc.file;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.NetworkEvent;
@@ -39,12 +39,12 @@ public class RegionFileService {
     @Inject
     public RegionFileService( final ModelEventBus eventBus ) {
         logger.info( "Region File Service started" );
-        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent( PlayerPositionUpdate event ) {
-                updatePlayerPos( (int) event.getX(), (int) event.getZ() );
+            public void handleEvent(PlayerPositionUpdate event) {
+                updatePlayerPos((int) event.getX(), (int) event.getZ());
             }
-        } );
+        });
     }
 
     protected void updatePlayerPos( int x, int z ) {
@@ -68,8 +68,8 @@ public class RegionFileService {
         logger.info( "unloading " + toRemove.size() + " chunks" );
 
         for( Long id : toRemove ) {
-            eventDispatcher.fire( new ChunkPreparation( NetworkEvent.SERVER, getChunkXForId( id ),
-                    getChunkYForId( id ), false ));
+            eventDispatcher.publish(new ChunkPreparation(NetworkEvent.SERVER, getChunkXForId(id),
+                    getChunkYForId(id), false));
         }
 
         loadedChunks.removeAll( toRemove );
@@ -86,8 +86,8 @@ public class RegionFileService {
                 CompoundTag    level  = (CompoundTag) root.getValue().get( "Level" );
                 ByteArrayTag   blocks = (ByteArrayTag) level.getValue().get( "Blocks" );
 
-                eventDispatcher.fire( new ChunkData( ChunkData.SERVER, chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7,
-                        1 << 4, blocks.getValue() ));
+                eventDispatcher.publish(new ChunkData(ChunkData.SERVER, chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7,
+                        1 << 4, blocks.getValue()));
             } catch( IOException e ) {
                 e.printStackTrace();
             }

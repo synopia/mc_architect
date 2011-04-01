@@ -7,11 +7,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * This eventbus implementation uses a thread to process events.
+ * <p>This eventbus implementation uses a thread to process events.</p>
  *
- * When an event is fired to a threaded eventbus, its checked from which thread the new event is fired.
+ * <p>When an event is published to a threaded eventbus, its checked from which thread the new event is fired.
  * If its fired on the process thread, it gets handled imediately. Otherwise the event is stored in a
- * event queue and handled later on.
+ * event queue and handled later on in eventbus' thread.</p>
  *
  * @author synopia
  */
@@ -44,7 +44,7 @@ public abstract class ThreadedEventBus extends EventBus {
     }
 
     @Override
-    public void forceFireEvent( final Event event ) {
+    public void publish(final Event event) {
         if( Thread.currentThread() == thread ) {
             handleEvent( event );
         } else {

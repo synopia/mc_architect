@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import de.funky_clan.mc.config.ArchitectModule;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.SwingEventBus;
@@ -33,7 +33,7 @@ import java.awt.Component;
  */
 public class Main extends JFrame {
     @Inject
-    EventDispatcher  eventDispatcher;
+    EventDispatcher eventDispatcher;
     @Inject
     @Named( "Info" )
     StatusBar        info;
@@ -88,28 +88,28 @@ public class Main extends JFrame {
         south.add( toolBar );
         south.add( status );
         add( south, BorderLayout.SOUTH );
-        swingEventBus.registerCallback( Initialize.class, new EventHandler<Initialize>() {
+        swingEventBus.subscribe(Initialize.class, new EventHandler<Initialize>() {
             @Override
-            public void handleEvent( Initialize event ) {
-                setBounds( 20, 20, 600, 500 );
-                eventDispatcher.fire( new PlayerSpawnPosition() );
+            public void handleEvent(Initialize event) {
+                setBounds(20, 20, 600, 500);
+                eventDispatcher.publish(new PlayerSpawnPosition());
             }
-        } );
-        eventDispatcher.fire( new Initialize() );
+        });
+        eventDispatcher.publish(new Initialize());
 
         if( isDebug() ) {
-            eventDispatcher.fire( new ConnectionDetailsChanged( 12345, "localhost" ));
+            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "localhost"));
         } else {
-            eventDispatcher.fire( new ConnectionDetailsChanged( 12345, "mc.funky-clan.de" ));
+            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));
         }
 
-        eventDispatcher.fire( new LoadScript( "kolloseum.rb", !Main.isDebug() ));
-        eventDispatcher.fire( new LoadScript( "akw.rb", !Main.isDebug() ));
-        eventDispatcher.fire( new LoadScript( "glaskugel.rb", !Main.isDebug() ));
-        eventDispatcher.fire( new LoadScript( "superformula.rb", !Main.isDebug() ));
+        eventDispatcher.publish(new LoadScript("kolloseum.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("akw.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("glaskugel.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("superformula.rb", !Main.isDebug()));
 
         if( Main.isDebug() ) {
-            eventDispatcher.fire( new LoadScript( "test.rb", false ));
+            eventDispatcher.publish(new LoadScript("test.rb", false));
         }
     }
 

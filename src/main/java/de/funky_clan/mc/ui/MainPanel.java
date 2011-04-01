@@ -67,39 +67,39 @@ public class MainPanel extends CControl {
 
     @Inject
     public MainPanel( final SwingEventBus eventBus ) {
-        eventBus.registerCallback( MouseRectangle.class, new EventHandler<MouseRectangle>() {
+        eventBus.subscribe(MouseRectangle.class, new EventHandler<MouseRectangle>() {
             @Override
-            public void handleEvent( MouseRectangle event ) {
-                selectionBox.set( event.getX(), event.getY(), event.getZ(), event.getEndX(), event.getEndY(),
-                                  event.getEndZ() );
+            public void handleEvent(MouseRectangle event) {
+                selectionBox.set(event.getX(), event.getY(), event.getZ(), event.getEndX(), event.getEndY(),
+                        event.getEndZ());
                 statusText.setText(
-                    String.format(
-                        "Selection: (%.0f, %.0f, %.0f) -> (%.0f, %.0f, %.0f) = (%.0f, %.0f, %.0f)",
-                        selectionBox.getStartX(), selectionBox.getStartY(), selectionBox.getStartZ(),
-                        selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
-                        selectionBox.getEndX() - selectionBox.getStartX(),
-                        selectionBox.getEndY() - selectionBox.getStartY(),
-                        selectionBox.getEndZ() - selectionBox.getStartZ() ));
+                        String.format(
+                                "Selection: (%.0f, %.0f, %.0f) -> (%.0f, %.0f, %.0f) = (%.0f, %.0f, %.0f)",
+                                selectionBox.getStartX(), selectionBox.getStartY(), selectionBox.getStartZ(),
+                                selectionBox.getEndX(), selectionBox.getEndY(), selectionBox.getEndZ(),
+                                selectionBox.getEndX() - selectionBox.getStartX(),
+                                selectionBox.getEndY() - selectionBox.getStartY(),
+                                selectionBox.getEndZ() - selectionBox.getStartZ()));
                 MainPanel.this.getContentArea().repaint();
             }
-        } );
-        eventBus.registerCallback( MouseMoved.class, new EventHandler<MouseMoved>() {
+        });
+        eventBus.subscribe(MouseMoved.class, new EventHandler<MouseMoved>() {
             @Override
-            public void handleEvent( MouseMoved event ) {
-                int    x         = event.getX();
-                int    y         = event.getY();
-                int    z         = event.getZ();
-                String pixelText = DataValues.find( model.getPixel( x, y, z, 0 )).toString();
+            public void handleEvent(MouseMoved event) {
+                int x = event.getX();
+                int y = event.getY();
+                int z = event.getZ();
+                String pixelText = DataValues.find(model.getPixel(x, y, z, 0)).toString();
 
-                statusText.setText( "Mouse: " + x + ", " + y + ", " + z + " " + pixelText );
+                statusText.setText("Mouse: " + x + ", " + y + ", " + z + " " + pixelText);
             }
-        } );
-        eventBus.registerCallback( Initialize.class, new EventHandler<Initialize>() {
+        });
+        eventBus.subscribe(Initialize.class, new EventHandler<Initialize>() {
             @Override
-            public void handleEvent( Initialize event ) {
+            public void handleEvent(Initialize event) {
                 onInit();
             }
-        } );
+        });
         buildToolBar();
     }
 

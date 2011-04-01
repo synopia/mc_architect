@@ -1,10 +1,10 @@
 package de.funky_clan.mc.config;
 
 /**
- * Definition BlockIds.
+ * <p>Definition of BlockIds.</p>
  *
- * <b>Notice:</b> To get the real block ids used by minecraft, use
- * <code>DataValues.STONE.getId()</code>, instead of the enum's ordinal!
+ * <p><b>Notice:</b> To get the real block ids used by minecraft, use
+ * <code>DataValues.STONE.getId()</code>, instead of the enum's ordinal!</p>
  *
  * @author synopia
  */

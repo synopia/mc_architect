@@ -7,6 +7,9 @@ import de.funky_clan.mc.model.SliceType;
 import java.awt.Color;
 
 /**
+ * This class helps converting screen, slice and world coordinates. For performance reasons, no immutable objects
+ * are used for coordinates. Instead you should reuse an instance of this class as much as possible.
+ *
  * @author synopia
  */
 public final class Position {
@@ -37,6 +40,14 @@ public final class Position {
         setSlice( sliceX, sliceY, sliceNo );
     }
 
+    /**
+     * Sets world coordinates. After calling this method, you may use getScreenXY or getSliceXY to access
+     * the transformed coordinates.
+     *
+     * @param worldX x
+     * @param worldY up
+     * @param worldZ z
+     */
     public final void setWorld( double worldX, double worldY, double worldZ ) {
         this.worldX = worldX;
         this.worldY = worldY;
@@ -54,6 +65,14 @@ public final class Position {
         }
     }
 
+    /**
+     * Sets slice coordinates. After calling this method, you may use getScreenXY or getWorldXYZ to access
+     * the transformed coordinates.
+     *
+     * @param sliceX x
+     * @param sliceY y
+     * @param sliceNo up
+     */
     public final void setSlice( double sliceX, double sliceY, int sliceNo ) {
         this.sliceX  = sliceX;
         this.sliceY  = sliceY;
@@ -71,10 +90,24 @@ public final class Position {
         }
     }
 
+    /**
+     * Sets screen coordinates. After calling this method, you may use getWorldXYZ or getSliceXY to access
+     * the transformed coordinates.
+     *
+     * @param screenX x
+     * @param screenY y
+     */
     public final void setScreen( int screenX, int screenY ) {
         setScreen( screenX, screenY, sliceNo );
     }
 
+    /**
+     * Sets screen coordinates.
+     *
+     * @param screenX x
+     * @param screenY y
+     * @param sliceNo up
+     */
     public final void setScreen( int screenX, int screenY, int sliceNo ) {
         this.screenX = screenX;
         this.screenY = screenY;

@@ -1,7 +1,7 @@
 package de.funky_clan.mc.ui;
 
 import com.google.inject.Inject;
-import de.funky_clan.mc.config.EventDispatcher;
+import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.script.LoadScript;
@@ -48,26 +48,26 @@ public class ScriptsPanel extends JPanel {
         final ScriptsTableModel model = new ScriptsTableModel();
         final JTable            table = new JTable( model );
 
-        eventBus.registerCallback( ScriptFinished.class, new EventHandler<ScriptFinished>() {
+        eventBus.subscribe(ScriptFinished.class, new EventHandler<ScriptFinished>() {
             @Override
-            public void handleEvent( ScriptFinished event ) {
+            public void handleEvent(ScriptFinished event) {
                 model.fireTableDataChanged();
                 table.repaint();
             }
-        } );
-        eventBus.registerCallback( ScriptLoaded.class, new EventHandler<ScriptLoaded>() {
+        });
+        eventBus.subscribe(ScriptLoaded.class, new EventHandler<ScriptLoaded>() {
             @Override
-            public void handleEvent( ScriptLoaded event ) {
+            public void handleEvent(ScriptLoaded event) {
                 Script script = event.getScript();
 
-                if( !model.scripts.contains( script )) {
-                    model.scripts.add( script );
+                if (!model.scripts.contains(script)) {
+                    model.scripts.add(script);
                 }
 
                 model.fireTableDataChanged();
                 table.repaint();
             }
-        } );
+        });
         table.setPreferredScrollableViewportSize( new Dimension( 500, 70 ));
         table.setFillsViewportHeight( true );
         table.setRowSorter( new TableRowSorter<TableModel>( model ));
@@ -101,7 +101,7 @@ public class ScriptsPanel extends JPanel {
                     File file = fileChooser.getSelectedFile();
 
                     if( file.isFile() && file.exists() ) {
-                        eventDispatcher.fire( new LoadScript( file.getAbsolutePath(), false ));
+                        eventDispatcher.publish(new LoadScript(file.getAbsolutePath(), false));
                     }
                 }
             }
@@ -227,17 +227,17 @@ public class ScriptsPanel extends JPanel {
                 String cmd = aValue.toString();
 
                 if( "reload".equals( cmd )) {
-                    eventDispatcher.fire( new LoadScript( script ));
+                    eventDispatcher.publish(new LoadScript(script));
                     fireTableDataChanged();
                 } else if( "run".equals( cmd )) {
-                    eventDispatcher.fire( new RunScript( script ));
+                    eventDispatcher.publish(new RunScript(script));
                     fireTableDataChanged();
                 }
 
                 break;
 
             case SEND:
-                eventDispatcher.fire( new SendScriptData( script ));
+                eventDispatcher.publish(new SendScriptData(script));
                 fireTableDataChanged();
 
                 break;

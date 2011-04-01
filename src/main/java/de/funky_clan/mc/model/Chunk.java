@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 /**
+ * A chunk is a map of 16x128x16 blocks. For performance reasons a byte array is used to store block information.
+ *
  * @author synopia
  */
 public final class Chunk {
