@@ -3,6 +3,7 @@ package de.funky_clan.mc.config;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.util.StatusBar;
 
 /**
@@ -13,5 +14,6 @@ public class ArchitectModule implements Module {
     public void configure( Binder binder ) {
         binder.bind( StatusBar.class ).annotatedWith( Names.named( "Status" )).toInstance( new StatusBar() );
         binder.bind( StatusBar.class ).annotatedWith( Names.named( "Info" )).toInstance( new StatusBar() );
+        binder.bind( Box.class ).annotatedWith( Names.named( "SelectionBox" )).toInstance( new Box() );
     }
 }

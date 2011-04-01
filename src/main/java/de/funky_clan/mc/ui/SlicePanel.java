@@ -6,6 +6,7 @@ import bibliothek.gui.dock.common.action.CRadioButton;
 import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
@@ -73,7 +74,7 @@ public class SlicePanel extends ZoomPanel {
     private PlayerBlock playerBlock;
     @Inject
     private PlayerRenderer               playerRenderer;
-    @Inject
+    @Inject @Named("SelectionBox")
     private Box                          selectedBox;
     private boolean                      selectionBoxMode;
     @Inject

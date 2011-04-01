@@ -47,7 +47,7 @@ public class MainPanel extends CControl {
     private PlayerPositionService playerPositionService;
     @Inject
     ScriptsPanel                  scriptsPanel;
-    @Inject
+    @Inject @Named("SelectionBox")
     private Box                   selectionBox;
     @Inject
     private SlicePanel            sideX;
