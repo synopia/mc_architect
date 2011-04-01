@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.NetworkEvent;
-import de.funky_clan.mc.net.packets.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,14 +12,12 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class MinecraftClient extends MinecraftNetworkEventBus {
-    private final Logger logger = LoggerFactory.getLogger(MinecraftClient.class);
-
+    private final Logger logger = LoggerFactory.getLogger( MinecraftClient.class );
     @Inject
-    EventDispatcher eventDispatcher;
+    private EventDispatcher      eventDispatcher;
 
     public MinecraftClient() {
-        logger.info("Starting Minecraft Client Network...");
-
+        logger.info( "Starting Minecraft Client Network..." );
     }
 
     @Override

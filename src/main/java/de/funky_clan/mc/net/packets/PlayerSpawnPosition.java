@@ -11,14 +11,13 @@ import java.io.IOException;
  */
 public class PlayerSpawnPosition extends BasePacket {
     public static final int ID = 0x06;
-    private int z;
-    private int y;
-    private int x;
+    private int             x;
+    private int             y;
+    private int             z;
 
-    public PlayerSpawnPosition() {
-    }
+    public PlayerSpawnPosition() {}
 
-    public PlayerSpawnPosition(int z, int y, int x) {
+    public PlayerSpawnPosition( int z, int y, int x ) {
         this.z = z;
         this.y = y;
         this.x = x;
@@ -30,17 +29,17 @@ public class PlayerSpawnPosition extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         x = in.readInt();
         y = in.readInt();
         z = in.readInt();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(x);
-        out.writeInt(y);
-        out.writeInt(z);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( x );
+        out.writeInt( y );
+        out.writeInt( z );
     }
 
     public int getZ() {

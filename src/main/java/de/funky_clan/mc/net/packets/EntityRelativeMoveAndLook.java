@@ -11,12 +11,12 @@ import java.io.IOException;
  */
 public class EntityRelativeMoveAndLook extends BasePacket {
     public static final int ID = 0x21;
-    private int eid;
-    private int dx;
-    private int dy;
-    private int dz;
-    private int yaw;
-    private int pitch;
+    private int             dx;
+    private int             dy;
+    private int             dz;
+    private int             eid;
+    private int             pitch;
+    private int             yaw;
 
     @Override
     public int getPacketId() {
@@ -24,23 +24,23 @@ public class EntityRelativeMoveAndLook extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
-        dx = in.readByte();
-        dy = in.readByte();
-        dz = in.readByte();
-        yaw = in.readByte();
+    public void decode( DataInputStream in ) throws IOException {
+        eid   = in.readInt();
+        dx    = in.readByte();
+        dy    = in.readByte();
+        dz    = in.readByte();
+        yaw   = in.readByte();
         pitch = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(dx);
-        out.writeByte(dy);
-        out.writeByte(dz);
-        out.writeByte(yaw);
-        out.writeByte(pitch);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( dx );
+        out.writeByte( dy );
+        out.writeByte( dz );
+        out.writeByte( yaw );
+        out.writeByte( pitch );
     }
 
     public int getEid() {

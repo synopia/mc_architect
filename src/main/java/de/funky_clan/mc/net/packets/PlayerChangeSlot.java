@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class PlayerChangeSlot extends BasePacket {
     public static final int ID = 0x10;
-    private short slotId;
+    private short           slotId;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class PlayerChangeSlot extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         slotId = in.readShort();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeShort(slotId);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeShort( slotId );
     }
 }

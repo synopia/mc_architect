@@ -11,12 +11,12 @@ import java.io.IOException;
  */
 public class BlockExplosion extends BasePacket {
     public static final int ID = 0x3c;
-    private double x;
-    private double y;
-    private double z;
-    private float radius;
-    private int recordCount;
-    private byte[] records;
+    private float           radius;
+    private int             recordCount;
+    private byte[]          records;
+    private double          x;
+    private double          y;
+    private double          z;
 
     @Override
     public int getPacketId() {
@@ -24,23 +24,23 @@ public class BlockExplosion extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        x = in.readDouble();
-        y = in.readDouble();
-        z = in.readDouble();
-        radius = in.readFloat();
+    public void decode( DataInputStream in ) throws IOException {
+        x           = in.readDouble();
+        y           = in.readDouble();
+        z           = in.readDouble();
+        radius      = in.readFloat();
         recordCount = in.readInt();
-        records = new byte[recordCount*3];
-        in.readFully(records);
+        records     = new byte[recordCount * 3];
+        in.readFully( records );
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeDouble(x);
-        out.writeDouble(y);
-        out.writeDouble(z);
-        out.writeFloat(radius);
-        out.writeInt(recordCount);
-        out.write(records, 0, recordCount*3);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeDouble( x );
+        out.writeDouble( y );
+        out.writeDouble( z );
+        out.writeFloat( radius );
+        out.writeInt( recordCount );
+        out.write( records, 0, recordCount * 3 );
     }
 }

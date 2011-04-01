@@ -1,16 +1,21 @@
 package de.funky_clan.mc.model;
 
-//~--- JDK imports ------------------------------------------------------------
+import com.google.inject.Inject;
+import de.funky_clan.mc.config.Colors;
+
+import java.awt.Color;
 
 /**
  * @author paul.fritsche@googlemail.com
  */
 public class Player extends SelectedBlock {
+    @Inject
+    private Colors  colors;
     private int     direction;
     private boolean drawViewCone;
     private int     z;
 
-    public void setDrawViewCone(boolean drawViewCone) {
+    public void setDrawViewCone( boolean drawViewCone ) {
         this.drawViewCone = drawViewCone;
     }
 
@@ -36,7 +41,7 @@ public class Player extends SelectedBlock {
     }
 
     public void setDirection( int direction ) {
-        this.direction = direction+90;
+        this.direction = direction + 90;
     }
 
     @Override
@@ -54,4 +59,8 @@ public class Player extends SelectedBlock {
         return 0.7;
     }
 
+    @Override
+    public Color getColor() {
+        return colors.getPlayerBlockColor();
+    }
 }

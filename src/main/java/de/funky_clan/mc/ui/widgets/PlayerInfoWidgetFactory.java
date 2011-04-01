@@ -1,46 +1,40 @@
 package de.funky_clan.mc.ui.widgets;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.util.StatusBar;
 
-import javax.swing.*;
-
-//~--- JDK imports ------------------------------------------------------------
+import javax.swing.JLabel;
 
 /**
  * @author synopia
  */
 @Singleton
 public class PlayerInfoWidgetFactory {
-    private JLabel position;
     private JLabel direction;
     @Inject
     private Model  model;
+    private JLabel position;
 
     @Inject
-    public PlayerInfoWidgetFactory(final SwingEventBus eventBus) {
+    public PlayerInfoWidgetFactory( final SwingEventBus eventBus ) {
         build();
-
-        eventBus.registerCallback(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
+        eventBus.registerCallback( PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
-            public void handleEvent(PlayerPositionUpdate event) {
-                direction.setText(formatDirection((int) event.getYaw()));
-                position.setText("Position: " + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
+            public void handleEvent( PlayerPositionUpdate event ) {
+                direction.setText( formatDirection( (int) event.getYaw() ));
+                position.setText( "Position: "
+                                  + formatCoord( (int) event.getX(), (int) event.getY(), (int) event.getZ() ));
             }
-        });
+        } );
     }
 
     private void build() {
-        direction     = new JLabel("WE");
-        position      = new JLabel("Position: 1600, 1600, 1000");
+        direction = new JLabel( "WE" );
+        position  = new JLabel( "Position: 1600, 1600, 1000" );
     }
 
     public String formatDirection( int angle ) {

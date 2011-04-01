@@ -9,7 +9,7 @@ import de.funky_clan.mc.scripts.Script;
 public class SendScriptData implements Event {
     private Script script;
 
-    public SendScriptData(Script script) {
+    public SendScriptData( Script script ) {
         this.script = script;
     }
 

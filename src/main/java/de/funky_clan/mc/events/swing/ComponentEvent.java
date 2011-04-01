@@ -2,7 +2,7 @@ package de.funky_clan.mc.events.swing;
 
 import de.funky_clan.mc.eventbus.Event;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * @author synopia
@@ -10,7 +10,7 @@ import javax.swing.*;
 public abstract class ComponentEvent implements Event {
     private JComponent component;
 
-    protected ComponentEvent(JComponent component) {
+    protected ComponentEvent( JComponent component ) {
         this.component = component;
     }
 

@@ -1,35 +1,31 @@
 package de.funky_clan.mc.scripts;
 
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
-
-import java.util.HashMap;
-
 /**
  * Contains methods to "draw" into the model
  *
  * @author synopia
  */
 public abstract class Graphics {
+    private double scaleX = 1;
+    private double scaleY = 1;
+    private double scaleZ = 1;
     private double originX;
     private double originY;
     private double originZ;
-    private double scaleX=1;
-    private double scaleY=1;
-    private double scaleZ=1;
 
-    public void setOrigin( double x, double y, double z) {
+    public void setOrigin( double x, double y, double z ) {
         originX = x;
         originY = y;
         originZ = z;
     }
 
-    public void setScale(double scaleX, double scaleY, double scaleZ) {
+    public void setScale( double scaleX, double scaleY, double scaleZ ) {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.scaleZ = scaleZ;
     }
 
-    public void ellipse(double xm, double ym, double z, double width, double height, int value) {
+    public void ellipse( double xm, double ym, double z, double width, double height, int value ) {
         int a   = (int) width;
         int b   = (int) height;
         int dx  = 0;
@@ -40,10 +36,10 @@ public abstract class Graphics {
         int e2;
 
         do {
-            setPixel( xm + dx, ym + dy, z, value);
-            setPixel( xm - dx, ym + dy, z, value);
-            setPixel( xm - dx, ym - dy, z, value);
-            setPixel( xm + dx, ym - dy, z, value);
+            setPixel( xm + dx, ym + dy, z, value );
+            setPixel( xm - dx, ym + dy, z, value );
+            setPixel( xm - dx, ym - dy, z, value );
+            setPixel( xm + dx, ym - dy, z, value );
             e2 = 2 * err;
 
             if( e2 < ( 2 * dx + 1 ) * b2 ) {
@@ -59,19 +55,20 @@ public abstract class Graphics {
 
         while( dx + 1 < a ) {
             dx++;
-            setPixel( xm + dx, ym, z, value);
-            setPixel( xm - dx, ym, z, value);
+            setPixel( xm + dx, ym, z, value );
+            setPixel( xm - dx, ym, z, value );
         }
     }
 
     public void setPixel( double x, double y, double z, int value ) {
-        setPixelLocal(x*scaleX+originX, y*scaleY+originY, z*scaleZ+originZ, value);
+        setPixelLocal( x * scaleX + originX, y * scaleY + originY, z * scaleZ + originZ, value );
     }
+
     public int getPixel( double x, double y, double z ) {
-        return getPixelLocal(x*scaleX+originX, y*scaleY+originY, z*scaleZ+originZ);
+        return getPixelLocal( x * scaleX + originX, y * scaleY + originY, z * scaleZ + originZ );
     }
 
     public abstract void setPixelLocal( double x, double y, double z, int value );
-    public abstract int getPixelLocal( double x, double y, double z );
 
+    public abstract int getPixelLocal( double x, double y, double z );
 }

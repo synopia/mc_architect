@@ -11,11 +11,11 @@ import java.io.IOException;
  */
 public class BlockUpdate extends BasePacket {
     public static final int ID = 0x35;
-    private int x;
-    private int y;
-    private int z;
-    private byte type;
-    private byte meta;
+    private byte            meta;
+    private byte            type;
+    private int             x;
+    private int             y;
+    private int             z;
 
     @Override
     public int getPacketId() {
@@ -23,21 +23,21 @@ public class BlockUpdate extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        x = in.readInt();
-        y = in.readByte();
-        z = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        x    = in.readInt();
+        y    = in.readByte();
+        z    = in.readInt();
         type = in.readByte();
         meta = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(x);
-        out.writeByte(y);
-        out.writeInt(z);
-        out.writeByte(type);
-        out.writeByte(meta);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( x );
+        out.writeByte( y );
+        out.writeInt( z );
+        out.writeByte( type );
+        out.writeByte( meta );
     }
 
     public int getX() {

@@ -1,10 +1,15 @@
 package de.funky_clan.mc.config;
 
 /**
-* @author synopia
-*/
-public enum DataValues
-{
+ * Definition BlockIds.
+ *
+ * <b>Notice:</b> To get the real block ids used by minecraft, use
+ * <code>DataValues.STONE.getId()</code>, instead of the enum's ordinal!
+ *
+ * @author synopia
+ */
+public enum DataValues {
+    //J-
     AIR(0),
     STONE,
     GRASS,
@@ -95,26 +100,27 @@ public enum DataValues
     BLUEPRINT,
     NOT_LOADED,
     ;
+    //J+
 
-    private int id;
     private static int lastId;
-
-    public static int setId(int id) {
-        lastId = id;
-        return nextId();
-    }
-    public static int nextId() {
-        return lastId++;
-    }
+    private int        id;
 
     DataValues() {
         this.id = nextId();
-
     }
 
-    DataValues(int id) {
-        this.id = setId(id);
+    DataValues( int id ) {
+        this.id = setId( id );
+    }
 
+    public static int setId( int id ) {
+        lastId = id;
+
+        return nextId();
+    }
+
+    public static int nextId() {
+        return lastId++;
     }
 
     public int getId() {
@@ -122,11 +128,12 @@ public enum DataValues
     }
 
     public static DataValues find( int blockId ) {
-        for (DataValues values : DataValues.values()) {
-            if( values.getId()==blockId ) {
+        for( DataValues values : DataValues.values() ) {
+            if( values.getId() == blockId ) {
                 return values;
             }
         }
+
         return NOT_LOADED;
     }
 }

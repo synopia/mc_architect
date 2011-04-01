@@ -11,9 +11,9 @@ import java.io.IOException;
  */
 public class WindowUpdateProgressBar extends BasePacket {
     public static final int ID = 0x69;
-    private byte windowId;
-    private short progress;
-    private short value;
+    private short           progress;
+    private short           value;
+    private byte            windowId;
 
     @Override
     public int getPacketId() {
@@ -21,16 +21,16 @@ public class WindowUpdateProgressBar extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         windowId = in.readByte();
         progress = in.readShort();
-        value = in.readShort();
+        value    = in.readShort();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeByte(windowId);
-        out.writeShort(progress);
-        out.writeShort(value);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeByte( windowId );
+        out.writeShort( progress );
+        out.writeShort( value );
     }
 }

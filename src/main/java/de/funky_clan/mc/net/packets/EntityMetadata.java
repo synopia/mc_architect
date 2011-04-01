@@ -12,8 +12,8 @@ import java.util.ArrayList;
  */
 public class EntityMetadata extends BasePacket {
     public static final int ID = 0x28;
-    private ArrayList meta;
-    private int eid;
+    private int             eid;
+    private ArrayList       meta;
 
     @Override
     public int getPacketId() {
@@ -21,14 +21,14 @@ public class EntityMetadata extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
-        meta = readMetadata(in);
+    public void decode( DataInputStream in ) throws IOException {
+        eid  = in.readInt();
+        meta = readMetadata( in );
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        writeMetadata(out, meta);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        writeMetadata( out, meta );
     }
 }

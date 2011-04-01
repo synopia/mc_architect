@@ -11,12 +11,12 @@ import java.io.IOException;
  */
 public class EntityTeleport extends BasePacket {
     public static final int ID = 0x22;
-    private int eid;
-    private int x;
-    private int y;
-    private int z;
-    private int yaw;
-    private int pitch;
+    private int             eid;
+    private int             pitch;
+    private int             x;
+    private int             y;
+    private int             yaw;
+    private int             z;
 
     @Override
     public int getPacketId() {
@@ -24,23 +24,23 @@ public class EntityTeleport extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
-        x = in.readInt();
-        y = in.readInt();
-        z = in.readInt();
-        yaw = in.readByte();
+    public void decode( DataInputStream in ) throws IOException {
+        eid   = in.readInt();
+        x     = in.readInt();
+        y     = in.readInt();
+        z     = in.readInt();
+        yaw   = in.readByte();
         pitch = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeInt(x);
-        out.writeInt(y);
-        out.writeInt(z);
-        out.writeByte(yaw);
-        out.writeByte(pitch);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeInt( x );
+        out.writeInt( y );
+        out.writeInt( z );
+        out.writeByte( yaw );
+        out.writeByte( pitch );
     }
 
     public int getEid() {

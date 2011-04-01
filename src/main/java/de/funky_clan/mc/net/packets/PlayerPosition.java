@@ -1,6 +1,5 @@
 package de.funky_clan.mc.net.packets;
 
-import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.net.BasePacket;
 
 import java.io.DataInputStream;
@@ -12,11 +11,11 @@ import java.io.IOException;
  */
 public class PlayerPosition extends BasePacket {
     public static final int ID = 0x0b;
-    private double x;
-    private double y;
-    private double stance;
-    private double z;
-    private boolean onGround;
+    private boolean         onGround;
+    private double          stance;
+    private double          x;
+    private double          y;
+    private double          z;
 
     @Override
     public int getPacketId() {
@@ -24,21 +23,21 @@ public class PlayerPosition extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        x = in.readDouble();
-        y = in.readDouble();
-        stance = in.readDouble();
-        z = in.readDouble();
+    public void decode( DataInputStream in ) throws IOException {
+        x        = in.readDouble();
+        y        = in.readDouble();
+        stance   = in.readDouble();
+        z        = in.readDouble();
         onGround = in.readBoolean();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeDouble(x);
-        out.writeDouble(y);
-        out.writeDouble(stance);
-        out.writeDouble(z);
-        out.writeBoolean(onGround);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeDouble( x );
+        out.writeDouble( y );
+        out.writeDouble( stance );
+        out.writeDouble( z );
+        out.writeBoolean( onGround );
     }
 
     public double getX() {

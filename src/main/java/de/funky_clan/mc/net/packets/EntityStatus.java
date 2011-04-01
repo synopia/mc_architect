@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class EntityStatus extends BasePacket {
     public static final int ID = 0x26;
-    private int eid;
-    private byte status;
+    private int             eid;
+    private byte            status;
 
     @Override
     public int getPacketId() {
@@ -20,14 +20,14 @@ public class EntityStatus extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        eid    = in.readInt();
         status = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(status);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( status );
     }
 }

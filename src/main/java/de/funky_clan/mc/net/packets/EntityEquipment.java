@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class EntityEquipment extends BasePacket {
     public static final int ID = 0x05;
-    private int eid;
-    private short slot;
-    private short itemId;
-    private short damage;
+    private short           damage;
+    private int             eid;
+    private short           itemId;
+    private short           slot;
 
     @Override
     public int getPacketId() {
@@ -22,18 +22,18 @@ public class EntityEquipment extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
-        slot = in.readShort();
+    public void decode( DataInputStream in ) throws IOException {
+        eid    = in.readInt();
+        slot   = in.readShort();
         itemId = in.readShort();
         damage = in.readShort();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeShort(slot);
-        out.writeShort(itemId);
-        out.writeShort(damage);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeShort( slot );
+        out.writeShort( itemId );
+        out.writeShort( damage );
     }
 }

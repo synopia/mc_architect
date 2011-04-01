@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class EntityAnimation extends BasePacket {
     public static final int ID = 0x12;
-    private int eid;
-    private byte animation;
+    private byte            animation;
+    private int             eid;
 
     @Override
     public int getPacketId() {
@@ -20,14 +20,14 @@ public class EntityAnimation extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        eid       = in.readInt();
         animation = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(animation);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( animation );
     }
 }

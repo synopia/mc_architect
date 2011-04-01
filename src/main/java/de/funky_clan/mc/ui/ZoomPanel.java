@@ -1,15 +1,15 @@
 package de.funky_clan.mc.ui;
 
-//~--- JDK imports ------------------------------------------------------------
-
-import com.google.inject.Inject;
 import de.funky_clan.mc.model.RenderContext;
-import de.funky_clan.mc.util.Benchmark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -20,48 +20,49 @@ import java.awt.event.MouseWheelListener;
  * @author synopia
  */
 public abstract class ZoomPanel extends JPanel {
-    private final Logger logger = LoggerFactory.getLogger(ZoomPanel.class);
-    private Rectangle lastRect;
-    private Point start;
-    private Rectangle rect;
+    private final Logger    logger = LoggerFactory.getLogger( ZoomPanel.class );
     protected RenderContext context;
+    private Rectangle       lastRect;
+    private Rectangle       rect;
+    private Point           start;
 
     protected abstract RenderContext createRenderContext();
 
     public void init() {
         context = createRenderContext();
-        context.init(0,0,getWidth(), getHeight(), getWidth(), getHeight());
-        addMouseMotionListener(new MouseAdapter() {
+        context.init( 0, 0, getWidth(), getHeight(), getWidth(), getHeight() );
+        addMouseMotionListener( new MouseAdapter() {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mouseMoved( MouseEvent e ) {
                 onMouseMoved( e, e.getX(), e.getY() );
             }
-
             @Override
-            public void mouseDragged(MouseEvent e) {
-                onMouseMoved(e, e.getX(), e.getY());
+            public void mouseDragged( MouseEvent e ) {
+                onMouseMoved( e, e.getX(), e.getY() );
+
                 if( start == null ) {
                     return;
                 }
-                if (isRectMode(e) ) {
-                    rectModeDragged(e);
-                } else if( isDragMode(e) ) {
-                    dragModeDragged(e);
+
+                if( isRectMode( e )) {
+                    rectModeDragged( e );
+                } else if( isDragMode( e )) {
+                    dragModeDragged( e );
                 }
             }
-        });
+        } );
         addMouseListener( new MouseAdapter() {
             @Override
             public void mouseReleased( MouseEvent e ) {
-                if( isRectMode(e) ) {
-                    rectModeReleased(e);
-                } else if( !isDragMode(e) ) {
+                if( isRectMode( e )) {
+                    rectModeReleased( e );
+                } else if( !isDragMode( e )) {
                     onMouseReleased( e, e.getX(), e.getY() );
                 }
             }
             @Override
             public void mousePressed( MouseEvent e ) {
-                if( isRectMode(e) || isDragMode(e) ) {
+                if( isRectMode( e ) || isDragMode( e )) {
                     start = e.getPoint();
                 } else {
                     onMousePressed( e, e.getX(), e.getY() );
@@ -71,16 +72,16 @@ public abstract class ZoomPanel extends JPanel {
         addMouseWheelListener( new MouseWheelListener() {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e ) {
-                onMouseWheel(e, e.getX(), e.getY(), e.getWheelRotation());
-                onMouseMoved(e, e.getX(), e.getY());
+                onMouseWheel( e, e.getX(), e.getY(), e.getWheelRotation() );
+                onMouseMoved( e, e.getX(), e.getY() );
             }
         } );
     }
 
     @Override
-    public void setBounds(int x, int y, int width, int height) {
-        super.setBounds(x, y, width, height);
-        context.setScreenSize(width, height);
+    public void setBounds( int x, int y, int width, int height ) {
+        super.setBounds( x, y, width, height );
+        context.setScreenSize( width, height );
         context.calculateSizes();
     }
 
@@ -90,47 +91,57 @@ public abstract class ZoomPanel extends JPanel {
      * @param e current MouseEvent
      * @return true if the MouseEvent is a zooming event, false if not
      */
-    public boolean isRectMode(MouseEvent e) {
-        return (e.getModifiers()&MouseEvent.BUTTON1_MASK) != 0;
-    }
-    public boolean isDragMode(MouseEvent e) {
-        return (e.getModifiers()&MouseEvent.BUTTON3_MASK) != 0;
+    public boolean isRectMode( MouseEvent e ) {
+        return( e.getModifiers() & MouseEvent.BUTTON1_MASK ) != 0;
     }
 
-    protected abstract void paintContent(Graphics2D graphics2D);
+    public boolean isDragMode( MouseEvent e ) {
+        return( e.getModifiers() & MouseEvent.BUTTON3_MASK ) != 0;
+    }
+
+    protected abstract void paintContent( Graphics2D graphics2D );
 
     protected abstract void onMouseRectangle( MouseEvent e, int x, int y, int width, int height );
+
     protected abstract void onMouseDragged( MouseEvent e, int x, int y, int lastX, int lastY );
+
     protected abstract void onMouseWheel( MouseWheelEvent e, int x, int y, int wheelRotation );
+
     protected abstract void onMouseMoved( MouseEvent e, int x, int y );
+
     protected abstract void onMousePressed( MouseEvent e, int x, int y );
+
     protected abstract void onMouseReleased( MouseEvent e, int x, int y );
 
     protected void initContext( Graphics2D g ) {
-        context.setGraphics(g);
+        context.setGraphics( g );
     }
 
-    protected void rectModeReleased(MouseEvent e) {
+    protected void rectModeReleased( MouseEvent e ) {
         rect = null;
 
         Point end = e.getPoint();
 
-        if( (start != null) && !start.equals( end )) {
+        if(( start != null ) && !start.equals( end )) {
             e.consume();
 
-            int x = start.x < end.x ? start.x : end.x;
-            int y = start.y < end.y ? start.y : end.y;
-            int width  = Math.abs( end.x-start.x );
-            int height = Math.abs( end.y-start.y );
+            int x      = ( start.x < end.x )
+                         ? start.x
+                         : end.x;
+            int y      = ( start.y < end.y )
+                         ? start.y
+                         : end.y;
+            int width  = Math.abs( end.x - start.x );
+            int height = Math.abs( end.y - start.y );
 
-            if( width>10 && height>10 ) {
-                onMouseRectangle(e, x, y, width, height);
+            if(( width > 10 ) && ( height > 10 )) {
+                onMouseRectangle( e, x, y, width, height );
             }
         }
     }
 
-    protected void dragModeDragged(MouseEvent e) {
-        onMouseDragged(e, e.getX(), e.getY(), start.x, start.y);
+    protected void dragModeDragged( MouseEvent e ) {
+        onMouseDragged( e, e.getX(), e.getY(), start.x, start.y );
         start = e.getPoint();
     }
 
@@ -138,70 +149,75 @@ public abstract class ZoomPanel extends JPanel {
     protected void paintComponent( Graphics g ) {
         Graphics2D graphics2D = (Graphics2D) g;
 
-        initContext(graphics2D);
-
-        paintContent(graphics2D);
-
+        initContext( graphics2D );
+        paintContent( graphics2D );
         graphics2D.setXORMode( Color.WHITE );
+
         if( rect != null ) {
-            graphics2D.drawRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
+            graphics2D.drawRect( rect.x, rect.y, rect.width - 1, rect.height - 1 );
         }
     }
 
-    protected void rectModeDragged(MouseEvent e) {
+    protected void rectModeDragged( MouseEvent e ) {
         e.consume();
 
         Point mousePos = e.getPoint();
         Point start    = this.start;
-        int width  = mousePos.x - start.x;
-        int height = mousePos.y - start.y;
-        int w      = Math.abs( width );
-        int h      = Math.abs( height );
-        int x      = (width > 0)
-                ? start.x
-                : mousePos.x;
-        int y      = (height > 0)
-                ? start.y
-                : mousePos.y;
+        int   width    = mousePos.x - start.x;
+        int   height   = mousePos.y - start.y;
+        int   w        = Math.abs( width );
+        int   h        = Math.abs( height );
+        int   x        = ( width > 0 )
+                         ? start.x
+                         : mousePos.x;
+        int   y        = ( height > 0 )
+                         ? start.y
+                         : mousePos.y;
 
-        repaintRect(new Rectangle(x, y, w, h));
+        repaintRect( new Rectangle( x, y, w, h ));
     }
 
-
     public void applyWindow( int startX, int startY, int width, int height ) {
-        int x = (width>0)  ? startX : startX+width;
-        int y = (height>0) ? startY : startY+height;
-        int w = Math.abs(width);
-        int h = Math.abs(height);
+        int x = ( width > 0 )
+                ? startX
+                : startX + width;
+        int y = ( height > 0 )
+                ? startY
+                : startY + height;
+        int w = Math.abs( width );
+        int h = Math.abs( height );
 
-        if( w<10 || h<10 ) {
+        if(( w < 10 ) || ( h < 10 )) {
             return;
         }
 
-        double windowPositionX = context.screenToSliceX(x);
-        double windowPositionY = context.screenToSliceY(y);
-        context.init(windowPositionX, windowPositionY, context.screenToSliceX(x+w)-windowPositionX, context.screenToSliceY(y+h)-windowPositionY, getWidth(), getHeight());
+        double windowPositionX = context.screenToSliceX( x );
+        double windowPositionY = context.screenToSliceY( y );
 
-        repaint();
-
-    }
-
-    protected void scrollTo(double x, double y) {
-        double startX = x - context.getWindowSizeX()/2;
-        double startY = y - context.getWindowSizeY()/2;
-        context.init(startX, startY, context.getWindowSizeX(), context.getWindowSizeY(), context.getScreenSizeX(), context.getScreenSizeY());
+        context.init( windowPositionX, windowPositionY, context.screenToSliceX( x + w ) - windowPositionX,
+                      context.screenToSliceY( y + h ) - windowPositionY, getWidth(), getHeight() );
         repaint();
     }
 
-    private void repaintRect(Rectangle rectangle) {
+    protected void scrollTo( double x, double y ) {
+        double startX = x - context.getWindowSizeX() / 2;
+        double startY = y - context.getWindowSizeY() / 2;
+
+        context.init( startX, startY, context.getWindowSizeX(), context.getWindowSizeY(), context.getScreenSizeX(),
+                      context.getScreenSizeY() );
+        repaint();
+    }
+
+    private void repaintRect( Rectangle rectangle ) {
         rect = rectangle;
 
         Rectangle union = rect;
 
         if( lastRect != null ) {
-            union = rect.union(lastRect);
+            union = rect.union( lastRect );
         }
-        repaint(union);
+
+        repaint( union );
         lastRect = rect;
     }
 }

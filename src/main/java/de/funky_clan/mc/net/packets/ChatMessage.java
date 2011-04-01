@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class ChatMessage extends BasePacket {
     public static final int ID = 0x03;
-    private String message;
+    private String          message;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class ChatMessage extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         message = in.readUTF();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeUTF(message);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeUTF( message );
     }
 }

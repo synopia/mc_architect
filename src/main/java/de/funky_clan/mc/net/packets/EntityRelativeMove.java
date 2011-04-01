@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class EntityRelativeMove extends BasePacket {
     public static final int ID = 0x01f;
-    private int eid;
-    private int dx;
-    private int dy;
-    private int dz;
+    private int             dx;
+    private int             dy;
+    private int             dz;
+    private int             eid;
 
     @Override
     public int getPacketId() {
@@ -22,19 +22,19 @@ public class EntityRelativeMove extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         eid = in.readInt();
-        dx = in.readByte();
-        dy = in.readByte();
-        dz = in.readByte();
+        dx  = in.readByte();
+        dy  = in.readByte();
+        dz  = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(dx);
-        out.writeByte(dy);
-        out.writeByte(dz);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( dx );
+        out.writeByte( dy );
+        out.writeByte( dz );
     }
 
     public int getEid() {

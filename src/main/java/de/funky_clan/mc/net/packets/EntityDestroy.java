@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class EntityDestroy extends BasePacket {
     public static final int ID = 0x1d;
-    private int eid;
+    private int             eid;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class EntityDestroy extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         eid = in.readInt();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
     }
 }

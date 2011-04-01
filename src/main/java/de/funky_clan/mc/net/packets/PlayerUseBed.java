@@ -11,11 +11,11 @@ import java.io.IOException;
  */
 public class PlayerUseBed extends BasePacket {
     public static final int ID = 0x11;
-    private int z;
-    private byte y;
-    private int x;
-    private byte inBed;
-    private int eid;
+    private int             eid;
+    private byte            inBed;
+    private int             x;
+    private byte            y;
+    private int             z;
 
     @Override
     public int getPacketId() {
@@ -23,21 +23,20 @@ public class PlayerUseBed extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        eid   = in.readInt();
         inBed = in.readByte();
-        x = in.readInt();
-        y = in.readByte();
-        z = in.readInt();
-
+        x     = in.readInt();
+        y     = in.readByte();
+        z     = in.readInt();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(inBed);
-        out.writeInt(x);
-        out.writeByte(y);
-        out.writeInt(z);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( inBed );
+        out.writeInt( x );
+        out.writeByte( y );
+        out.writeInt( z );
     }
 }

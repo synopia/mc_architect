@@ -7,21 +7,21 @@ import de.funky_clan.mc.scripts.Script;
  * @author synopia
  */
 public class LoadScript implements Event {
-    private String fileName;
+    private String  fileName;
+    private Script  script;
     private boolean useClasspath;
-    private Script script;
-
-    public LoadScript(String fileName, boolean useClasspath) {
-        this.fileName = fileName;
-        this.useClasspath = useClasspath;
-    }
 
     public LoadScript( Script script ) {
         this.script = script;
     }
 
-    public LoadScript(String fileName) {
+    public LoadScript( String fileName ) {
         this.fileName = fileName;
+    }
+
+    public LoadScript( String fileName, boolean useClasspath ) {
+        this.fileName     = fileName;
+        this.useClasspath = useClasspath;
     }
 
     public String getFileName() {
@@ -37,6 +37,6 @@ public class LoadScript implements Event {
     }
 
     public boolean hasScript() {
-        return script!=null;
+        return script != null;
     }
 }

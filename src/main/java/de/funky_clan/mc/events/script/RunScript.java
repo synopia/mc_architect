@@ -9,7 +9,7 @@ import de.funky_clan.mc.scripts.Script;
 public class RunScript implements Event {
     private Script script;
 
-    public RunScript(Script script) {
+    public RunScript( Script script ) {
         this.script = script;
     }
 

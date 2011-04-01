@@ -4,10 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.util.Benchmark;
 
-import javax.swing.*;
-import java.awt.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
+import javax.swing.SwingUtilities;
 import java.util.List;
 
 /**
@@ -23,36 +20,36 @@ public class SwingEventBus extends EventBus {
     private Benchmark benchmark;
 
     public SwingEventBus() {
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater( new Runnable() {
             @Override
             public void run() {
-                benchmark.addThreadId("gfx", Thread.currentThread().getId());
+                benchmark.addThreadId( "gfx", Thread.currentThread().getId() );
             }
-        });
+        } );
     }
 
     @Override
-    public void forceFireEvent(final Event event) {
+    public void forceFireEvent( final Event event ) {
         if( SwingUtilities.isEventDispatchThread() ) {
-            handleEvent(event);
+            handleEvent( event );
         } else {
-            handleEventInEdt(event);
+            handleEventInEdt( event );
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void handleEventInEdt(final Event event) {
-        if( event!=null && hasCallbacks(event) ) {
-            List<EventHandler> callbacks = getCallbacks(event);
-            for (final EventHandler callback : callbacks) {
+    @SuppressWarnings( "unchecked" )
+    protected void handleEventInEdt( final Event event ) {
+        if(( event != null ) && hasCallbacks( event )) {
+            List<EventHandler> callbacks = getCallbacks( event );
+
+            for( final EventHandler callback : callbacks ) {
                 SwingUtilities.invokeLater( new Runnable() {
                     @Override
                     public void run() {
-                        callback.handleEvent(event);
+                        callback.handleEvent( event );
                     }
-                });
+                } );
             }
         }
     }
-
 }

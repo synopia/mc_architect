@@ -18,10 +18,8 @@ public class KeepAlive extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-    }
+    public void decode( DataInputStream in ) throws IOException {}
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-    }
+    public void encode( DataOutputStream out ) throws IOException {}
 }

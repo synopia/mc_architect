@@ -4,7 +4,11 @@ import com.google.inject.Inject;
 import de.funky_clan.mc.config.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.events.script.*;
+import de.funky_clan.mc.events.script.LoadScript;
+import de.funky_clan.mc.events.script.RunScript;
+import de.funky_clan.mc.events.script.ScriptFinished;
+import de.funky_clan.mc.events.script.ScriptLoaded;
+import de.funky_clan.mc.events.script.SendScriptData;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
@@ -17,75 +21,78 @@ import java.util.HashMap;
  * @author synopia
  */
 public class ScriptFactory {
-    @Inject private SliceGraphics sliceGraphicsX;
-    @Inject private SliceGraphics sliceGraphicsY;
-    @Inject private SliceGraphics sliceGraphicsZ;
-    @Inject private WorldGraphics worldGraphics;
-    @Inject private Model model;
+    private final Logger  logger = LoggerFactory.getLogger( ScriptFactory.class );
     @Inject
-    BinvoxLoader binvoxLoader;
+    BinvoxLoader          binvoxLoader;
     @Inject
-    EventDispatcher eventDispatcher;
-    private final Logger logger = LoggerFactory.getLogger(ScriptFactory.class);
+    EventDispatcher       eventDispatcher;
+    @Inject
+    private Model         model;
+    @Inject
+    private SliceGraphics sliceGraphicsX;
+    @Inject
+    private SliceGraphics sliceGraphicsY;
+    @Inject
+    private SliceGraphics sliceGraphicsZ;
+    @Inject
+    private WorldGraphics worldGraphics;
 
-
     @Inject
-    public ScriptFactory(final ModelEventBus eventBus) {
-        eventBus.registerCallback(LoadScript.class, new EventHandler<LoadScript>() {
+    public ScriptFactory( final ModelEventBus eventBus ) {
+        eventBus.registerCallback( LoadScript.class, new EventHandler<LoadScript>() {
             @Override
-            public void handleEvent(LoadScript event) {
+            public void handleEvent( LoadScript event ) {
                 Script script;
+
                 if( !event.hasScript() ) {
-                    if( !event.getFileName().endsWith(".rb") ) {
+                    if( !event.getFileName().endsWith( ".rb" )) {
                         return;
                     }
-                    script = new Script(event.getFileName(), event.isUseClasspath());
+
+                    script = new Script( event.getFileName(), event.isUseClasspath() );
                 } else {
                     script = event.getScript();
                 }
-                logger.info("Loading script " + event.getFileName());
+
+                logger.info( "Loading script " + event.getFileName() );
                 script.load();
-                eventDispatcher.fire(new ScriptLoaded(script) );
+                eventDispatcher.fire( new ScriptLoaded( script ));
             }
-        });
-
-        eventBus.registerCallback(RunScript.class, new EventHandler<RunScript>() {
+        } );
+        eventBus.registerCallback( RunScript.class, new EventHandler<RunScript>() {
             @Override
-            public void handleEvent(RunScript event) {
-                sliceGraphicsX.setSliceType(SliceType.X);
-                sliceGraphicsY.setSliceType(SliceType.Y);
-                sliceGraphicsZ.setSliceType(SliceType.Z);
+            public void handleEvent( RunScript event ) {
+                sliceGraphicsX.setSliceType( SliceType.X );
+                sliceGraphicsY.setSliceType( SliceType.Y );
+                sliceGraphicsZ.setSliceType( SliceType.Z );
 
                 Script script = event.getScript();
 
-                script.put("@slice_x", sliceGraphicsX);
-                script.put("@slice_y", sliceGraphicsY);
-                script.put("@slice_z", sliceGraphicsZ);
-                script.put("@world", worldGraphics);
-                script.put("@binvox", binvoxLoader);
-                script.put("@model", model);
-
-                logger.info("Running script "+script.getName());
+                script.put( "@slice_x", sliceGraphicsX );
+                script.put( "@slice_y", sliceGraphicsY );
+                script.put( "@slice_z", sliceGraphicsZ );
+                script.put( "@world", worldGraphics );
+                script.put( "@binvox", binvoxLoader );
+                script.put( "@model", model );
+                logger.info( "Running script " + script.getName() );
                 script.run();
-
-                script.setChunkUpdates(new HashMap<Long, BlockMultiUpdate>(model.getUpdates()));
+                script.setChunkUpdates( new HashMap<Long, BlockMultiUpdate>( model.getUpdates() ));
                 model.getUpdates().clear();
-
-                eventDispatcher.fire(new ScriptFinished(script));
+                eventDispatcher.fire( new ScriptFinished( script ));
             }
-        });
-
-        eventBus.registerCallback(SendScriptData.class, new EventHandler<SendScriptData>() {
+        } );
+        eventBus.registerCallback( SendScriptData.class, new EventHandler<SendScriptData>() {
             @Override
-            public void handleEvent(SendScriptData event) {
-                Script script = event.getScript();
-                HashMap<Long,BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
-                for (BlockMultiUpdate update : chunkUpdates.values()) {
-                    eventDispatcher.fire(update);
+            public void handleEvent( SendScriptData event ) {
+                Script                          script       = event.getScript();
+                HashMap<Long, BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
+
+                for( BlockMultiUpdate update : chunkUpdates.values() ) {
+                    eventDispatcher.fire( update );
                 }
+
                 script.setSent( true );
             }
-        });
+        } );
     }
-
 }

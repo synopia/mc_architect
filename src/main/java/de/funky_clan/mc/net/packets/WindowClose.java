@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class WindowClose extends BasePacket {
     public static final int ID = 0x65;
-    private byte windowId;
+    private byte            windowId;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class WindowClose extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         windowId = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeByte(windowId);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeByte( windowId );
     }
 }

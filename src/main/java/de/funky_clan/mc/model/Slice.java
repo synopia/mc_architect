@@ -1,7 +1,5 @@
 package de.funky_clan.mc.model;
 
-//~--- JDK imports ------------------------------------------------------------
-
 import com.google.inject.Inject;
 import de.funky_clan.mc.math.Position;
 
@@ -9,13 +7,13 @@ import de.funky_clan.mc.math.Position;
  * @author synopia
  */
 public class Slice {
+    private int       maxRenderDepth;
     @Inject
     private Model     model;
     private int       slice;
     private SliceType type;
-    private int       maxRenderDepth;
 
-    public void setType(SliceType type) {
+    public void setType( SliceType type ) {
         this.type = type;
     }
 
@@ -27,15 +25,16 @@ public class Slice {
         return maxRenderDepth;
     }
 
-    public void setMaxRenderDepth(int maxRenderDepth) {
+    public void setMaxRenderDepth( int maxRenderDepth ) {
         this.maxRenderDepth = maxRenderDepth;
     }
 
-    public void setPixel(Position pos, int type, int value) {
-        model.setPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type, value );
+    public void setPixel( Position pos, int type, int value ) {
+        model.setPixel( pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type, value );
     }
-    public int getPixel(Position pos, int type) {
-        return model.getPixel(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type);
+
+    public int getPixel( Position pos, int type ) {
+        return model.getPixel( pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), type );
     }
 
     public SliceType getType() {

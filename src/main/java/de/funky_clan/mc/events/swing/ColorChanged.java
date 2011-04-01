@@ -2,18 +2,18 @@ package de.funky_clan.mc.events.swing;
 
 import de.funky_clan.mc.eventbus.Event;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * @author synopia
  */
 public final class ColorChanged implements Event {
-    private final int blockId;
+    private final int   blockId;
     private final Color color;
 
-    public ColorChanged(int blockId, Color color) {
+    public ColorChanged( int blockId, Color color ) {
         this.blockId = blockId;
-        this.color = color;
+        this.color   = color;
     }
 
     public int getBlockId() {

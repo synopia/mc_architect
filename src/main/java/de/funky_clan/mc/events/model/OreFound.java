@@ -9,12 +9,12 @@ import java.util.List;
  * @author synopia
  */
 public class OreFound implements Event {
-    private long  chunkId;
+    private long      chunkId;
     private List<Ore> ores;
 
-    public OreFound(long chunkId, List<Ore> ores) {
+    public OreFound( long chunkId, List<Ore> ores ) {
         this.chunkId = chunkId;
-        this.ores = ores;
+        this.ores    = ores;
     }
 
     public long getChunkId() {

@@ -8,8 +8,8 @@ public class MouseRectangle extends MouseMoved {
     private int endY;
     private int endZ;
 
-    public MouseRectangle(int x, int y, int z, int endX, int endY, int endZ) {
-        super(x, y, z);
+    public MouseRectangle( int x, int y, int z, int endX, int endY, int endZ ) {
+        super( x, y, z );
         this.endX = endX;
         this.endY = endY;
         this.endZ = endZ;

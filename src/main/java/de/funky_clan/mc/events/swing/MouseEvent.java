@@ -10,7 +10,7 @@ public abstract class MouseEvent implements Event {
     private int y;
     private int z;
 
-    protected MouseEvent(int x, int y, int z) {
+    protected MouseEvent( int x, int y, int z ) {
         this.x = x;
         this.y = y;
         this.z = z;

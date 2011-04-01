@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class EntityAction extends BasePacket {
     public static final int ID = 0x13;
-    private byte action;
-    private int eid;
+    private byte            action;
+    private int             eid;
 
     @Override
     public int getPacketId() {
@@ -20,14 +20,14 @@ public class EntityAction extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        eid    = in.readInt();
         action = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeByte(action);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeByte( action );
     }
 }

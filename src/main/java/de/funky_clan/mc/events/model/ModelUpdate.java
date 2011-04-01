@@ -8,22 +8,22 @@ import de.funky_clan.mc.eventbus.Event;
 public class ModelUpdate implements Event {
     private int chunkX;
     private int chunkZ;
-    private int startX;
-    private int startY;
-    private int startZ;
     private int sizeX;
     private int sizeY;
     private int sizeZ;
+    private int startX;
+    private int startY;
+    private int startZ;
 
-    public ModelUpdate(int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ) {
-        chunkX = startX>>4;
-        chunkZ = startZ>>4;
+    public ModelUpdate( int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ ) {
+        chunkX      = startX >> 4;
+        chunkZ      = startZ >> 4;
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
+        this.sizeX  = sizeX;
+        this.sizeY  = sizeY;
+        this.sizeZ  = sizeZ;
     }
 
     public int getChunkX() {

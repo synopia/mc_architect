@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class ItemCollect extends BasePacket {
     public static final int ID = 0x16;
-    private int collectedId;
-    private int collectorId;
+    private int             collectedId;
+    private int             collectorId;
 
     @Override
     public int getPacketId() {
@@ -20,14 +20,14 @@ public class ItemCollect extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         collectedId = in.readInt();
         collectorId = in.readInt();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(collectedId);
-        out.writeInt(collectorId);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( collectedId );
+        out.writeInt( collectorId );
     }
 }

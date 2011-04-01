@@ -3,7 +3,6 @@ package de.funky_clan.mc.ui.widgets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.config.EventDispatcher;
-import de.funky_clan.mc.eventbus.EventBus;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
@@ -11,7 +10,8 @@ import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
 import de.funky_clan.mc.net.packets.Disconnect;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -20,58 +20,54 @@ import java.awt.event.ActionListener;
  */
 @Singleton
 public class ConnectionWidgetFactory {
+    private JLabel          connectionStatus;
     @Inject
     private EventDispatcher eventDispatcher;
-    private JLabel connectionStatus;
-    private JTextField host;
+    private JTextField      host;
 
     @Inject
-    public ConnectionWidgetFactory(SwingEventBus eventBus) {
+    public ConnectionWidgetFactory( SwingEventBus eventBus ) {
         build();
-
-        eventBus.registerCallback(ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
+        eventBus.registerCallback( ConnectionEstablished.class, new EventHandler<ConnectionEstablished>() {
             @Override
-            public void handleEvent(ConnectionEstablished event) {
-                updateStatus(true, "connected");
+            public void handleEvent( ConnectionEstablished event ) {
+                updateStatus( true, "connected" );
             }
-        });
-
-        eventBus.registerCallback(ConnectionLost.class, new EventHandler<ConnectionLost>() {
+        } );
+        eventBus.registerCallback( ConnectionLost.class, new EventHandler<ConnectionLost>() {
             @Override
-            public void handleEvent(ConnectionLost event) {
-                updateStatus(false, "disconnected");
+            public void handleEvent( ConnectionLost event ) {
+                updateStatus( false, "disconnected" );
             }
-        });
-
-        eventBus.registerCallback(Disconnect.class, new EventHandler<Disconnect>() {
+        } );
+        eventBus.registerCallback( Disconnect.class, new EventHandler<Disconnect>() {
             @Override
-            public void handleEvent(Disconnect event) {
-                updateStatus( false, "disconnected");
+            public void handleEvent( Disconnect event ) {
+                updateStatus( false, "disconnected" );
             }
-        });
-
-        eventBus.registerCallback(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
+        } );
+        eventBus.registerCallback( ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
             @Override
-            public void handleEvent(ConnectionDetailsChanged event) {
+            public void handleEvent( ConnectionDetailsChanged event ) {
                 host.setText( event.getReadableHost() );
             }
-        });
+        } );
     }
 
     protected void updateStatus( boolean connected, String msg ) {
-        host.setEditable(!connected);
-        connectionStatus.setText(msg);
+        host.setEditable( !connected );
+        connectionStatus.setText( msg );
     }
 
     private void build() {
-        connectionStatus = new JLabel("disconnected");
-        host = new JTextField(50);
-        host.addActionListener(new ActionListener() {
+        connectionStatus = new JLabel( "disconnected" );
+        host             = new JTextField( 50 );
+        host.addActionListener( new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                eventDispatcher.fire(new ConnectionDetailsChanged(12345, host.getText()));
+            public void actionPerformed( ActionEvent e ) {
+                eventDispatcher.fire( new ConnectionDetailsChanged( 12345, host.getText() ));
             }
-        });
+        } );
     }
 
     public JLabel getConnectionStatus() {

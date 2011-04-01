@@ -11,11 +11,11 @@ import java.io.IOException;
  */
 public class WindowSlotUpdate extends BasePacket {
     public static final int ID = 0x67;
-    private byte windowId;
-    private short slot;
-    private short itemId;
-    private byte itemCount;
-    private short itemUses;
+    private byte            itemCount;
+    private short           itemId;
+    private short           itemUses;
+    private short           slot;
+    private byte            windowId;
 
     @Override
     public int getPacketId() {
@@ -23,24 +23,26 @@ public class WindowSlotUpdate extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         windowId = in.readByte();
-        slot = in.readShort();
-        itemId = in.readShort();
-        if( itemId!=-1 ) {
+        slot     = in.readShort();
+        itemId   = in.readShort();
+
+        if( itemId != -1 ) {
             itemCount = in.readByte();
-            itemUses = in.readShort();
+            itemUses  = in.readShort();
         }
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeByte(windowId);
-        out.writeShort(slot);
-        out.writeShort(itemId);
-        if( itemId!=-1 ) {
-            out.writeByte(itemCount);
-            out.writeShort(itemUses);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeByte( windowId );
+        out.writeShort( slot );
+        out.writeShort( itemId );
+
+        if( itemId != -1 ) {
+            out.writeByte( itemCount );
+            out.writeShort( itemUses );
         }
     }
 }

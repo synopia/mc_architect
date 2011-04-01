@@ -5,5 +5,4 @@ import de.funky_clan.mc.eventbus.Event;
 /**
  * @author synopia
  */
-public class Initialize implements Event {
-}
+public class Initialize implements Event {}

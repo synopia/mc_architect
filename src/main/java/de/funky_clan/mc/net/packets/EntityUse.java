@@ -11,9 +11,9 @@ import java.io.IOException;
  */
 public class EntityUse extends BasePacket {
     public static final int ID = 0x07;
-    private boolean leftClick;
-    private int target;
-    private int user;
+    private boolean         leftClick;
+    private int             target;
+    private int             user;
 
     @Override
     public int getPacketId() {
@@ -21,16 +21,16 @@ public class EntityUse extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        user = in.readInt();
-        target = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        user      = in.readInt();
+        target    = in.readInt();
         leftClick = in.readBoolean();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(user);
-        out.writeInt(target);
-        out.writeBoolean(leftClick);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( user );
+        out.writeInt( target );
+        out.writeBoolean( leftClick );
     }
 }

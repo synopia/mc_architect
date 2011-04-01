@@ -12,10 +12,12 @@ public interface NetworkEvent extends Event {
     byte SERVER = 2;
 
     int getPacketId();
+
     void decode( DataInputStream in ) throws IOException;
+
     void encode( DataOutputStream out ) throws IOException;
 
     byte getSource();
 
-    void setSource(byte source);
+    void setSource( byte source );
 }

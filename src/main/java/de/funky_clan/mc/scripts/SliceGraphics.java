@@ -8,26 +8,26 @@ import de.funky_clan.mc.model.SliceType;
 /**
  * @author synopia
  */
-public class SliceGraphics extends Graphics{
-    @Inject
-    private Slice slice;
-
+public class SliceGraphics extends Graphics {
     private Position pos = new Position();
+    @Inject
+    private Slice    slice;
 
     @Override
-    public void setPixelLocal(double x, double y, double z, int value) {
-        pos.setSlice(x, y, (int) z);
-        slice.setPixel(pos, 1, value);
+    public void setPixelLocal( double x, double y, double z, int value ) {
+        pos.setSlice( x, y, (int) z );
+        slice.setPixel( pos, 1, value );
     }
 
     @Override
-    public int getPixelLocal(double x, double y, double z) {
-        pos.setSlice(x, y, (int) z);
-        return slice.getPixel(pos, 1);
+    public int getPixelLocal( double x, double y, double z ) {
+        pos.setSlice( x, y, (int) z );
+
+        return slice.getPixel( pos, 1 );
     }
 
-    public void setSliceType(SliceType sliceType) {
-        slice.setType(sliceType);
-        pos.setSlice(slice);
+    public void setSliceType( SliceType sliceType ) {
+        slice.setType( sliceType );
+        pos.setSlice( slice );
     }
 }

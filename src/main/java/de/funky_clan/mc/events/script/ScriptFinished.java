@@ -9,7 +9,7 @@ import de.funky_clan.mc.scripts.Script;
 public class ScriptFinished implements Event {
     private Script script;
 
-    public ScriptFinished(Script script) {
+    public ScriptFinished( Script script ) {
         this.script = script;
     }
 

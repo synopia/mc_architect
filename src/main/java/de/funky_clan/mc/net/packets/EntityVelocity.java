@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class EntityVelocity extends BasePacket {
     public static final int ID = 0x1c;
-    private int eid;
-    private short velocityX;
-    private short velocityY;
-    private short velocityZ;
+    private int             eid;
+    private short           velocityX;
+    private short           velocityY;
+    private short           velocityZ;
 
     @Override
     public int getPacketId() {
@@ -22,18 +22,18 @@ public class EntityVelocity extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        eid = in.readInt();
+    public void decode( DataInputStream in ) throws IOException {
+        eid       = in.readInt();
         velocityX = in.readShort();
         velocityY = in.readShort();
         velocityZ = in.readShort();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeInt(eid);
-        out.writeShort(velocityX);
-        out.writeShort(velocityY);
-        out.writeShort(velocityZ);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeInt( eid );
+        out.writeShort( velocityX );
+        out.writeShort( velocityY );
+        out.writeShort( velocityZ );
     }
 }

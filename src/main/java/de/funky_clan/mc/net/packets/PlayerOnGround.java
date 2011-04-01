@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class PlayerOnGround extends BasePacket {
     public static final int ID = 0x0a;
-    private boolean onGround;
+    private boolean         onGround;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class PlayerOnGround extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         onGround = in.readBoolean();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeBoolean(onGround);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeBoolean( onGround );
     }
 }

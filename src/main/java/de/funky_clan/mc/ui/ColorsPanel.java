@@ -8,42 +8,47 @@ import de.funky_clan.mc.events.swing.ColorChanged;
 import de.funky_clan.mc.ui.renderer.ColorEditor;
 import de.funky_clan.mc.ui.renderer.ColorRenderer;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
 /**
  * @author synopia
  */
 public class ColorsPanel extends JPanel {
     @Inject
-    private EventDispatcher eventDispatcher;
+    private Colors          colors;
     @Inject
-    private Colors colors;
+    private EventDispatcher eventDispatcher;
 
     @Inject
     public ColorsPanel() {
-        super(new GridLayout(1,0));
+        super( new GridLayout( 1, 0 ));
 
         ColorTableModel model = new ColorTableModel();
-        JTable table = new JTable(model);
-        table.setPreferredScrollableViewportSize(new Dimension(500,70));
-        table.setFillsViewportHeight(true);
-        table.setRowSorter( new TableRowSorter<TableModel>(model));
+        JTable          table = new JTable( model );
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setDefaultEditor(Color.class, new ColorEditor());
-        table.setDefaultRenderer(Color.class, new ColorRenderer(true));
+        table.setPreferredScrollableViewportSize( new Dimension( 500, 70 ));
+        table.setFillsViewportHeight( true );
+        table.setRowSorter( new TableRowSorter<TableModel>( model ));
 
+        JScrollPane scrollPane = new JScrollPane( table );
+
+        table.setDefaultEditor( Color.class, new ColorEditor() );
+        table.setDefaultRenderer( Color.class, new ColorRenderer( true ));
         add( scrollPane );
     }
 
     class ColorTableModel extends AbstractTableModel {
         @Override
         public int getRowCount() {
-            return DataValues.values().length-1;
+            return DataValues.values().length - 1;
         }
 
         @Override
@@ -52,43 +57,47 @@ public class ColorsPanel extends JPanel {
         }
 
         @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return DataValues.values()[rowIndex].toString();
-                case 1:
-                    return colors.getColorForBlock(DataValues.values()[rowIndex].getId());
+        public Object getValueAt( int rowIndex, int columnIndex ) {
+            switch( columnIndex ) {
+            case 0:
+                return DataValues.values()[rowIndex].toString();
+
+            case 1:
+                return colors.getColorForBlock( DataValues.values()[rowIndex].getId() );
             }
+
             return null;
         }
 
         @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 1:
-                    int id = DataValues.values()[rowIndex].getId();
-                    if( !colors.getColorForBlock(id).equals(aValue) ) {
-                        colors.setColorForBlock(id, (Color)aValue);
-                        eventDispatcher.fire( new ColorChanged(id, (Color) aValue));
-                    }
-            }
+        public void setValueAt( Object aValue, int rowIndex, int columnIndex ) {
+            switch( columnIndex ) {
+            case 1:
+                int id = DataValues.values()[rowIndex].getId();
 
+                if( !colors.getColorForBlock( id ).equals( aValue )) {
+                    colors.setColorForBlock( id, (Color) aValue );
+                    eventDispatcher.fire( new ColorChanged( id, (Color) aValue ));
+                }
+            }
         }
 
         @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return String.class;
-                case 1:
-                    return Color.class;
+        public Class<?> getColumnClass( int columnIndex ) {
+            switch( columnIndex ) {
+            case 0:
+                return String.class;
+
+            case 1:
+                return Color.class;
             }
+
             return null;
         }
 
         @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex==1;
+        public boolean isCellEditable( int rowIndex, int columnIndex ) {
+            return columnIndex == 1;
         }
     }
 }

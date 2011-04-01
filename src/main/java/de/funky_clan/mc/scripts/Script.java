@@ -3,39 +3,38 @@ package de.funky_clan.mc.scripts;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import org.jruby.RubyHash;
 import org.jruby.RubySymbol;
-import org.jruby.embed.*;
+import org.jruby.embed.EvalFailedException;
+import org.jruby.embed.PathType;
+import org.jruby.embed.ScriptingContainer;
 
-import java.io.*;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 /**
  * @author synopia
  */
 public class Script {
-    private String filename;
-    private boolean useClasspath;
-
-    private String author;
-    private String name;
+    private boolean                         running  = false;
+    private boolean                         finished = false;
+    private boolean                         sent     = false;
+    private String                          author;
+    ScriptingContainer                      container;
+    private String                          filename;
+    private EvalFailedException             hasError;
+    private boolean                         loaded;
+    private String                          name;
     private HashMap<Long, BlockMultiUpdate> updates;
+    private boolean                         useClasspath;
+    private StringWriter                    writer;
 
-    private EvalFailedException hasError;
-    private boolean loaded;
-    private boolean running = false;
-    private boolean finished = false;
-    private boolean sent = false;
-
-    ScriptingContainer container;
-    private StringWriter writer;
-
-    public Script(String filename, boolean useClasspath) {
-        this.filename = filename;
+    public Script( String filename, boolean useClasspath ) {
+        this.filename     = filename;
         this.useClasspath = useClasspath;
     }
 
     public void init() {
-        if( container==null ) {
-            writer = new StringWriter();
+        if( container == null ) {
+            writer    = new StringWriter();
             container = new ScriptingContainer();
         }
     }
@@ -47,26 +46,28 @@ public class Script {
 
     public void load() {
         init();
+
         Object result;
+
         try {
-            result = interalRun("info");
+            result = interalRun( "info" );
+
             RubyHash hash = (RubyHash) result;
-            author = getString(hash,"author");
-            name   = getString(hash,"name");
+
+            author = getString( hash, "author" );
+            name   = getString( hash, "name" );
             loaded = true;
-        } catch (EvalFailedException e) {
+        } catch( EvalFailedException e ) {
             hasError = e;
         }
     }
 
     public void run() {
         init();
-
         running = true;
-        interalRun("run");
-        running = false;
-        finished = true;
-
+        interalRun( "run" );
+        running   = false;
+        finished  = true;
         container = null;
     }
 
@@ -83,7 +84,9 @@ public class Script {
     }
 
     public String getName() {
-        return name!=null?name:filename;
+        return( name != null )
+              ? name
+              : filename;
     }
 
     public boolean isLoaded() {
@@ -96,6 +99,7 @@ public class Script {
 
     public String getStatusText() {
         String result;
+
         if( !loaded ) {
             result = "not loaded";
         } else {
@@ -113,24 +117,29 @@ public class Script {
                 }
             }
         }
+
         return result;
     }
 
     public int getChunksUpdated() {
-        return updates!=null?updates.size():0;
+        return( updates != null )
+              ? updates.size()
+              : 0;
     }
 
     public int getPixelsUpdated() {
         int total = 0;
-        if( updates!=null ) {
-            for (BlockMultiUpdate update : updates.values()) {
+
+        if( updates != null ) {
+            for( BlockMultiUpdate update : updates.values() ) {
                 total += update.getSize();
             }
         }
+
         return total;
     }
 
-    public void setChunkUpdates(HashMap<Long, BlockMultiUpdate> updates) {
+    public void setChunkUpdates( HashMap<Long, BlockMultiUpdate> updates ) {
         this.updates = updates;
     }
 
@@ -152,28 +161,32 @@ public class Script {
 
     protected Object interalRun( String methodCall ) {
         Object result;
-        container.put("@dummy", this);
-        writer = new StringWriter();
-        container.setWriter(writer);
-        container.setErrorWriter(writer);
-        container.runScriptlet("def info\nraise 'Script must implement "+methodCall+"()!'\nend\n");
-        if( useClasspath ) {
-            container.runScriptlet(PathType.CLASSPATH, filename);
-        } else {
-            container.runScriptlet(PathType.ABSOLUTE, filename);
 
+        container.put( "@dummy", this );
+        writer = new StringWriter();
+        container.setWriter( writer );
+        container.setErrorWriter( writer );
+        container.runScriptlet( "def info\nraise 'Script must implement " + methodCall + "()!'\nend\n" );
+
+        if( useClasspath ) {
+            container.runScriptlet( PathType.CLASSPATH, filename );
+        } else {
+            container.runScriptlet( PathType.ABSOLUTE, filename );
         }
-        return container.runScriptlet(methodCall);
+
+        return container.runScriptlet( methodCall );
     }
 
     protected String getString( RubyHash hash, String key ) {
-        Object result = null;
+        Object                 result      = null;
         RubySymbol.SymbolTable symbolTable = container.getRuntime().getSymbolTable();
-        RubySymbol symbol = symbolTable.getSymbol(key);
-        if( symbol!=null ) {
-            result = hash.get(symbol);
+        RubySymbol             symbol      = symbolTable.getSymbol( key );
+
+        if( symbol != null ) {
+            result = hash.get( symbol );
         }
-        if( result!=null ) {
+
+        if( result != null ) {
             return result.toString();
         } else {
             return null;

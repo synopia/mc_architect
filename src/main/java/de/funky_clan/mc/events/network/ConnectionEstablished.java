@@ -1,7 +1,6 @@
 package de.funky_clan.mc.events.network;
 
 import de.funky_clan.mc.eventbus.Event;
-import de.funky_clan.mc.eventbus.NetworkEvent;
 
 /**
  * @author synopia
@@ -9,7 +8,7 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 public class ConnectionEstablished implements Event {
     private String username;
 
-    public ConnectionEstablished(String username) {
+    public ConnectionEstablished( String username ) {
         this.username = username;
     }
 

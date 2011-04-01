@@ -3,12 +3,6 @@ package de.funky_clan.mc.eventbus;
 import com.google.inject.Inject;
 import de.funky_clan.mc.util.Benchmark;
 
-import javax.swing.*;
-import java.awt.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,37 +17,35 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class ThreadedEventBus extends EventBus {
     protected BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
-    private Thread thread;
-
     @Inject
-    private Benchmark benchmark;
+    private Benchmark              benchmark;
+    private Thread                 thread;
 
-
-    public ThreadedEventBus() {
-    }
+    public ThreadedEventBus() {}
 
     public void start() {
-        thread = new Thread(new Runnable() {
+        thread = new Thread( new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while( true ) {
                     try {
                         Event event = events.take();
-                        handleEvent(event);
-                    } catch (Exception e) {
+
+                        handleEvent( event );
+                    } catch( Exception e ) {
                         e.printStackTrace();
                     }
                 }
             }
-        });
+        } );
         thread.start();
-        benchmark.addThreadId("bus", thread.getId() );
+        benchmark.addThreadId( "bus", thread.getId() );
     }
 
     @Override
-    public void forceFireEvent(final Event event) {
-        if( Thread.currentThread()==thread ) {
-            handleEvent(event);
+    public void forceFireEvent( final Event event ) {
+        if( Thread.currentThread() == thread ) {
+            handleEvent( event );
         } else {
             events.add( event );
         }

@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class TimeUpdate extends BasePacket {
     public static final int ID = 0x04;
-    private long time;
+    private long            time;
 
     @Override
     public int getPacketId() {
@@ -19,13 +19,12 @@ public class TimeUpdate extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
+    public void decode( DataInputStream in ) throws IOException {
         time = in.readLong();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeLong(time);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeLong( time );
     }
 }
-

@@ -11,10 +11,10 @@ import java.io.IOException;
  */
 public class WindowOpen extends BasePacket {
     public static final int ID = 0x64;
-    private byte windowId;
-    private byte invType;
-    private String windowTitle;
-    private byte numberOfSlots;
+    private byte            invType;
+    private byte            numberOfSlots;
+    private byte            windowId;
+    private String          windowTitle;
 
     @Override
     public int getPacketId() {
@@ -22,18 +22,18 @@ public class WindowOpen extends BasePacket {
     }
 
     @Override
-    public void decode(DataInputStream in) throws IOException {
-        windowId = in.readByte();
-        invType = in.readByte();
-        windowTitle = in.readUTF();
+    public void decode( DataInputStream in ) throws IOException {
+        windowId      = in.readByte();
+        invType       = in.readByte();
+        windowTitle   = in.readUTF();
         numberOfSlots = in.readByte();
     }
 
     @Override
-    public void encode(DataOutputStream out) throws IOException {
-        out.writeByte(windowId);
-        out.writeByte(invType);
-        out.writeUTF(windowTitle);
-        out.writeByte(numberOfSlots);
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeByte( windowId );
+        out.writeByte( invType );
+        out.writeUTF( windowTitle );
+        out.writeByte( numberOfSlots );
     }
 }
