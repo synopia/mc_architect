@@ -209,21 +209,21 @@ public final class Position {
         case X:
             sliceX  = worldZ;
             sliceY  = -worldY;
-            sliceNo = (int) worldX;
+            sliceNo = (int) Math.floor(worldX);
 
             break;
 
         case Z:
             sliceX  = worldX;
             sliceY  = -worldY;
-            sliceNo = (int) worldZ;
+            sliceNo = (int) Math.floor(worldZ);
 
             break;
 
         case Y:
             sliceX  = worldX;
             sliceY  = worldZ;
-            sliceNo = (int) worldY;
+            sliceNo = (int) Math.floor(worldY);
 
             break;
         }

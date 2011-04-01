@@ -160,9 +160,9 @@ public class PlayerPositionService {
     }
 
     private void removeBlueprintAroundPlayer( PlayerPositionUpdate event ) {
-        int px = (int) Math.floor( event.getX() );
-        int py = (int) Math.floor( event.getY() );
-        int pz = (int) Math.floor( event.getZ() );
+        int px = event.getBlockX();
+        int py = event.getBlockY();
+        int pz = event.getBlockZ();
 
         for( int x = -3; x <= 3; x++ ) {
             for( int y = -3; y <= 3; y++ ) {

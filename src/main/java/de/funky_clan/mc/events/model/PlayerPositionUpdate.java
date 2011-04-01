@@ -37,6 +37,18 @@ public class PlayerPositionUpdate implements Event {
         return z;
     }
 
+    public int getBlockX() {
+        return (int) Math.floor(x);
+    }
+
+    public int getBlockY() {
+        return (int) Math.floor(y);
+    }
+
+    public int getBlockZ() {
+        return (int) Math.floor(z);
+    }
+
     public float getYaw() {
         return yaw;
     }

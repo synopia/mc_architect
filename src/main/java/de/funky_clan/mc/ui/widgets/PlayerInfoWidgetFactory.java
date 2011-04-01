@@ -27,7 +27,7 @@ public class PlayerInfoWidgetFactory {
             public void handleEvent(PlayerPositionUpdate event) {
                 direction.setText(formatDirection((int) event.getYaw()));
                 position.setText("Position: "
-                        + formatCoord((int) event.getX(), (int) event.getY(), (int) event.getZ()));
+                        + formatCoord(event.getBlockX(), event.getBlockY(), event.getBlockZ()));
             }
         });
     }

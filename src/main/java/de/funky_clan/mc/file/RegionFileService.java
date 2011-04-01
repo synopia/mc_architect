@@ -42,7 +42,7 @@ public class RegionFileService {
         eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {
-                updatePlayerPos((int) event.getX(), (int) event.getZ());
+                updatePlayerPos(event.getBlockX(), event.getBlockZ());
             }
         });
     }

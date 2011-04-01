@@ -41,7 +41,7 @@ public class OreDetectorService extends BaseOreDetectorService {
             @Override
             public void handleEvent(PlayerPositionUpdate event) {
                 if (event.isChunkChanged()) {
-                    buildPlayerList((int) event.getX(), (int) event.getZ());
+                    buildPlayerList(event.getBlockX(), event.getBlockZ());
                     sendPlayerList();
                 }
             }
