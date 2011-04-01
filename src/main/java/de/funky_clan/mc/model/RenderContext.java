@@ -16,22 +16,22 @@ import java.awt.Point;
  * @author synopia
  */
 public class RenderContext {
-    private final Logger logger    = LoggerFactory.getLogger( RenderContext.class );
-    private Box          windowBox = new Box();
-    private Colors       colors;
-    private Graphics2D   g;
-    private double       pixelSizeX;
-    private double       pixelSizeY;
-    private Position     position;
-    private int          screenSizeX;
-    private int          screenSizeY;
-    private Slice        slice;
-    private Position     windowEnd;
-    private double       windowPositionX;
-    private double       windowPositionY;
-    private double       windowSizeX;
-    private double       windowSizeY;
-    private Position     windowStart;
+    private final Logger   logger    = LoggerFactory.getLogger( RenderContext.class );
+    private final Box      windowBox = new Box();
+    private Colors         colors;
+    private Graphics2D     g;
+    private double         pixelSizeX;
+    private double         pixelSizeY;
+    private final Position position;
+    private int            screenSizeX;
+    private int            screenSizeY;
+    private final Slice    slice;
+    private final Position windowEnd;
+    private double         windowPositionX;
+    private double         windowPositionY;
+    private double         windowSizeX;
+    private double         windowSizeY;
+    private final Position windowStart;
 
     public RenderContext( Slice slice ) {
         this.slice = slice;
@@ -85,14 +85,14 @@ public class RenderContext {
         return(int) (( sliceY - windowPositionY ) * pixelSizeY );
     }
 
-    public int screenUnitX( double a ) {
-        int dx = (int) ( a * pixelSizeX );
+    public int screenUnitX() {
+        int dx = (int) ( pixelSizeX );
 
         return Math.max( 1, Math.abs( dx ));
     }
 
-    public int screenUnitY( double a ) {
-        int dy = (int) ( a * pixelSizeY );
+    public int screenUnitY() {
+        int dy = (int) ( pixelSizeY );
 
         return Math.max( 1, Math.abs( dy ));
     }

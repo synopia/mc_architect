@@ -18,8 +18,8 @@ import java.util.List;
  * @author synopia
  */
 public abstract class EventBus {
-    private HashMap<Class<? extends Event>, List<EventHandler<?>>> handlers = new HashMap<Class<? extends Event>,
-                                                                                  List<EventHandler<?>>>();
+    private final HashMap<Class<? extends Event>, List<EventHandler<?>>> handlers = new HashMap<Class<? extends Event>,
+                                                                                        List<EventHandler<?>>>();
     private final Logger log = LoggerFactory.getLogger( EventBus.class );
     @Inject
     private Benchmark    benchmark;

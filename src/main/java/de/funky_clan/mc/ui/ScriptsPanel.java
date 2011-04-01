@@ -109,14 +109,14 @@ public class ScriptsPanel extends JPanel {
     }
 
     class ScriptsTableModel extends AbstractTableModel {
-        public static final int CHUNK_UPDATES = 4;
-        public static final int NAME          = 0;
-        public static final int NUMBER        = 6;
-        public static final int PIXEL_UPDATES = 5;
-        public static final int RUN           = 1;
-        public static final int SEND          = 2;
-        public static final int STATUS        = 3;
-        private List<Script>    scripts       = new ArrayList<Script>();
+        public static final int    CHUNK_UPDATES = 4;
+        public static final int    NAME          = 0;
+        public static final int    NUMBER        = 6;
+        public static final int    PIXEL_UPDATES = 5;
+        public static final int    RUN           = 1;
+        public static final int    SEND          = 2;
+        public static final int    STATUS        = 3;
+        private final List<Script> scripts       = new ArrayList<Script>();
 
         @Override
         public String getColumnName( int column ) {

@@ -22,18 +22,15 @@ public class PlayerRenderer extends BlockRenderer<Player> {
             Graphics2D g         = c.getGraphics();
             int        sx        = position.getScreenX();
             int        sy        = position.getScreenY();
-            int        w         = c.screenUnitX( 1 );
-            int        h         = c.screenUnitY( 1 );
-            int        mx        = sx;
-            int        my        = sy;
+            int        w         = c.screenUnitX();
             int        direction = object.getDirection();
-            int        x1        = mx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
-            int        y1        = my + (int) ( 10 * w * Math.sin(( direction - 30 ) / 180.0 * Math.PI ));
-            int        x2        = mx + (int) ( 10 * w * Math.cos(( direction + 30 ) / 180.0 * Math.PI ));
-            int        y2        = my + (int) ( 10 * w * Math.sin(( direction + 30 ) / 180.0 * Math.PI ));
+            int        x1        = sx + (int) ( 10 * w * Math.cos(( direction - 30 ) / 180.0 * Math.PI ));
+            int        y1        = sy + (int) ( 10 * w * Math.sin(( direction - 30 ) / 180.0 * Math.PI ));
+            int        x2        = sx + (int) ( 10 * w * Math.cos(( direction + 30 ) / 180.0 * Math.PI ));
+            int        y2        = sy + (int) ( 10 * w * Math.sin(( direction + 30 ) / 180.0 * Math.PI ));
 
-            g.drawLine( mx, my, x1, y1 );
-            g.drawLine( mx, my, x2, y2 );
+            g.drawLine( sx, sy, x1, y1 );
+            g.drawLine( sx, sy, x2, y2 );
             g.drawLine( x1, y1, x2, y2 );
         }
     }

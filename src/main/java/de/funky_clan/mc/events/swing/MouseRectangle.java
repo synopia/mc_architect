@@ -4,9 +4,9 @@ package de.funky_clan.mc.events.swing;
  * @author synopia
  */
 public class MouseRectangle extends MouseMoved {
-    private int endX;
-    private int endY;
-    private int endZ;
+    private final int endX;
+    private final int endY;
+    private final int endZ;
 
     public MouseRectangle( int x, int y, int z, int endX, int endY, int endZ ) {
         super( x, y, z );

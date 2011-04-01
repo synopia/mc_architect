@@ -58,7 +58,7 @@ public class Benchmark {
         return result;
     }
 
-    protected HashMap<String, Double> captureThreadInfo( long totalTime ) {
+    private HashMap<String, Double> captureThreadInfo( long totalTime ) {
         HashMap<String, Double> result = new HashMap<String, Double>();
         final ThreadMXBean      bean   = ManagementFactory.getThreadMXBean();
 

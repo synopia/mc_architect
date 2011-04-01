@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class MinecraftClient extends MinecraftNetworkEventBus {
-    private final Logger logger = LoggerFactory.getLogger( MinecraftClient.class );
+    @SuppressWarnings( {"FieldCanBeLocal"} )
+    private final Logger    logger = LoggerFactory.getLogger( MinecraftClient.class );
     @Inject
-    private EventDispatcher      eventDispatcher;
+    private EventDispatcher eventDispatcher;
 
     public MinecraftClient() {
         logger.info( "Starting Minecraft Client Network..." );

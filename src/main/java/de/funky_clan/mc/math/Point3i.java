@@ -52,11 +52,7 @@ public final class Point3i extends Point2i {
 
         Point3i point3i = (Point3i) o;
 
-        if( z != point3i.z ) {
-            return false;
-        }
-
-        return true;
+        return z == point3i.z;
     }
 
     @Override

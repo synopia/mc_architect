@@ -53,11 +53,7 @@ public final class Point3d extends Point2d {
 
         Point3d point3d = (Point3d) o;
 
-        if( Double.compare( point3d.z, z ) != 0 ) {
-            return false;
-        }
-
-        return true;
+        return Double.compare( point3d.z, z ) == 0;
     }
 
     @Override

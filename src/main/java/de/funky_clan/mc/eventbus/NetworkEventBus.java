@@ -25,6 +25,7 @@ public abstract class NetworkEventBus extends ThreadedEventBus {
     public void start() {
         super.start();
         netThread = new Thread( new Runnable() {
+            @SuppressWarnings( {"InfiniteLoopStatement"} )
             @Override
             public void run() {
                 while( true ) {

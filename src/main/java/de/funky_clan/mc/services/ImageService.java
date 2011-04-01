@@ -15,7 +15,7 @@ import java.util.HashMap;
  */
 @Singleton
 public class ImageService {
-    private HashMap<DataValues, Tile> tiles = new HashMap<DataValues, Tile>();
+    private final HashMap<DataValues, Tile> tiles = new HashMap<DataValues, Tile>();
 
     public ImageService() {
         addTile( DataValues.DIAMONDORE, 112, 48 );
@@ -44,7 +44,7 @@ public class ImageService {
                 BufferedImage tileImage = new BufferedImage( 16, 16, BufferedImage.TYPE_INT_ARGB );
 
                 tileImage.setRGB( 0, 0, 16, 16, pixels, 0, 16 );
-                tile.icon = new ImageIcon(tileImage);
+                tile.icon = new ImageIcon( tileImage );
             }
         } catch( IOException e ) {
             e.printStackTrace();    // To change body of catch statement use File | Settings | File Templates.
@@ -62,10 +62,10 @@ public class ImageService {
     }
 
     private static class Tile {
-        public ImageIcon  icon;
-        public DataValues value;
-        public int        x;
-        public int        y;
+        public ImageIcon        icon;
+        public final DataValues value;
+        public final int        x;
+        public final int        y;
 
         private Tile( DataValues value, int x, int y ) {
             this.value = value;

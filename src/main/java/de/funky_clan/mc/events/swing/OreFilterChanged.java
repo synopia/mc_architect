@@ -6,7 +6,7 @@ import javax.swing.JComponent;
  * @author synopia
  */
 public class OreFilterChanged extends ComponentEvent {
-    private boolean[] filter;
+    private final boolean[] filter;
 
     public OreFilterChanged( JComponent component, boolean[] filter ) {
         super( component );

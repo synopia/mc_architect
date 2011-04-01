@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -23,16 +22,16 @@ import java.util.HashMap;
  * @author synopia
  */
 public class SliceRenderer implements Renderer<Slice> {
-    private float                        blueprint[] = new float[4];
-    private float                        color[]     = new float[4];
-    private int                          colori[]    = new int[4];
-    private final Logger                 logger      = LoggerFactory.getLogger( SliceRenderer.class );
-    private HashMap<Long, BufferedImage> imageCache  = new HashMap<Long, BufferedImage>();
-    private boolean                      cacheValid  = false;
+    private final float[]                      blueprint  = new float[4];
+    private float                              color[]    = new float[4];
+    private final int[]                        colori     = new int[4];
+    private final Logger                       logger     = LoggerFactory.getLogger( SliceRenderer.class );
+    private final HashMap<Long, BufferedImage> imageCache = new HashMap<Long, BufferedImage>();
+    private boolean                            cacheValid = false;
     @Inject
-    private Colors                       colors;
+    private Colors                             colors;
     @Inject
-    private Model                        model;
+    private Model                              model;
 
     public void invalidate() {
         cacheValid = false;
@@ -40,11 +39,10 @@ public class SliceRenderer implements Renderer<Slice> {
 
     @Override
     public void render( Slice slice, RenderContext c ) {
-        Graphics2D g  = c.getGraphics();
-        int        sx = c.getWindowStartX() - 1;
-        int        sy = c.getWindowStartY() - 1;
-        int        ex = c.getWindowEndX() + 1;
-        int        ey = c.getWindowEndY() + 1;
+        int sx = c.getWindowStartX() - 1;
+        int sy = c.getWindowStartY() - 1;
+        int ex = c.getWindowEndX() + 1;
+        int ey = c.getWindowEndY() + 1;
 
         if( slice.getSlice() == -999 ) {
             return;

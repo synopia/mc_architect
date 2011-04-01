@@ -16,7 +16,7 @@ import java.util.HashMap;
  * @author synopia
  */
 public class ConsolePanel extends DefaultStackDockComponent {
-    private HashMap<Script, JTextArea> tabs = new HashMap<Script, JTextArea>();
+    private final HashMap<Script, JTextArea> tabs = new HashMap<Script, JTextArea>();
 
     @Inject
     public ConsolePanel( SwingEventBus eventBus ) {

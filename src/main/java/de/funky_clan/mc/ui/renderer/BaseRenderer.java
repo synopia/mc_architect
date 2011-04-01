@@ -10,11 +10,10 @@ import java.awt.Color;
  */
 public abstract class BaseRenderer<T> implements Renderer<T> {
     protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
-                              double worldEndX, double worldEndY, double worldEndZ, Color color, boolean fadeOut,
-                              boolean centered, boolean unitSize ) {
+                              double worldEndX, double worldEndY, double worldEndZ, Color color, boolean centered,
+                              boolean unitSize ) {
         Position position = c.getPosition();
         double   sizeX    = 0;
-        double   sizeY    = 0;
         double   sizeZ    = 0;
 
         if( centered ) {
@@ -41,16 +40,11 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
         int h      = Math.abs( endY - startY );
 
         if( unitSize ) {
-            w += c.screenUnitX( 1 );
-            h += c.screenUnitY( 1 );
+            w += c.screenUnitX();
+            h += c.screenUnitY();
         }
 
-        if( fadeOut ) {
-            c.getGraphics().setColor( position.fadeOut( color ));
-        } else {
-            c.getGraphics().setColor( color );
-        }
-
+        c.getGraphics().setColor( position.fadeOut( color ));
         c.getGraphics().drawRect( x, y, w, h );
     }
 }

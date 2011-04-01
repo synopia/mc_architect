@@ -27,18 +27,18 @@ import java.util.concurrent.Executors;
  */
 @Singleton
 public class MinecraftService {
-    private final Logger    logger = LoggerFactory.getLogger( MinecraftService.class );
+    private final Logger          logger = LoggerFactory.getLogger( MinecraftService.class );
     @Inject
-    private MinecraftClient client;
+    private MinecraftClient       client;
     @Inject
-    private EventDispatcher eventDispatcher;
-    private ExecutorService pool;
-    private int             port;
+    private EventDispatcher       eventDispatcher;
+    private final ExecutorService pool;
+    private int                   port;
     @Inject
-    private MinecraftServer server;
-    private ServerSocket    serverSocket;
-    private String          targetHost;
-    private int             targetPort;
+    private MinecraftServer       server;
+    private ServerSocket          serverSocket;
+    private String                targetHost;
+    private int                   targetPort;
 
     @Inject
     public MinecraftService( ModelEventBus eventBus ) {

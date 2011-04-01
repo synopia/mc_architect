@@ -7,7 +7,7 @@ import de.funky_clan.mc.scripts.Script;
  * @author synopia
  */
 public class SendScriptData implements Event {
-    private Script script;
+    private final Script script;
 
     public SendScriptData( Script script ) {
         this.script = script;

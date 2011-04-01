@@ -40,9 +40,7 @@ public class WindowMultiSlotUpdate extends BasePacket {
         out.writeByte( windowId );
         out.writeShort( count );
 
-        for( int i = 0; i < items.length; i++ ) {
-            Item item = items[i];
-
+        for( Item item : items ) {
             if( item != null ) {
                 out.writeShort( item.itemId );
                 out.writeByte( item.count );
@@ -54,9 +52,9 @@ public class WindowMultiSlotUpdate extends BasePacket {
     }
 
     public static class Item {
-        public byte  count;
-        public short itemId;
-        public short uses;
+        public final byte  count;
+        public final short itemId;
+        public final short uses;
 
         public Item( short itemId, byte count, short uses ) {
             this.itemId = itemId;

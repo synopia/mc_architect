@@ -19,12 +19,12 @@ public class Script {
     private boolean                         sent     = false;
     private String                          author;
     ScriptingContainer                      container;
-    private String                          filename;
+    private final String                    filename;
     private EvalFailedException             hasError;
     private boolean                         loaded;
     private String                          name;
     private HashMap<Long, BlockMultiUpdate> updates;
-    private boolean                         useClasspath;
+    private final boolean                   useClasspath;
     private StringWriter                    writer;
 
     public Script( String filename, boolean useClasspath ) {
@@ -160,8 +160,6 @@ public class Script {
     }
 
     protected Object interalRun( String methodCall ) {
-        Object result;
-
         container.put( "@dummy", this );
         writer = new StringWriter();
         container.setWriter( writer );

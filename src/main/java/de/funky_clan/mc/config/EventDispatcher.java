@@ -20,8 +20,8 @@ import java.util.HashMap;
  */
 @Singleton
 public class EventDispatcher {
-    private HashMap<Class<? extends Event>, HandlerBus> vetoHandlers = new HashMap<Class<? extends Event>,
-                                                                           HandlerBus>();
+    private final HashMap<Class<? extends Event>, HandlerBus> vetoHandlers = new HashMap<Class<? extends Event>,
+                                                                                 HandlerBus>();
     @Inject
     private MinecraftClient client;
     @Inject
@@ -67,8 +67,8 @@ public class EventDispatcher {
     }
 
     private static class HandlerBus {
-        public EventBus    bus;
-        public VetoHandler vetoHandler;
+        public final EventBus    bus;
+        public final VetoHandler vetoHandler;
 
         private HandlerBus( VetoHandler<?> vetoHandler, EventBus bus ) {
             this.vetoHandler = vetoHandler;

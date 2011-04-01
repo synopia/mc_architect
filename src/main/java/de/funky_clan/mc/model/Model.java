@@ -28,10 +28,10 @@ import java.util.HashMap;
  */
 @Singleton
 public class Model {
-    private HashMap<Long, Chunk>            chunks  = new HashMap<Long, Chunk>();
-    private final Logger                    log     = LoggerFactory.getLogger( Model.class );
-    private HashMap<Long, BlockMultiUpdate> updates = new HashMap<Long, BlockMultiUpdate>();
-    private EventDispatcher                 eventDispatcher;
+    private final HashMap<Long, Chunk>            chunks  = new HashMap<Long, Chunk>();
+    private final Logger                          log     = LoggerFactory.getLogger( Model.class );
+    private final HashMap<Long, BlockMultiUpdate> updates = new HashMap<Long, BlockMultiUpdate>();
+    private final EventDispatcher                 eventDispatcher;
 
     @Inject
     public Model( final EventDispatcher eventDispatcher, final ModelEventBus eventBus, final MinecraftServer server ) {
@@ -235,14 +235,14 @@ public class Model {
         return getOrCreateChunk( chunkX, chunkZ );
     }
 
-    public Chunk getOrCreateChunk( int x, int y ) {
+    public Chunk getOrCreateChunk( int x, int z ) {
         Chunk chunk;
-        long  id = getChunkId( x, y );
+        long  id = getChunkId( x, z );
 
         if( chunks.containsKey( id )) {
             chunk = chunks.get( id );
         } else {
-            chunk = new Chunk( x << 4, 0, y << 4, 1 << 4, 1 << 7, 1 << 4 );
+            chunk = new Chunk( x << 4, z << 4, 1 << 4, 1 << 7, 1 << 4 );
             chunks.put( id, chunk );
         }
 

@@ -9,8 +9,8 @@ import java.util.List;
  * @author synopia
  */
 public class OreDisplayUpdate extends ComponentEvent {
-    private List<Ore> ore;
-    private int       total;
+    private final List<Ore> ore;
+    private final int       total;
 
     public OreDisplayUpdate( JComponent component, List<Ore> ore, int total ) {
         super( component );

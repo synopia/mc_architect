@@ -103,7 +103,7 @@ public enum DataValues {
     //J+
 
     private static int lastId;
-    private int        id;
+    private final int  id;
 
     DataValues() {
         this.id = nextId();

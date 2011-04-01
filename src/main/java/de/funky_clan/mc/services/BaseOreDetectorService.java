@@ -18,7 +18,7 @@ import java.util.Arrays;
  * @author synopia
  */
 public abstract class BaseOreDetectorService {
-    private boolean[]       closedMap = new boolean[16 * 128 * 16];
+    private final boolean[] closedMap = new boolean[16 * 128 * 16];
     private ArrayList<Ore>  ores      = new ArrayList<Ore>();
     private byte[]          data;
     @Inject
@@ -81,13 +81,13 @@ public abstract class BaseOreDetectorService {
         } );
     }
 
-    public boolean isOre( int data ) {
+    public boolean isOre(int data) {
         return( data == DataValues.IRONORE.getId() ) || ( data == DataValues.COALORE.getId() )
               || ( data == DataValues.DIAMONDORE.getId() ) || ( data == DataValues.GOLDORE.getId() )
               || ( data == DataValues.LAPIZLAZULIORE.getId() ) || ( data == DataValues.REDSTONEORE.getId() );
     }
 
-    public Ore findOre( int x, int y, int z ) {
+    public Ore findOre(int x, int y, int z) {
         for( Ore ore : ores ) {
             if( ore.contains( x, y, z )) {
                 return ore;
@@ -97,9 +97,9 @@ public abstract class BaseOreDetectorService {
         return null;
     }
 
-    protected Ore followOre( int x, int y, int z, Ore ore ) {
-        Ore result     = ore;
-        Ore otherChunk = null;
+    protected Ore followOre(int x, int y, int z, Ore ore) {
+        Ore result = ore;
+        Ore otherChunk;
 
         if(( x < 0 ) || ( y < 0 ) || ( z < 0 ) || ( x > 15 ) || ( y > 127 ) || ( z > 15 )) {
             int pixel = model.getPixel( startX + x, startY + y, startZ + z, 0 );

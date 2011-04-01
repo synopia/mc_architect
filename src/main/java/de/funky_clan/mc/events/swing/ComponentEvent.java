@@ -8,7 +8,7 @@ import javax.swing.JComponent;
  * @author synopia
  */
 public abstract class ComponentEvent implements Event {
-    private JComponent component;
+    private final JComponent component;
 
     protected ComponentEvent( JComponent component ) {
         this.component = component;

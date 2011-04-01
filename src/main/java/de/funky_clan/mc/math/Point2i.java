@@ -66,11 +66,7 @@ public class Point2i {
             return false;
         }
 
-        if( y != point2i.y ) {
-            return false;
-        }
-
-        return true;
+        return y == point2i.y;
     }
 
     @Override

@@ -15,10 +15,10 @@ import javax.swing.JComponent;
  * @author synopia
  */
 public class OrePanel {
-    EventDispatcher   eventDispatcher;
-    private boolean[] filter;
+    private final EventDispatcher eventDispatcher;
+    private final boolean[]       filter;
     @Inject
-    ImageService      imageService;
+    private ImageService          imageService;
 
     @Inject
     public OrePanel( final EventDispatcher eventDispatcher ) {

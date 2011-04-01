@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class SlicePanel extends ZoomPanel {
     private final List<Ore>              ores     = new ArrayList<Ore>();
-    private Position                     position = new Position();
+    private final Position               position = new Position();
     @Inject
     private BlockRenderer<SelectedBlock> blockRenderer;
     private int                          blockStartX;

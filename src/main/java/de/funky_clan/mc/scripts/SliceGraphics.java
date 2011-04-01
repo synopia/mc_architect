@@ -9,9 +9,9 @@ import de.funky_clan.mc.model.SliceType;
  * @author synopia
  */
 public class SliceGraphics extends Graphics {
-    private Position pos = new Position();
+    private final Position pos = new Position();
     @Inject
-    private Slice    slice;
+    private Slice          slice;
 
     @Override
     public void setPixelLocal( double x, double y, double z, int value ) {

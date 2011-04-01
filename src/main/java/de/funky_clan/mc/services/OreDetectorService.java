@@ -25,12 +25,13 @@ import java.util.List;
  */
 @Singleton
 public class OreDetectorService extends BaseOreDetectorService {
-    private final Logger                   logger          = LoggerFactory.getLogger( OreDetectorService.class );
-    private HashMap<Long, List<Ore>>       ores            = new HashMap<Long, List<Ore>>();
-    private HashMap<JComponent, boolean[]> oreTypes        = new HashMap<JComponent, boolean[]>();
-    private List<Long>                     chunksForPlayer = new ArrayList<Long>();
+    @SuppressWarnings( {"FieldCanBeLocal"} )
+    private final Logger                         logger          = LoggerFactory.getLogger( OreDetectorService.class );
+    private final HashMap<Long, List<Ore>>       ores            = new HashMap<Long, List<Ore>>();
+    private final HashMap<JComponent, boolean[]> oreTypes        = new HashMap<JComponent, boolean[]>();
+    private final List<Long>                     chunksForPlayer = new ArrayList<Long>();
     @Inject
-    private EventDispatcher                eventDispatcher;
+    private EventDispatcher                      eventDispatcher;
 
     @Inject
     public OreDetectorService( ModelEventBus eventBus ) {

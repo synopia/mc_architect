@@ -4,8 +4,6 @@ import com.bric.swing.ColorPicker;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import java.awt.Color;
@@ -18,10 +16,8 @@ import java.awt.event.ActionListener;
  */
 public class ColorEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
     protected static final String EDIT = "edit";
-    JButton                       button;
-    JColorChooser                 colorChooser;
-    Color                         currentColor;
-    JDialog                       dialog;
+    private final JButton         button;
+    private Color                 currentColor;
 
     public ColorEditor() {
 
@@ -33,14 +29,6 @@ public class ColorEditor extends AbstractCellEditor implements TableCellEditor, 
         button.setActionCommand( EDIT );
         button.addActionListener( this );
         button.setBorderPainted( false );
-
-        // Set up the dialog that the button brings up.
-        ColorPicker colorPicker = new ColorPicker( true, true );
-
-        colorChooser = new JColorChooser();
-        dialog       = JColorChooser.createDialog( button, "Pick a Color", true,    // modal
-                colorChooser, this,                                                 // OK button handler
-                null );                                                             // no CANCEL button handler
     }
 
     /**
@@ -48,23 +36,19 @@ public class ColorEditor extends AbstractCellEditor implements TableCellEditor, 
      * the dialog's OK button.
      */
     public void actionPerformed( ActionEvent e ) {
-        if( EDIT.equals( e.getActionCommand() )) {
 
-            // The user has clicked the cell, so
-            // bring up the dialog.
-            button.setBackground( currentColor );
+        // The user has clicked the cell, so
+        // bring up the dialog.
+        button.setBackground( currentColor );
 
-            if( currentColor == null ) {
-                currentColor = new Color( 255, 255, 255, 0 );
-            }
-
-            currentColor = ColorPicker.showDialog( null, currentColor, true );
-
-            // Make the renderer reappear.
-            fireEditingStopped();
-        } else {    // User pressed dialog's "OK" button.
-            currentColor = colorChooser.getColor();
+        if( currentColor == null ) {
+            currentColor = new Color( 255, 255, 255, 0 );
         }
+
+        currentColor = ColorPicker.showDialog( null, currentColor, true );
+
+        // Make the renderer reappear.
+        fireEditingStopped();
     }
 
     // Implement the one CellEditor method that AbstractCellEditor doesn't.

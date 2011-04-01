@@ -12,9 +12,9 @@ import java.awt.event.ActionListener;
  * @author synopia
  */
 public class ButtonEditor extends DefaultCellEditor {
-    protected JButton button;
-    private boolean   isPushed;
-    private String    label;
+    protected final JButton button;
+    private boolean         isPushed;
+    private String          label;
 
     public ButtonEditor( JCheckBox checkBox ) {
         super( checkBox );
@@ -62,9 +62,5 @@ public class ButtonEditor extends DefaultCellEditor {
         isPushed = false;
 
         return super.stopCellEditing();
-    }
-
-    protected void fireEditingStopped() {
-        super.fireEditingStopped();
     }
 }

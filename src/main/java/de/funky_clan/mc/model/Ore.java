@@ -6,13 +6,13 @@ import de.funky_clan.mc.config.DataValues;
  * @author synopia
  */
 public class Ore {
-    private int       endX;
-    private int       endY;
-    private int       endZ;
-    private boolean[] oreTypes;
-    private int       startX;
-    private int       startY;
-    private int       startZ;
+    private int             endX;
+    private int             endY;
+    private int             endZ;
+    private final boolean[] oreTypes;
+    private int             startX;
+    private int             startY;
+    private int             startZ;
 
     public Ore( int startX, int startY, int startZ ) {
         this( startX, startY, startZ, startX, startY, startZ );
@@ -35,8 +35,8 @@ public class Ore {
         LAPIZLAZULI( DataValues.LAPIZLAZULIORE.getId(), "Lapizlazuli" )
         ;
 
-        private int    blockId;
-        private String text;
+        private final int    blockId;
+        private final String text;
 
         OreType( int blockId ) {
             this( blockId, null );

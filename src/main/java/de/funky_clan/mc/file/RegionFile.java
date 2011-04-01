@@ -70,6 +70,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
+@SuppressWarnings( {"ALL", "EmptyMethod"} )
 public class RegionFile {
     static final int           CHUNK_HEADER_SIZE = 5;
     private static final int   SECTOR_BYTES      = 4096;
@@ -403,7 +404,8 @@ public class RegionFile {
      * chunk is serializing -- only writes when serialization is over
      */
     class ChunkBuffer extends ByteArrayOutputStream {
-        private int x, z;
+        private final int x;
+        private final int z;
 
         public ChunkBuffer( int x, int z ) {
             super( 8096 );    // initialize to 8KB

@@ -134,11 +134,11 @@ public class BlockMultiUpdate extends BasePacket {
 
 
     private static class Item {
-        public byte meta;
-        public byte type;
-        public int  x;
-        public int  y;
-        public int  z;
+        public final byte meta;
+        public final byte type;
+        public final int  x;
+        public final int  y;
+        public final int  z;
 
         private Item( int x, int y, int z, byte type, byte meta ) {
             this.x    = x;

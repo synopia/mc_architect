@@ -18,14 +18,11 @@ public final class Chunk {
     private final int        sizeY;
     private final int        sizeZ;
     private final int        startX;
-    private final int        startY;
     private final int        startZ;
 
-    public Chunk( final int startX, final int startY, final int startZ, final int sizeX, final int sizeY,
-                  final int sizeZ ) {
+    public Chunk( final int startX, final int startZ, final int sizeX, final int sizeY, final int sizeZ ) {
         id          = getChunkId( startX >> 4, startZ >> 4 );
         this.startX = startX;
-        this.startY = startY;
         this.startZ = startZ;
         this.sizeX  = sizeX;
         this.sizeY  = sizeY;
@@ -57,10 +54,6 @@ public final class Chunk {
         return startX;
     }
 
-    public final int getStartY() {
-        return startY;
-    }
-
     public final int getStartZ() {
         return startZ;
     }
@@ -78,26 +71,24 @@ public final class Chunk {
     }
 
     public final void setPixel( int x, int y, int z, int type, int value ) {
-        int sy    = y - startY;
         int sz    = z - startZ;
         int sx    = x - startX;
-        int index = sy + ( sz * sizeY ) + ( sx * sizeY * sizeZ );
+        int index = y + ( sz * sizeY ) + ( sx * sizeY * sizeZ );
 
         if(( index < 0 ) || ( index >= CHUNK_ARRAY_SIZE )) {
-            throw new IllegalArgumentException( sx + ", " + sy + ", " + sz + " is no valid chunk pos" );
+            throw new IllegalArgumentException( sx + ", " + y + ", " + sz + " is no valid chunk pos" );
         }
 
         map[index + type * CHUNK_ARRAY_SIZE] = (byte) value;
     }
 
     public final int getPixel( int x, int y, int z, int type ) {
-        int sy    = y - startY;
         int sz    = z - startZ;
         int sx    = x - startX;
-        int index = sy + ( sz * sizeY ) + ( sx * sizeY * sizeZ );
+        int index = y + ( sz * sizeY ) + ( sx * sizeY * sizeZ );
 
         if(( index < 0 ) || ( index >= CHUNK_ARRAY_SIZE )) {
-            throw new IllegalArgumentException( sx + ", " + sy + ", " + sz + " is no valid chunk pos" );
+            throw new IllegalArgumentException( sx + ", " + y + ", " + sz + " is no valid chunk pos" );
         }
 
         return map[index + type * CHUNK_ARRAY_SIZE];

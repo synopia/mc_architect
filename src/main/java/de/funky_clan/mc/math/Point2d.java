@@ -64,11 +64,7 @@ public class Point2d {
             return false;
         }
 
-        if( Double.compare( point2d.y, y ) != 0 ) {
-            return false;
-        }
-
-        return true;
+        return Double.compare( point2d.y, y ) == 0;
     }
 
     @Override

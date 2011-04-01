@@ -6,13 +6,13 @@ import de.funky_clan.mc.eventbus.Event;
  * @author synopia
  */
 public class PlayerPositionUpdate implements Event {
-    private boolean blockChanged;
-    private boolean chunkChanged;
-    private float   pitch;
-    private double  x;
-    private double  y;
-    private float   yaw;
-    private double  z;
+    private final boolean blockChanged;
+    private final boolean chunkChanged;
+    private final float   pitch;
+    private final double  x;
+    private final double  y;
+    private final float   yaw;
+    private final double  z;
 
     public PlayerPositionUpdate( double x, double y, double z, float yaw, float pitch, boolean blockChanged,
                                  boolean chunkChanged ) {

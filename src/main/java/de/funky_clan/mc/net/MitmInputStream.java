@@ -8,8 +8,8 @@ import java.io.OutputStream;
  * @author synopia
  */
 public class MitmInputStream extends InputStream {
-    private InputStream  source;
-    private OutputStream target;
+    private final InputStream  source;
+    private final OutputStream target;
 
     MitmInputStream( InputStream in, OutputStream target ) {
         this.source = in;

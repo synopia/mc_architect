@@ -29,12 +29,12 @@ import java.util.List;
  */
 @Singleton
 public class RegionFileService {
-    private static final int SIZE         = 10;
-    private final Logger     logger       = LoggerFactory.getLogger( RegionFileService.class );
-    private Logger           log          = LoggerFactory.getLogger( RegionFileService.class );
-    private ArrayList<Long>  loadedChunks = new ArrayList<Long>();
+    private static final int      SIZE         = 10;
+    @SuppressWarnings( {"FieldCanBeLocal"} )
+    private final Logger          logger       = LoggerFactory.getLogger( RegionFileService.class );
+    private final ArrayList<Long> loadedChunks = new ArrayList<Long>();
     @Inject
-    private EventDispatcher  eventDispatcher;
+    private EventDispatcher       eventDispatcher;
 
     @Inject
     public RegionFileService( final ModelEventBus eventBus ) {
@@ -65,7 +65,7 @@ public class RegionFileService {
             }
         }
 
-        log.info( "unloading " + toRemove.size() + " chunks" );
+        logger.info( "unloading " + toRemove.size() + " chunks" );
 
         for( Long id : toRemove ) {
             eventDispatcher.fire( new ChunkPreparation( NetworkEvent.SERVER, getChunkXForId( id ),

@@ -79,11 +79,9 @@ public abstract class BasePacket implements NetworkEvent {
     @SuppressWarnings( "unchecked" )
     protected ArrayList readMetadata( DataInputStream in ) throws IOException {
         ArrayList result = new ArrayList();
-        int       index  = 0;
 
         for( byte r = in.readByte(); r != 0x7f; r = in.readByte() ) {
             int i = ( r & 0xe0 ) >> 5;
-            int j = r & 0x1f;
 
             result.add( r );
 

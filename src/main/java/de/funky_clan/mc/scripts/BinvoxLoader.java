@@ -12,11 +12,11 @@ import java.util.regex.Pattern;
  * @author synopia
  */
 public class BinvoxLoader {
-    private Pattern header    = Pattern.compile( "#binvox (\\d+)" );
-    private Pattern dim       = Pattern.compile( "dim (\\d+) (\\d+) (\\d+)" );
-    private Pattern translate = Pattern.compile( "translate (-?\\d+.\\d*) (-?\\d+.\\d*) (-?\\d+.\\d*)" );
-    private Pattern scale     = Pattern.compile( "scale (-?\\d+.\\d*)" );
-    private Pattern data      = Pattern.compile( "data" );
+    private Pattern       header    = Pattern.compile( "#binvox (\\d+)" );
+    private final Pattern dim       = Pattern.compile( "dim (\\d+) (\\d+) (\\d+)" );
+    private Pattern       translate = Pattern.compile( "translate (-?\\d+.\\d*) (-?\\d+.\\d*) (-?\\d+.\\d*)" );
+    private Pattern       scale     = Pattern.compile( "scale (-?\\d+.\\d*)" );
+    private final Pattern data      = Pattern.compile( "data" );
 
     public void load( Graphics g, String filename, int sx, int sy, int sz, int ex, int ey, int ez, int blockId ) {
         try {

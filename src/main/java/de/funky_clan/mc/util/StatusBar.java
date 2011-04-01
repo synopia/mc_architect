@@ -197,6 +197,7 @@ class LookAndFeelTweaks {
  *          name="PercentLayout"
  *          shortDescription="A layout supports constraints expressed in percent."
  */
+@SuppressWarnings( {"ALL"} )
 class PercentLayout implements LayoutManager2 {
 
     /**
@@ -212,7 +213,7 @@ class PercentLayout implements LayoutManager2 {
     private final static Constraint REMAINING_SPACE = new Constraint( "*" );
     private final static Constraint PREFERRED_SIZE  = new Constraint( "" );
     private int                     gap;
-    private Hashtable               m_ComponentToConstraint;
+    private final Hashtable         m_ComponentToConstraint;
     private int                     orientation;
 
     /**
@@ -496,7 +497,7 @@ class PercentLayout implements LayoutManager2 {
     }
 
     static class Constraint {
-        protected Object value;
+        protected final Object value;
 
         private Constraint( Object value ) {
             this.value = value;
@@ -541,7 +542,7 @@ public class StatusBar extends JComponent {
      * The key used to identified the default zone
      */
     public final static String DEFAULT_ZONE = "default";
-    private Hashtable          idToZones;
+    private final Hashtable    idToZones;
     private Border             zoneBorder;
 
     /**

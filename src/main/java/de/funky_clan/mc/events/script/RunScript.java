@@ -7,7 +7,7 @@ import de.funky_clan.mc.scripts.Script;
  * @author synopia
  */
 public class RunScript implements Event {
-    private Script script;
+    private final Script script;
 
     public RunScript( Script script ) {
         this.script = script;

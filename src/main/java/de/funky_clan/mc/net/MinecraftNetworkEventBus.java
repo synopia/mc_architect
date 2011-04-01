@@ -72,10 +72,10 @@ import java.util.HashMap;
  * @author synopia
  */
 public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
-    private final Logger                                    logger      =
+    private final Logger                                          logger      =
         LoggerFactory.getLogger( MinecraftNetworkEventBus.class );
-    private HashMap<Integer, Class<? extends NetworkEvent>> packetTypes = new HashMap<Integer,
-                                                                              Class<? extends NetworkEvent>>();
+    private final HashMap<Integer, Class<? extends NetworkEvent>> packetTypes = new HashMap<Integer,
+                                                                                    Class<? extends NetworkEvent>>();
     private boolean          connected;
     @Inject
     private EventDispatcher  eventDispatcher;

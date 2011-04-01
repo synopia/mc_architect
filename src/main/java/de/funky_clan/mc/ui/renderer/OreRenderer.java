@@ -22,7 +22,7 @@ public class OreRenderer extends BaseRenderer<List<Ore>> {
             if( c.contains( ore.getStartX(), ore.getStartY(), ore.getEndZ() )
                     || c.contains( ore.getEndX(), ore.getStartY(), ore.getEndZ() )) {
                 renderBox( c, ore.getStartX(), ore.getStartY(), ore.getStartZ(), ore.getEndX(), ore.getEndY(),
-                           ore.getEndZ(), colors.getSelectedBlockColor(), true, false, true );
+                           ore.getEndZ(), colors.getSelectedBlockColor(), false, true );
             }
         }
     }

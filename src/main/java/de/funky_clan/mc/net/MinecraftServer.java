@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class MinecraftServer extends MinecraftNetworkEventBus {
+    @SuppressWarnings( {"FieldCanBeLocal"} )
     private final Logger logger = LoggerFactory.getLogger( MinecraftServer.class );
     @Inject
     EventDispatcher      eventDispatcher;

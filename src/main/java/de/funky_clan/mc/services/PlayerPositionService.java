@@ -30,23 +30,24 @@ import java.util.HashMap;
  */
 @Singleton
 public class PlayerPositionService {
-    private int                             attachedId = -1;
-    private int                             entityId   = -1;
-    private final Logger                    logger     = LoggerFactory.getLogger( PlayerPositionService.class );
-    private int                             yShift     = 0;
-    private HashMap<Long, BlockMultiUpdate> updates    = new HashMap<Long, BlockMultiUpdate>();
+    private int                                   attachedId = -1;
+    private int                                   entityId   = -1;
+    @SuppressWarnings( {"FieldCanBeLocal"} )
+    private final Logger                          logger     = LoggerFactory.getLogger( PlayerPositionService.class );
+    private int                                   yShift     = 0;
+    private final HashMap<Long, BlockMultiUpdate> updates    = new HashMap<Long, BlockMultiUpdate>();
     @Inject
-    private EventDispatcher                 eventDispatcher;
-    private double                          lastX;
-    private double                          lastY;
-    private double                          lastZ;
+    private EventDispatcher                       eventDispatcher;
+    private double                                lastX;
+    private double                                lastY;
+    private double                                lastZ;
     @Inject
-    private Model                           model;
-    private float                           pitch;
-    private double                          x;
-    private double                          y;
-    private float                           yaw;
-    private double                          z;
+    private Model                                 model;
+    private float                                 pitch;
+    private double                                x;
+    private double                                y;
+    private float                                 yaw;
+    private double                                z;
 
     @Inject
     public PlayerPositionService( final ModelEventBus eventBus ) {

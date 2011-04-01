@@ -6,14 +6,14 @@ import de.funky_clan.mc.eventbus.Event;
  * @author synopia
  */
 public class ModelUpdate implements Event {
-    private int chunkX;
-    private int chunkZ;
-    private int sizeX;
-    private int sizeY;
-    private int sizeZ;
-    private int startX;
-    private int startY;
-    private int startZ;
+    private final int chunkX;
+    private final int chunkZ;
+    private final int sizeX;
+    private final int sizeY;
+    private final int sizeZ;
+    private final int startX;
+    private final int startY;
+    private final int startZ;
 
     public ModelUpdate( int startX, int startY, int startZ, int sizeX, int sizeY, int sizeZ ) {
         chunkX      = startX >> 4;

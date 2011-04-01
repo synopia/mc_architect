@@ -6,10 +6,10 @@ import de.funky_clan.mc.eventbus.Event;
  * @author synopia
  */
 public class ConnectionDetailsChanged implements Event {
-    private String host;
-    private int    listeningPort;
-    private int    port;
-    private String readableHost;
+    private final String host;
+    private final int    listeningPort;
+    private final int    port;
+    private final String readableHost;
 
     public ConnectionDetailsChanged( int listeningPort, String readableHost ) {
         this.listeningPort = listeningPort;

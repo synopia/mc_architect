@@ -16,15 +16,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author synopia
  */
 public abstract class ThreadedEventBus extends EventBus {
-    protected BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
+    protected final BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
     @Inject
-    private Benchmark              benchmark;
-    private Thread                 thread;
+    private Benchmark                    benchmark;
+    private Thread                       thread;
 
     public ThreadedEventBus() {}
 
     public void start() {
         thread = new Thread( new Runnable() {
+            @SuppressWarnings( {"InfiniteLoopStatement"} )
             @Override
             public void run() {
                 while( true ) {
