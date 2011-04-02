@@ -47,7 +47,7 @@ public class PlayerBlock extends SelectedBlock {
 
     @Override
     public double getHeight() {
-        return 1.7;
+        return 1.8;
     }
 
     @Override

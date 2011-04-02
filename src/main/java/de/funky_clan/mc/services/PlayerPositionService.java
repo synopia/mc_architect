@@ -35,7 +35,6 @@ public class PlayerPositionService {
     @SuppressWarnings( {"FieldCanBeLocal"} )
     private final Logger                          logger     = LoggerFactory.getLogger( PlayerPositionService.class );
     private int                                   yShift     = 0;
-    private final HashMap<Long, BlockMultiUpdate> updates    = new HashMap<Long, BlockMultiUpdate>();
     @Inject
     private EventDispatcher                       eventDispatcher;
     private double                                lastX;
@@ -52,15 +51,7 @@ public class PlayerPositionService {
     @Inject
     public PlayerPositionService( final ModelEventBus eventBus ) {
         logger.info( "Starting PlayerPositionService..." );
-        eventBus.subscribe(PlayerPositionUpdate.class, new EventHandler<PlayerPositionUpdate>() {
-            @Override
-            public void handleEvent(PlayerPositionUpdate event) {
-                if (event.isBlockChanged()) {
 
-//                  removeBlueprintAroundPlayer(event);
-                }
-            }
-        });
         eventBus.subscribe(LoginRequest.class, new EventHandler<LoginRequest>() {
             @Override
             public void handleEvent(LoginRequest event) {
@@ -159,66 +150,6 @@ public class PlayerPositionService {
         });
     }
 
-    private void removeBlueprintAroundPlayer( PlayerPositionUpdate event ) {
-        int px = event.getBlockX();
-        int py = event.getBlockY();
-        int pz = event.getBlockZ();
-
-        for( int x = -3; x <= 3; x++ ) {
-            for( int y = -3; y <= 3; y++ ) {
-                for( int z = -3; z <= 3; z++ ) {
-                    int rx = x + px;
-                    int ry = y + py;
-                    int rz = z + pz;
-
-                    if(( ry < 0 ) || ( ry > 127 )) {
-                        continue;
-                    }
-
-                    int pixel     = model.getPixel( rx, ry, rz, 0 );
-                    int blueprint = model.getPixel( rx, ry, rz, 1 );
-
-                    if(( blueprint < 1 ) || ( pixel < 0 )) {
-                        continue;
-                    }
-
-                    BlockMultiUpdate update = getUpdate( rx, ry, rz );
-
-                    if(( x == -3 ) || ( x == 3 ) || ( y == -3 ) || ( y == 3 ) || ( z == -3 ) || ( z == 3 )) {
-                        update.add( rx, ry, rz, (byte) (( pixel > 0 )
-                                                        ? pixel
-                                                        : blueprint ), (byte) 0 );
-                    } else {
-                        update.add( rx, ry, rz, (byte) pixel, (byte) 0 );
-                    }
-                }
-            }
-        }
-
-        for( BlockMultiUpdate update : updates.values() ) {
-            if( update.getSize() > 0 ) {
-                eventDispatcher.publish(update);
-            }
-        }
-
-        updates.clear();
-    }
-
-    private BlockMultiUpdate getUpdate( int rx, int ry, int rz ) {
-        int              chunkX = rx >> 4;
-        int              chunkZ = rz >> 4;
-        long             id     = Chunk.getChunkId( chunkX, chunkZ );
-        BlockMultiUpdate update;
-
-        if( updates.containsKey( id )) {
-            update = updates.get( id );
-        } else {
-            update = new BlockMultiUpdate( NetworkEvent.SERVER, chunkX, chunkZ );
-            updates.put( id, update );
-        }
-
-        return update;
-    }
 
     private void firePositionUpdate() {
         double oldX = lastX;

@@ -78,22 +78,8 @@ public class ScriptFactory {
                 script.put("@model", model);
                 logger.info("Running script " + script.getName());
                 script.run();
-                script.setChunkUpdates(new HashMap<Long, BlockMultiUpdate>(model.getUpdates()));
-                model.getUpdates().clear();
+                script.setChunkUpdates(model.getUpdates());
                 eventDispatcher.publish(new ScriptFinished(script));
-            }
-        });
-        eventBus.subscribe(SendScriptData.class, new EventHandler<SendScriptData>() {
-            @Override
-            public void handleEvent(SendScriptData event) {
-                Script script = event.getScript();
-                HashMap<Long, BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
-
-                for (BlockMultiUpdate update : chunkUpdates.values()) {
-                    eventDispatcher.publish(update);
-                }
-
-                script.setSent(true);
             }
         });
     }

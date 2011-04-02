@@ -17,6 +17,7 @@ import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.MinecraftService;
 import de.funky_clan.mc.net.packets.PlayerSpawnPosition;
 import de.funky_clan.mc.scripts.ScriptFactory;
+import de.funky_clan.mc.services.BlueprintInjectorService;
 import de.funky_clan.mc.services.OreDetectorService;
 import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.util.StatusBar;
@@ -59,6 +60,8 @@ public class Main extends JFrame {
     StatusBar          status;
     @Inject
     SwingEventBus      swingEventBus;
+    @Inject
+    private BlueprintInjectorService blueprintInjectorService;
 
     public Main() {}
 

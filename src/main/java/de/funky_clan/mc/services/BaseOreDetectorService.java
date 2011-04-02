@@ -39,8 +39,7 @@ public abstract class BaseOreDetectorService {
                 startX = event.getStartX();
                 startY = event.getStartY();
                 startZ = event.getStartZ();
-                model.interate(event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(),
-                        event.getSizeY(), event.getSizeZ(), new Model.BlockUpdateCallable() {
+                model.interate(event, new Model.BlockUpdateCallable() {
                             @Override
                             public void updateChunk(Chunk chunk) {
                                 BaseOreDetectorService.this.data = chunk.getMap();

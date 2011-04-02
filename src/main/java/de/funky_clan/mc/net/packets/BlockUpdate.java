@@ -17,6 +17,18 @@ public class BlockUpdate extends BasePacket {
     private int             y;
     private int             z;
 
+    public BlockUpdate() {
+    }
+
+    public BlockUpdate(byte source, int x, int y, int z, byte type, byte meta) {
+        super(source);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.type = type;
+        this.meta = meta;
+    }
+
     @Override
     public int getPacketId() {
         return ID;

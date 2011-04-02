@@ -18,15 +18,15 @@ public class BlockMultiUpdate extends BasePacket {
     private byte[]          meta;
     private short           size;
     private byte[]          type;
-    private int             x;
-    private int             y;
+    private int chunkX;
+    private int chunkZ;
 
     public BlockMultiUpdate() {}
 
-    public BlockMultiUpdate( byte source, int x, int y ) {
+    public BlockMultiUpdate( byte source, int chunkX, int chunkZ) {
         super( source );
-        this.x = x;
-        this.y = y;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class BlockMultiUpdate extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        x      = in.readInt();
-        y      = in.readInt();
+        chunkX = in.readInt();
+        chunkZ = in.readInt();
         size   = in.readShort();
         coords = new short[size];
 
@@ -53,8 +53,8 @@ public class BlockMultiUpdate extends BasePacket {
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeInt( x );
-        out.writeInt( y );
+        out.writeInt(chunkX);
+        out.writeInt(chunkZ);
 
         if( coords != null ) {
             out.writeShort( size );
@@ -85,12 +85,25 @@ public class BlockMultiUpdate extends BasePacket {
     }
 
     public void each( Each block ) {
-        for( int i = 0; i < size; i++ ) {
-            int x = ( this.x << 4 ) + ( coords[i] >> 12 );
-            int z = ( this.y << 4 ) + (( coords[i] >> 8 ) & (( 1 << 4 ) - 1 ));
-            int y = coords[i] & (( 1 << 8 ) - 1 );
+        if( items==null ) {
+            for( int i = 0; i < size; i++ ) {
+                int x = (( coords[i] >> 12 ) & 0xf);
+                int z = (( coords[i] >> 8 ) & 0xf);
+                int y = coords[i] & 0xff;
+                assert x>=0 && x<16 && z>=0 && z<16 && y>=0 && y<128;
 
-            block.update( x, y, z, type[i], meta[i] );
+                x += ( this.chunkX << 4 );
+                z += ( this.chunkZ << 4 );
+
+                block.update( x, y, z, type[i], meta[i] );
+            }
+        } else {
+            for (Item item : items) {
+                int x = (this.chunkX<<4) + item.x;
+                int z = (this.chunkZ<<4) + item.z;
+                int y = item.y;
+                block.update(x,y,z,item.type, item.meta);
+            }
         }
     }
 
@@ -99,15 +112,23 @@ public class BlockMultiUpdate extends BasePacket {
             items = new ArrayList<Item>();
         }
 
-        items.add( new Item( x - ( this.x << 4 ), y, z - ( this.y << 4 ), blockId, meta ));
+        items.add( new Item( x - ( this.chunkX << 4 ), y, z - ( this.chunkZ << 4 ), blockId, meta ));
     }
 
-    public int getX() {
-        return x;
+    public int getChunkX() {
+        return chunkX;
     }
 
-    public int getY() {
-        return y;
+    public int getChunkZ() {
+        return chunkZ;
+    }
+
+    public void setChunkX(int chunkX) {
+        this.chunkX = chunkX;
+    }
+
+    public void setChunkZ(int chunkZ) {
+        this.chunkZ = chunkZ;
     }
 
     public short getSize() {
@@ -129,7 +150,7 @@ public class BlockMultiUpdate extends BasePacket {
     }
 
     public interface Each {
-        public void update( int x, int y, int z, int type, int meta );
+        public void update( int x, int y, int z, byte type, byte meta );
     }
 
 
@@ -146,6 +167,7 @@ public class BlockMultiUpdate extends BasePacket {
             this.z    = z;
             this.type = type;
             this.meta = meta;
+            assert x>=0 && x<16 && z>=0 && z<16 && y>=0 && y<128;
         }
     }
 }
