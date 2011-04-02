@@ -20,7 +20,7 @@ public class Script {
     private String                          author;
     ScriptingContainer                      container;
     private final String                    filename;
-    private EvalFailedException             hasError;
+    private Exception                       hasError;
     private boolean                         loaded;
     private String                          name;
     private HashMap<Long, BlockMultiUpdate> updates;
@@ -57,7 +57,7 @@ public class Script {
             author = getString( hash, "author" );
             name   = getString( hash, "name" );
             loaded = true;
-        } catch( EvalFailedException e ) {
+        } catch( Exception e ) {
             hasError = e;
         }
     }
@@ -151,7 +151,7 @@ public class Script {
         this.sent = sent;
     }
 
-    public EvalFailedException getError() {
+    public Exception getError() {
         return hasError;
     }
 
@@ -172,7 +172,13 @@ public class Script {
             container.runScriptlet( PathType.ABSOLUTE, filename );
         }
 
-        return container.runScriptlet( methodCall );
+        try {
+            return container.runScriptlet( methodCall );
+        } catch (Exception e) {
+            hasError = e;
+            return null;
+        }
+
     }
 
     protected String getString( RubyHash hash, String key ) {

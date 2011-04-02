@@ -1,6 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 /**
  * @author synopia
  */
+@Singleton
 public class ScriptFactory {
     private final Logger  logger = LoggerFactory.getLogger( ScriptFactory.class );
     @Inject
@@ -76,22 +78,8 @@ public class ScriptFactory {
                 script.put("@model", model);
                 logger.info("Running script " + script.getName());
                 script.run();
-                script.setChunkUpdates(new HashMap<Long, BlockMultiUpdate>(model.getUpdates()));
-                model.getUpdates().clear();
+                script.setChunkUpdates(model.getUpdates());
                 eventDispatcher.publish(new ScriptFinished(script));
-            }
-        });
-        eventBus.subscribe(SendScriptData.class, new EventHandler<SendScriptData>() {
-            @Override
-            public void handleEvent(SendScriptData event) {
-                Script script = event.getScript();
-                HashMap<Long, BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
-
-                for (BlockMultiUpdate update : chunkUpdates.values()) {
-                    eventDispatcher.publish(update);
-                }
-
-                script.setSent(true);
             }
         });
     }

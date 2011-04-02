@@ -39,6 +39,7 @@ import de.funky_clan.mc.net.packets.ItemSpawn;
 import de.funky_clan.mc.net.packets.KeepAlive;
 import de.funky_clan.mc.net.packets.LoginRequest;
 import de.funky_clan.mc.net.packets.Packet1B;
+import de.funky_clan.mc.net.packets.Packet46;
 import de.funky_clan.mc.net.packets.PlayerBlockPlacement;
 import de.funky_clan.mc.net.packets.PlayerChangeSlot;
 import de.funky_clan.mc.net.packets.PlayerDigging;
@@ -136,6 +137,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( WindowTransaction.class );
         addPacketType( BlockSignUpdate.class );
         addPacketType( Disconnect.class );
+        addPacketType( Packet46.class );
     }
 
     public synchronized void connect( InputStream in, OutputStream out ) {
@@ -164,20 +166,23 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
 
     @Override
     protected void handleEvent( Event event ) {
+        super.handleEvent( event );
         if(( event instanceof NetworkEvent ) && ( out != null )) {
             NetworkEvent networkEvent = (NetworkEvent) event;
-
-            if( networkEvent.getSource() == getNetworkType() ) {
-                try {
-                    out.writeByte( networkEvent.getPacketId() );
-                    networkEvent.encode( out );
-                } catch( IOException e ) {
-                    throw new NetworkException( e );
-                }
-            }
+            sendPacket(networkEvent);
         }
 
-        super.handleEvent( event );
+    }
+
+    public void sendPacket(NetworkEvent networkEvent) {
+        if( networkEvent.getSource() == getNetworkType() ) {
+            try {
+                out.writeByte( networkEvent.getPacketId() );
+                networkEvent.encode( out );
+            } catch( IOException e ) {
+                throw new NetworkException( e );
+            }
+        }
     }
 
     @Override

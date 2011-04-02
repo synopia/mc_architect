@@ -96,6 +96,22 @@ public final class Chunk {
         return map[index + type * CHUNK_ARRAY_SIZE];
     }
 
+    public final int getPixelOrBlueprint( int x, int y, int z ) {
+        int sz    = z - startZ;
+        int sx    = x - startX;
+        int index = y + ( sz * sizeY ) + ( sx * sizeY * sizeZ );
+        return getPixelOrBlueprint( index );
+    }
+
+    public final int getPixelOrBlueprint( int index ) {
+        int value     = map[index];
+        int blueprint = map[index+CHUNK_ARRAY_SIZE];
+        if( blueprint>0 && value==0 ) {
+            return blueprint;
+        }
+        return value;
+    }
+
     public void updateFullBlock( int type, byte[] data ) {
         System.arraycopy( data, 0, map, CHUNK_ARRAY_SIZE * type, CHUNK_ARRAY_SIZE );
     }

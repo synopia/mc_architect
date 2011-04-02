@@ -33,7 +33,8 @@ public abstract class ThreadedEventBus extends EventBus {
                         Event event = events.take();
 
                         handleEvent( event );
-                    } catch( Exception e ) {
+                    } catch( Throwable e ) {
+                        // we never ever want this thread to be killed
                         e.printStackTrace();
                     }
                 }

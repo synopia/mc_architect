@@ -20,6 +20,10 @@ public abstract class BasePacket implements NetworkEvent {
         this.source = source;
     }
 
+    public void dropPacket() {
+        source = -1;
+    }
+
     @SuppressWarnings( "unchecked" )
     protected void writeMetadata( DataOutputStream out, ArrayList meta ) throws IOException {
         Iterator it = meta.iterator();

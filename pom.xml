@@ -4,7 +4,7 @@
     <groupId>de.funky_clan.mc</groupId>
     <artifactId>mc_architect</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>0.3.4-SNAPSHOT</version>
     <name>Minecraft Architect</name>
 
     <dependencies>

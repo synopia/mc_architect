@@ -1,5 +1,6 @@
 package de.funky_clan.mc.net.packets;
 
+import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.net.BasePacket;
 
 import java.io.DataInputStream;
@@ -105,6 +106,10 @@ public class ChunkData extends BasePacket {
 
     public int getZ() {
         return z;
+    }
+
+    public long getChunkId() {
+        return Chunk.getChunkId(x>>4, z>>4);
     }
 
     public int getSizeX() {

@@ -13,6 +13,7 @@ def info
 end
 
 def run
+    puts "Hello from Run"
     @model.clear_blueprint
 
     @slice_x.set_origin @mid_z,-@mid_y-32,@mid_x
