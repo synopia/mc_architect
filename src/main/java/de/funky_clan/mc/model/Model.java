@@ -206,7 +206,7 @@ public class Model {
         return getOrCreateChunk(chunkX, chunkZ);
     }
 
-    public Chunk getOrCreateChunk( int chunkX, int chunkZ ) {
+    public synchronized Chunk getOrCreateChunk( int chunkX, int chunkZ ) {
         Chunk chunk;
         long  id = getChunkId( chunkX, chunkZ );
 

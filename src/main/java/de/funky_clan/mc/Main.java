@@ -110,6 +110,8 @@ public class Main extends JFrame {
         eventDispatcher.publish(new LoadScript("akw.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("glaskugel.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("superformula.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("station_select_schematic.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("nagoya.rb", !Main.isDebug()));
 
         if( Main.isDebug() ) {
             eventDispatcher.publish(new LoadScript("test.rb", false));
