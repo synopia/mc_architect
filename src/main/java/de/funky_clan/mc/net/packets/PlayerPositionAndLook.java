@@ -32,7 +32,7 @@ public class PlayerPositionAndLook extends BasePacket {
         z        = in.readDouble();
         yaw      = in.readFloat();
         pitch    = in.readFloat();
-        onGround = in.readBoolean();
+        onGround = in.readByte()!=0;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PlayerPositionAndLook extends BasePacket {
         out.writeDouble( z );
         out.writeFloat( yaw );
         out.writeFloat( pitch );
-        out.writeBoolean( onGround );
+        out.write( onGround ? 1 : 0);
     }
 
     public double getX() {

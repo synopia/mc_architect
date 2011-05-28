@@ -24,14 +24,14 @@ public class PlayerLook extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         yaw      = in.readFloat();
         pitch    = in.readFloat();
-        onGround = in.readBoolean();
+        onGround = in.readByte()!=0;
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeFloat( yaw );
         out.writeFloat( pitch );
-        out.writeBoolean( onGround );
+        out.write( onGround ? 1 : 0);
     }
 
     public float getYaw() {

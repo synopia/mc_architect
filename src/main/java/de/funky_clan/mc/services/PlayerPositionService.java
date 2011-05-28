@@ -5,11 +5,9 @@ import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
-import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import de.funky_clan.mc.net.packets.EntityAttach;
 import de.funky_clan.mc.net.packets.EntityLook;
 import de.funky_clan.mc.net.packets.EntityRelativeMove;
@@ -22,8 +20,6 @@ import de.funky_clan.mc.net.packets.PlayerPositionAndLook;
 import de.funky_clan.mc.net.packets.PlayerSpawnPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 /**
  * @author synopia
@@ -55,7 +51,7 @@ public class PlayerPositionService {
         eventBus.subscribe(LoginRequest.class, new EventHandler<LoginRequest>() {
             @Override
             public void handleEvent(LoginRequest event) {
-                entityId = event.getEntityId();
+                entityId = event.getProtocolVersion();
             }
         });
         eventBus.subscribe(EntityAttach.class, new EventHandler<EntityAttach>() {

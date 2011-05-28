@@ -57,7 +57,7 @@ public abstract class BasePacket implements NetworkEvent {
                 break;
 
             case 4:
-                out.writeUTF( (String) it.next() );
+                writeString( (String) it.next(), out );
 
                 break;
 
@@ -111,9 +111,8 @@ public abstract class BasePacket implements NetworkEvent {
                 break;
 
             case 4:
-                String texts = in.readUTF();
+                String texts = readString(in, 64);
 
-                System.out.println( texts );
                 result.add( texts );
 
                 break;
@@ -135,6 +134,31 @@ public abstract class BasePacket implements NetworkEvent {
         }
 
         return result;
+    }
+
+    public String readString( DataInputStream in, int maxLen ) throws IOException {
+        short len = in.readShort();
+        if( len>maxLen ) {
+            throw new IOException("Received string length longer than maxlen");
+        }
+        if( len<0 ) {
+            throw new IOException("Received string length < 0");
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+              sb.append(in.readChar());
+        }
+
+        return sb.toString();
+    }
+
+    public void writeString( String str, DataOutputStream out) throws IOException {
+        if( str.length()>32767 ) {
+            throw new IOException("String to long");
+        } else {
+            out.writeShort(str.length());
+            out.writeChars(str);
+        }
     }
 
     @Override

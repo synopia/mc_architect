@@ -18,6 +18,7 @@ public class WindowClick extends BasePacket {
     private byte            rightClick;
     private short           slot;
     private byte            windowId;
+    private boolean         f;
 
     @Override
     public int getPacketId() {
@@ -30,6 +31,7 @@ public class WindowClick extends BasePacket {
         slot         = in.readShort();
         rightClick   = in.readByte();
         actionNumber = in.readShort();
+        f            = in.readBoolean();
         itemId       = in.readShort();
 
         if( itemId != -1 ) {
@@ -44,6 +46,7 @@ public class WindowClick extends BasePacket {
         out.writeShort( slot );
         out.writeByte( rightClick );
         out.writeShort( actionNumber );
+        out.writeBoolean( f );
         out.writeShort( itemId );
 
         if( itemId != -1 ) {

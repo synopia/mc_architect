@@ -9,11 +9,10 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public final class LoginRequest extends BasePacket {
+public final class  LoginRequest extends BasePacket {
     public static final int ID = 0x01;
     private int             dimension;
-    private int             entityId;
-    private String          password;
+    private int             protocolVersion;
     private long            seed;
     private String          username;
 
@@ -24,36 +23,26 @@ public final class LoginRequest extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        entityId  = in.readInt();
-        username  = in.readUTF();
-        password  = in.readUTF();
+        protocolVersion = in.readInt();
+        username  = readString(in, 16);
         seed      = in.readLong();
         dimension = in.readByte();
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeInt( entityId );
-        out.writeUTF( username );
-        out.writeUTF( password );
+        out.writeInt(protocolVersion);
+        writeString( username, out );
         out.writeLong( seed );
         out.writeByte( dimension );
     }
 
-    public int getEntityId() {
-        return entityId;
-    }
-
     public int getProtocolVersion() {
-        return entityId;
+        return protocolVersion;
     }
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public long getSeed() {

@@ -29,10 +29,10 @@ public class BlockSignUpdate extends BasePacket {
         x     = in.readInt();
         y     = in.readShort();
         z     = in.readInt();
-        text1 = in.readUTF();
-        text2 = in.readUTF();
-        text3 = in.readUTF();
-        text4 = in.readUTF();
+        text1 = readString(in, 15);
+        text2 = readString(in, 15);
+        text3 = readString(in, 15);
+        text4 = readString(in, 15);
     }
 
     @Override
@@ -40,9 +40,9 @@ public class BlockSignUpdate extends BasePacket {
         out.writeInt( x );
         out.writeShort( y );
         out.writeInt( z );
-        out.writeUTF( text1 );
-        out.writeUTF( text2 );
-        out.writeUTF( text3 );
-        out.writeUTF( text4 );
+        writeString( text1, out );
+        writeString( text2, out );
+        writeString( text3, out );
+        writeString( text4, out );
     }
 }

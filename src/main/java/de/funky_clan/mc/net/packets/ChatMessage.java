@@ -20,11 +20,11 @@ public class ChatMessage extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        message = in.readUTF();
+        message = readString(in, 119);
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeUTF( message );
+        writeString(message, out);
     }
 }

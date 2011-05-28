@@ -24,13 +24,13 @@ public class EntityUse extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         user      = in.readInt();
         target    = in.readInt();
-        leftClick = in.readBoolean();
+        leftClick = in.readByte()==1;
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt( user );
         out.writeInt( target );
-        out.writeBoolean( leftClick );
+        out.writeByte( leftClick ? 1 : 0 );
     }
 }

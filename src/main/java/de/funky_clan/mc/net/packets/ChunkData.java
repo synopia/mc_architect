@@ -73,7 +73,7 @@ public class ChunkData extends BasePacket {
     }
 
     private int deflateData() {
-        Deflater deflater = new Deflater();
+        Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
 
         compressedData = new byte[data.length];
         deflater.setInput( data );

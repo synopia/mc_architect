@@ -24,13 +24,13 @@ public class WindowTransaction extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         windowId     = in.readByte();
         actionNumber = in.readShort();
-        accepted     = in.readBoolean();
+        accepted     = in.readByte()!=0;
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeByte( windowId );
         out.writeShort( actionNumber );
-        out.writeBoolean( accepted );
+        out.writeByte( accepted ? 1 : 0 );
     }
 }

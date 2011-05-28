@@ -28,7 +28,7 @@ public class PlayerPosition extends BasePacket {
         y        = in.readDouble();
         stance   = in.readDouble();
         z        = in.readDouble();
-        onGround = in.readBoolean();
+        onGround = in.read()!=0;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class PlayerPosition extends BasePacket {
         out.writeDouble( y );
         out.writeDouble( stance );
         out.writeDouble( z );
-        out.writeBoolean( onGround );
+        out.write( onGround ? 1 : 0);
     }
 
     public double getX() {

@@ -11,6 +11,7 @@ import java.io.IOException;
  */
 public class PlayerRespawn extends BasePacket {
     public static final int ID = 0x09;
+    private byte unknown;
 
     @Override
     public int getPacketId() {
@@ -18,8 +19,12 @@ public class PlayerRespawn extends BasePacket {
     }
 
     @Override
-    public void decode( DataInputStream in ) throws IOException {}
+    public void decode( DataInputStream in ) throws IOException {
+        unknown = in.readByte();
+    }
 
     @Override
-    public void encode( DataOutputStream out ) throws IOException {}
+    public void encode( DataOutputStream out ) throws IOException {
+        out.writeByte(unknown);
+    }
 }

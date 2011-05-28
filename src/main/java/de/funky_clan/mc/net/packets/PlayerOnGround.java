@@ -20,11 +20,11 @@ public class PlayerOnGround extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        onGround = in.readBoolean();
+        onGround = in.read()!=0;
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeBoolean( onGround );
+        out.write( onGround ? 1 : 0);
     }
 }

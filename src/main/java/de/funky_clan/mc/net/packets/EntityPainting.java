@@ -26,7 +26,7 @@ public class EntityPainting extends BasePacket {
     @Override
     public void decode( DataInputStream in ) throws IOException {
         eid       = in.readInt();
-        title     = in.readUTF();
+        title     = readString(in, 119);
         x         = in.readInt();
         y         = in.readInt();
         z         = in.readInt();
@@ -36,7 +36,7 @@ public class EntityPainting extends BasePacket {
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt( eid );
-        out.writeUTF( title );
+        writeString(title, out);
         out.writeInt( x );
         out.writeInt( y );
         out.writeInt( z );

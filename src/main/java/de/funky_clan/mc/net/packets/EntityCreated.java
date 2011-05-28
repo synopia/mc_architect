@@ -16,6 +16,10 @@ public class EntityCreated extends BasePacket {
     private int             x;
     private int             y;
     private int             z;
+    private int             i;
+    private short           e;
+    private short           f;
+    private short           g;
 
     @Override
     public int getPacketId() {
@@ -29,6 +33,12 @@ public class EntityCreated extends BasePacket {
         x    = in.readInt();
         y    = in.readInt();
         z    = in.readInt();
+        i    = in.readInt();
+        if( i>0 ) {
+            e = in.readShort();
+            f = in.readShort();
+            g = in.readShort();
+        }
     }
 
     @Override
@@ -38,5 +48,11 @@ public class EntityCreated extends BasePacket {
         out.writeInt( x );
         out.writeInt( y );
         out.writeInt( z );
+        out.writeInt( i );
+        if( i>0 ) {
+            out.writeShort(e);
+            out.writeShort(f);
+            out.writeShort(g);
+        }
     }
 }

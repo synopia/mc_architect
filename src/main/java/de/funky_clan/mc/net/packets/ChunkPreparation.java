@@ -33,14 +33,14 @@ public class ChunkPreparation extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         x    = in.readInt();
         z    = in.readInt();
-        mode = in.readBoolean();
+        mode = in.read()!=0;
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt( x );
         out.writeInt( z );
-        out.writeBoolean( mode );
+        out.write( mode ? 1 : 0 );
     }
 
     public int getX() {

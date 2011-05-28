@@ -20,12 +20,12 @@ public class Handshake extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        username = in.readUTF();
+        username = readString(in, 32);
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeUTF( username );
+        writeString(username, out);
     }
 
     public String getConnectionHash() {
