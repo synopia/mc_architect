@@ -42,6 +42,7 @@ public class BlueprintInjectorService {
     private int lastY = Integer.MAX_VALUE;
     private int lastZ = Integer.MAX_VALUE;
     private byte lastBlockId = 0;
+    private boolean online = false;
 
     private MinecraftServer server;
 

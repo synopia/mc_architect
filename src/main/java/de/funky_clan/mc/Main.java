@@ -60,8 +60,6 @@ public class Main extends JFrame {
     StatusBar          status;
     @Inject
     SwingEventBus      swingEventBus;
-    @Inject
-    private BlueprintInjectorService blueprintInjectorService;
 
     public Main() {}
 
@@ -112,6 +110,7 @@ public class Main extends JFrame {
         eventDispatcher.publish(new LoadScript("superformula.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("station_select_schematic.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("nagoya.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("spider.rb", !Main.isDebug()));
 
         if( Main.isDebug() ) {
             eventDispatcher.publish(new LoadScript("test.rb", false));

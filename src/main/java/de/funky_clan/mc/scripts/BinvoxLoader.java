@@ -60,7 +60,7 @@ public class BinvoxLoader {
                 for( int i = 0; i < count; i++ ) {
                     if(( value > 0 ) && ( x >= sx ) && ( y >= sy ) && ( z >= sz ) && ( x <= ex ) && ( y <= ey )
                             && ( z <= ez )) {
-                        g.setPixel( z - sx - halfSizeX, y - sy - halfSizeY, x - sz - halfSizeZ, blockId );
+                        g.setPixel( x - sx - halfSizeX, z - sy - halfSizeY, y - sz - halfSizeZ, blockId );
 
 //                      g.setPixel(2 * sz - (z - sz), y - sy, x - sx, value);
                     }
