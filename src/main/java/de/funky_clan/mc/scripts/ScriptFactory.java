@@ -10,6 +10,7 @@ import de.funky_clan.mc.events.script.RunScript;
 import de.funky_clan.mc.events.script.ScriptFinished;
 import de.funky_clan.mc.events.script.ScriptLoaded;
 import de.funky_clan.mc.events.script.SendScriptData;
+import de.funky_clan.mc.file.SchematicLoader;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
@@ -30,6 +31,8 @@ public class ScriptFactory {
     EventDispatcher eventDispatcher;
     @Inject
     private Model         model;
+    @Inject
+    private SchematicLoader schematicLoader;
     @Inject
     private SliceGraphics sliceGraphicsX;
     @Inject
@@ -75,6 +78,7 @@ public class ScriptFactory {
                 script.put("@slice_z", sliceGraphicsZ);
                 script.put("@world", worldGraphics);
                 script.put("@binvox", binvoxLoader);
+                script.put("@schematic", schematicLoader);
                 script.put("@model", model);
                 logger.info("Running script " + script.getName());
                 script.run();
