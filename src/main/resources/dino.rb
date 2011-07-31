@@ -4,11 +4,11 @@ def run
     puts "running"
     @model.clear_blueprint
 
-    mid_x  = 0# 1116
-    mid_y  = 64 # height
-    mid_z  = 0#27
+    mid_x  =960
+    mid_y  = 90 # height
+    mid_z  = -490
 
-    @schematic.load @world, "Skull_and_body_hollow.schematic", mid_x, mid_y, mid_z
+    @schematic.load @world, "Skull_and_body_hollow.schematic", mid_x, mid_y, mid_z, -1, 1,1
 end
 
 def info

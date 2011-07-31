@@ -20,9 +20,13 @@ import java.util.zip.GZIPInputStream;
  */
 @Singleton
 public class SchematicLoader {
-    public void load(Graphics g, String filename, int mid_x, int mid_y, int mid_z) {
+    public void load(Graphics g, String filename, int mid_x, int mid_y, int mid_z, int dirX, int dirY, int dirZ) {
         try {
-            InputStream fileInput = getClass().getResourceAsStream( "/" + filename );
+            InputStream fileInput;
+            fileInput = getClass().getResourceAsStream( "/" + filename );
+            if( fileInput==null ) {
+                fileInput = new FileInputStream(filename);
+            }
             DataInputStream in = new DataInputStream( new GZIPInputStream( fileInput ));
             NBTInputStream nbt    = new NBTInputStream( in );
             CompoundTag root   = (CompoundTag) nbt.readTag();
@@ -43,8 +47,21 @@ public class SchematicLoader {
                 for( int y = 0; y < sizeY; y++ ) {
                     for( int z = 0; z < sizeZ; z++ ) {
                         int   i     = x + ( y*sizeZ+z ) * sizeX;
-
-                        g.setPixel(startX+x, startY+y, startZ+z, blocks[i]);
+                        if( blocks[i]>0 ) {
+                            int xx = x;
+                            int yy = y;
+                            int zz = z;
+                            if( dirX<0 ){
+                                xx = sizeX-x-1;
+                            }
+                            if( dirY<0 ) {
+                                yy = sizeY-y-1;
+                            }
+                            if( dirZ<0 ) {
+                                zz = sizeZ-z-1;
+                            }
+                            g.setPixel(startX+xx, startY+yy, startZ+zz, blocks[i]);
+                        }
                     }
                 }
             }
