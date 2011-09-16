@@ -57,7 +57,7 @@ public abstract class BasePacket implements NetworkEvent {
                 break;
 
             case 4:
-                writeString( (String) it.next(), out );
+                writeString(out, (String) it.next());
 
                 break;
 
@@ -152,10 +152,16 @@ public abstract class BasePacket implements NetworkEvent {
         return sb.toString();
     }
 
-    public void writeString( String str, DataOutputStream out) throws IOException {
+    public void writeString(DataOutputStream out, String str) throws IOException {
+        writeString(out, str, -1);
+    }
+    public void writeString(DataOutputStream out, String str, int maxLen) throws IOException {
         if( str.length()>32767 ) {
             throw new IOException("String to long");
         } else {
+            if( maxLen!=-1 && str.length()>=maxLen ) {
+                str = str.substring(0, maxLen);
+            }
             out.writeShort(str.length());
             out.writeChars(str);
         }

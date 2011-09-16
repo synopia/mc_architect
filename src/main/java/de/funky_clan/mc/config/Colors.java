@@ -114,7 +114,7 @@ public class Colors {
     }
 
     public Color getPlayerBlockColor() {
-        return Color.BLUE.brighter();
+        return Color.YELLOW.brighter();
     }
 
     public Color getSelectedBlockColor() {

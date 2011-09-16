@@ -9,9 +9,11 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class KeepAlive extends BasePacket {
-    public static final int ID = 0;
+public class EntityRemoveEffect extends BasePacket {
+
+    public static final int ID = 0x2a;
     private int a;
+    private byte b;
 
     @Override
     public int getPacketId() {
@@ -19,12 +21,14 @@ public class KeepAlive extends BasePacket {
     }
 
     @Override
-    public void decode( DataInputStream in ) throws IOException {
+    public void decode(DataInputStream in) throws IOException {
         a = in.readInt();
+        b = in.readByte();
     }
 
     @Override
-    public void encode( DataOutputStream out ) throws IOException {
+    public void encode(DataOutputStream out) throws IOException {
         out.writeInt(a);
+        out.writeByte(b);
     }
 }

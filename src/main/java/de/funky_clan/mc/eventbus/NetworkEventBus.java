@@ -41,11 +41,11 @@ public abstract class NetworkEventBus extends ThreadedEventBus {
                             }
                         }
                     } catch( NetworkException e ) {
-                        disconnect( e );
+                       disconnect(e);
                     }
                 }
             }
-        } );
+        }, getClass().getCanonicalName() );
         netThread.start();
         benchmark.addThreadId( "net", netThread.getId() );
     }

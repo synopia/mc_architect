@@ -39,7 +39,7 @@ public abstract class ThreadedEventBus extends EventBus {
                     }
                 }
             }
-        } );
+        }, getClass().getCanonicalName() );
         thread.start();
         benchmark.addThreadId( "bus", thread.getId() );
     }

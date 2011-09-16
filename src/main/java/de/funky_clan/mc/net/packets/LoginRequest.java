@@ -15,6 +15,10 @@ public final class  LoginRequest extends BasePacket {
     private int             protocolVersion;
     private long            seed;
     private String          username;
+    private byte e;
+    private byte f;
+    private byte g;
+    private byte h;
 
     @Override
     public int getPacketId() {
@@ -26,15 +30,24 @@ public final class  LoginRequest extends BasePacket {
         protocolVersion = in.readInt();
         username  = readString(in, 16);
         seed      = in.readLong();
-        dimension = in.readByte();
+        dimension = in.readInt();
+        e = in.readByte();
+        f = in.readByte();
+        g = in.readByte();
+        h = in.readByte();
+
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt(protocolVersion);
-        writeString( username, out );
-        out.writeLong( seed );
-        out.writeByte( dimension );
+        writeString(out, username, 16);
+        out.writeLong(seed);
+        out.writeInt(dimension);
+        out.writeByte(e);
+        out.writeByte(f);
+        out.writeByte(g);
+        out.writeByte(h);
     }
 
     public int getProtocolVersion() {

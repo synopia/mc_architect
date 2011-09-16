@@ -9,9 +9,9 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class KeepAlive extends BasePacket {
-    public static final int ID = 0;
-    private int a;
+public class GetInfo extends BasePacket {
+
+    public static final int ID = 0xfe;
 
     @Override
     public int getPacketId() {
@@ -19,12 +19,12 @@ public class KeepAlive extends BasePacket {
     }
 
     @Override
-    public void decode( DataInputStream in ) throws IOException {
-        a = in.readInt();
+    public void decode(DataInputStream in) throws IOException {
+
     }
 
     @Override
-    public void encode( DataOutputStream out ) throws IOException {
-        out.writeInt(a);
+    public void encode(DataOutputStream out) throws IOException {
+
     }
 }

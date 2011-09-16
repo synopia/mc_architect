@@ -199,7 +199,7 @@ public final class Position {
     }
 
     public final Color fadeOut( Color color ) {
-        double damp = Math.max( 0, Math.min( 1, ( 3 / Math.abs( distToSlice() ))));
+        double damp = Math.max( 0, Math.min( 1, ( 6 / Math.abs( distToSlice() ))));
 
         return new Color( color.getRed(), color.getGreen(), color.getBlue(), (int) ( 255 * damp ));
     }

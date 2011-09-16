@@ -6,6 +6,8 @@ import de.funky_clan.mc.eventbus.Event;
 import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.eventbus.NetworkEventBus;
 import de.funky_clan.mc.events.network.ConnectionLost;
+import de.funky_clan.mc.net.packets.AddExpOrb;
+import de.funky_clan.mc.net.packets.Bed;
 import de.funky_clan.mc.net.packets.BlockExplosion;
 import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import de.funky_clan.mc.net.packets.BlockPlayNote;
@@ -21,12 +23,14 @@ import de.funky_clan.mc.net.packets.EntityAnimation;
 import de.funky_clan.mc.net.packets.EntityAttach;
 import de.funky_clan.mc.net.packets.EntityCreated;
 import de.funky_clan.mc.net.packets.EntityDestroy;
+import de.funky_clan.mc.net.packets.EntityEffect;
 import de.funky_clan.mc.net.packets.EntityEquipment;
 import de.funky_clan.mc.net.packets.EntityLook;
 import de.funky_clan.mc.net.packets.EntityMetadata;
 import de.funky_clan.mc.net.packets.EntityPainting;
 import de.funky_clan.mc.net.packets.EntityRelativeMove;
 import de.funky_clan.mc.net.packets.EntityRelativeMoveAndLook;
+import de.funky_clan.mc.net.packets.EntityRemoveEffect;
 import de.funky_clan.mc.net.packets.EntitySpawn;
 import de.funky_clan.mc.net.packets.EntitySpawnNamed;
 import de.funky_clan.mc.net.packets.EntityStatus;
@@ -34,6 +38,7 @@ import de.funky_clan.mc.net.packets.EntityTeleport;
 import de.funky_clan.mc.net.packets.EntityUpdate;
 import de.funky_clan.mc.net.packets.EntityUse;
 import de.funky_clan.mc.net.packets.EntityVelocity;
+import de.funky_clan.mc.net.packets.GetInfo;
 import de.funky_clan.mc.net.packets.Handshake;
 import de.funky_clan.mc.net.packets.ItemCollect;
 import de.funky_clan.mc.net.packets.ItemSpawn;
@@ -41,10 +46,10 @@ import de.funky_clan.mc.net.packets.KeepAlive;
 import de.funky_clan.mc.net.packets.LoginRequest;
 import de.funky_clan.mc.net.packets.MapData;
 import de.funky_clan.mc.net.packets.Packet1B;
-import de.funky_clan.mc.net.packets.Packet46;
 import de.funky_clan.mc.net.packets.PlayerBlockPlacement;
 import de.funky_clan.mc.net.packets.PlayerChangeSlot;
 import de.funky_clan.mc.net.packets.PlayerDigging;
+import de.funky_clan.mc.net.packets.PlayerInfo;
 import de.funky_clan.mc.net.packets.PlayerLook;
 import de.funky_clan.mc.net.packets.PlayerOnGround;
 import de.funky_clan.mc.net.packets.PlayerPosition;
@@ -52,6 +57,8 @@ import de.funky_clan.mc.net.packets.PlayerPositionAndLook;
 import de.funky_clan.mc.net.packets.PlayerRespawn;
 import de.funky_clan.mc.net.packets.PlayerSpawnPosition;
 import de.funky_clan.mc.net.packets.PlayerUseBed;
+import de.funky_clan.mc.net.packets.SetCreativeSlot;
+import de.funky_clan.mc.net.packets.SetExperience;
 import de.funky_clan.mc.net.packets.Statistic;
 import de.funky_clan.mc.net.packets.TimeUpdate;
 import de.funky_clan.mc.net.packets.UpdateHealth;
@@ -115,6 +122,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( EntityCreated.class );
         addPacketType( EntitySpawn.class );
         addPacketType( EntityPainting.class );
+        addPacketType( AddExpOrb.class );
         addPacketType( Packet1B.class );
         addPacketType( EntityVelocity.class );
         addPacketType( EntityDestroy.class );
@@ -126,6 +134,9 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( EntityStatus.class );
         addPacketType( EntityAttach.class );
         addPacketType( EntityMetadata.class );
+        addPacketType( EntityEffect.class );
+        addPacketType( EntityRemoveEffect.class );
+        addPacketType( SetExperience.class );
         addPacketType( ChunkPreparation.class );
         addPacketType( ChunkData.class );
         addPacketType( BlockMultiUpdate.class );
@@ -133,6 +144,7 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( BlockPlayNote.class );
         addPacketType( BlockExplosion.class );
         addPacketType( DoorChange.class );
+        addPacketType( Bed.class );
         addPacketType( Weather.class );
         addPacketType( WindowOpen.class );
         addPacketType( WindowClose.class );
@@ -141,11 +153,13 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         addPacketType( WindowMultiSlotUpdate.class );
         addPacketType( WindowUpdateProgressBar.class );
         addPacketType( WindowTransaction.class );
+        addPacketType( SetCreativeSlot.class );
         addPacketType( BlockSignUpdate.class );
         addPacketType( MapData.class );
-        addPacketType( Disconnect.class );
         addPacketType( Statistic.class );
-        addPacketType( Packet46.class );
+        addPacketType( PlayerInfo.class );
+        addPacketType( GetInfo.class );
+        addPacketType( Disconnect.class );
     }
 
     public synchronized void connect( InputStream in, OutputStream out ) {
@@ -186,7 +200,9 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
         if( networkEvent.getSource() == getNetworkType() ) {
             try {
                 out.writeByte( networkEvent.getPacketId() );
+//                logger.info("Packet id "+networkEvent.getPacketId()+" dispatching");
                 networkEvent.encode( out );
+//                logger.info(" Packet id "+networkEvent.getPacketId()+" encoded");
             } catch( IOException e ) {
                 throw new NetworkException( e );
             }
@@ -196,11 +212,14 @@ public abstract class MinecraftNetworkEventBus extends NetworkEventBus {
     @Override
     protected void processNetwork() {
         try {
+//            logger.info("receiving");
             int          packetId = in.readByte() & 0xff;
+//            logger.info("Packet id "+packetId+" received");
             NetworkEvent packet   = createPacket( packetId );
 
             if( packet != null ) {
                 packet.decode( in );
+//                logger.info(" Packet id "+packetId+" decoded");
                 eventDispatcher.publish(packet);
                 lastPacketId = packetId;
             } else {

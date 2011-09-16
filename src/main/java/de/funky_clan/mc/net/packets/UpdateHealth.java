@@ -12,6 +12,8 @@ import java.io.IOException;
 public class UpdateHealth extends BasePacket {
     public static final int ID = 0x08;
     private short           health;
+    private short           b;
+    private float           c;
 
     @Override
     public int getPacketId() {
@@ -21,10 +23,14 @@ public class UpdateHealth extends BasePacket {
     @Override
     public void decode( DataInputStream in ) throws IOException {
         health = in.readShort();
+        b = in.readShort();
+        c = in.readFloat();
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeShort( health );
+        out.writeShort(b);
+        out.writeFloat(c);
     }
 }

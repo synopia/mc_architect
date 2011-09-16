@@ -16,7 +16,7 @@ public class BlockMultiUpdate extends BasePacket {
     private short[]         coords;
     private List<Item>      items;
     private byte[]          meta;
-    private short           size;
+    private int             size;
     private byte[]          type;
     private int chunkX;
     private int chunkZ;
@@ -38,7 +38,7 @@ public class BlockMultiUpdate extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         chunkX = in.readInt();
         chunkZ = in.readInt();
-        size   = in.readShort();
+        size   = in.readShort() & 0xffff;
         coords = new short[size];
 
         for( int i = 0; i < size; i++ ) {
@@ -131,7 +131,7 @@ public class BlockMultiUpdate extends BasePacket {
         this.chunkZ = chunkZ;
     }
 
-    public short getSize() {
+    public int getSize() {
         return( items == null )
               ? size
               : (short) items.size();

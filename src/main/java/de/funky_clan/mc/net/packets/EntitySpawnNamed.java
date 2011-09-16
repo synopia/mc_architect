@@ -40,7 +40,7 @@ public class EntitySpawnNamed extends BasePacket {
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt( eid );
-        writeString(playerName, out );
+        writeString(out, playerName, 16);
         out.writeInt( x );
         out.writeInt( y );
         out.writeInt( z );

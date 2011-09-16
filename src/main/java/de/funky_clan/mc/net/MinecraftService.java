@@ -34,14 +34,14 @@ public class MinecraftService {
     private EventDispatcher eventDispatcher;
     private final ExecutorService pool;
     private int                   port;
-    @Inject
     private MinecraftServer       server;
     private ServerSocket          serverSocket;
     private String                targetHost;
     private int                   targetPort;
 
     @Inject
-    public MinecraftService( ModelEventBus eventBus ) {
+    public MinecraftService( ModelEventBus eventBus, final MinecraftServer server ) {
+        this.server = server;
         logger.info( "Starting MinecraftService..." );
         pool = Executors.newFixedThreadPool( 1 );
         eventBus.subscribe(ConnectionDetailsChanged.class, new EventHandler<ConnectionDetailsChanged>() {
@@ -72,11 +72,11 @@ public class MinecraftService {
                 start();
             }
         });
-        eventBus.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
+        server.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
             @Override
             public void handleEvent(Disconnect event) {
                 logger.info("Received disconnect signal from " + event.getSourceName() + ".");
-                stop();
+                event.setReason("MCA -> "+event.getReason());
             }
         });
     }

@@ -9,13 +9,12 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class PlayerRespawn extends BasePacket {
-    public static final int ID = 0x09;
+public class EntityEffect extends BasePacket {
+    public static final int ID = 0x29;
+    private int a;
     private byte b;
     private byte c;
-    private byte e;
     private short d;
-    private long a;
 
     @Override
     public int getPacketId() {
@@ -23,20 +22,18 @@ public class PlayerRespawn extends BasePacket {
     }
 
     @Override
-    public void decode( DataInputStream in ) throws IOException {
+    public void decode(DataInputStream in) throws IOException {
+        a = in.readInt();
         b = in.readByte();
         c = in.readByte();
-        e = in.readByte();
         d = in.readShort();
-        a = in.readLong();
     }
 
     @Override
-    public void encode( DataOutputStream out ) throws IOException {
+    public void encode(DataOutputStream out) throws IOException {
+        out.writeInt(a);
         out.writeByte(b);
         out.writeByte(c);
-        out.writeByte(e);
         out.writeShort(d);
-        out.writeLong(a);
     }
 }

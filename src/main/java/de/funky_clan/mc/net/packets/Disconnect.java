@@ -20,11 +20,19 @@ public class Disconnect extends BasePacket {
 
     @Override
     public void decode( DataInputStream in ) throws IOException {
-        reason = in.readUTF();
+        reason = readString(in, 100);
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        out.writeUTF( reason );
+        writeString(out, reason, 50);
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

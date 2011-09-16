@@ -51,13 +51,11 @@ import java.util.Vector;
  * <P>In each constant the first option is the default button unless
  * you specify otherwise.  The Apple Interface Guidelines advises:
  * "The default button should be the button that represents the
- * action that the user is most likely to perform if that action isn’t
  * potentially dangerous."
  * <P>The YES_NO options should be approached with special reluctance.
  * Microsoft <A HREF="http://msdn.microsoft.com/en-us/library/aa511331.aspx">cautions</A>,
  * "Use Yes and No buttons only to respond to yes or no questions."  This seems
  * obvious enough, but Apple adds, "Button names should correspond to the action
- * the user performs when pressing the button—for example, Erase, Save, or Delete."
  * So instead of presenting a YES_NO dialog with the question "Do you want to continue?"
  * a better dialog might provide the options "Cancel" and "Continue".  In short: we
  * as developers might tend to lazily use this option and phrase dialogs in such

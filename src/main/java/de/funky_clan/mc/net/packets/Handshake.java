@@ -25,7 +25,7 @@ public class Handshake extends BasePacket {
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        writeString(username, out);
+        writeString(out, username, 32);
     }
 
     public String getConnectionHash() {

@@ -99,6 +99,7 @@ public class Main extends JFrame {
         eventDispatcher.publish(new Initialize());
 
         if( isDebug() ) {
+//            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));
             eventDispatcher.publish(new ConnectionDetailsChanged(12345, "localhost"));
         } else {
             eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));

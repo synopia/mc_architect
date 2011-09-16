@@ -25,6 +25,6 @@ public class ChatMessage extends BasePacket {
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
-        writeString(message, out);
+        writeString(out, message, 119);
     }
 }

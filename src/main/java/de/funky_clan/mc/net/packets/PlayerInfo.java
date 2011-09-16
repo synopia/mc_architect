@@ -9,9 +9,12 @@ import java.io.IOException;
 /**
  * @author synopia
  */
-public class Packet46 extends BasePacket {
-    public static final int ID = 0x46;
-    private byte a;
+public class PlayerInfo extends BasePacket {
+
+    public static final int ID = 0xc9;
+    private String s;
+    private boolean b;
+    private short c;
 
     @Override
     public int getPacketId() {
@@ -20,11 +23,15 @@ public class Packet46 extends BasePacket {
 
     @Override
     public void decode(DataInputStream in) throws IOException {
-        a = in.readByte();
+        s = readString(in, 16);
+        b = in.readByte()!=0;
+        c = in.readShort();
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
-        out.writeByte(a);
+        writeString(out, s, 16);
+        out.writeByte(b ? 1 : 0);
+        out.writeShort(c);
     }
 }

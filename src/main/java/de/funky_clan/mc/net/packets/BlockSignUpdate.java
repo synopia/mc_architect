@@ -40,9 +40,9 @@ public class BlockSignUpdate extends BasePacket {
         out.writeInt( x );
         out.writeShort( y );
         out.writeInt( z );
-        writeString( text1, out );
-        writeString( text2, out );
-        writeString( text3, out );
-        writeString( text4, out );
+        writeString(out, text1, 15);
+        writeString(out, text2, 15);
+        writeString(out, text3, 15);
+        writeString(out, text4, 15);
     }
 }
