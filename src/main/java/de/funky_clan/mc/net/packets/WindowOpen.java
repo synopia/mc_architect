@@ -25,7 +25,7 @@ public class WindowOpen extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         windowId      = in.readByte();
         invType       = in.readByte();
-        windowTitle   = in.readUTF();
+        windowTitle   = readString(in, 16);
         numberOfSlots = in.readByte();
     }
 
@@ -33,7 +33,7 @@ public class WindowOpen extends BasePacket {
     public void encode( DataOutputStream out ) throws IOException {
         out.writeByte( windowId );
         out.writeByte( invType );
-        out.writeUTF( windowTitle );
+        writeString(out, windowTitle, 16);
         out.writeByte( numberOfSlots );
     }
 }
