@@ -11,7 +11,7 @@ import de.funky_clan.mc.events.swing.OreDisplayUpdate;
 import de.funky_clan.mc.events.swing.OreFilterChanged;
 import de.funky_clan.mc.model.Chunk;
 import de.funky_clan.mc.model.Ore;
-import de.funky_clan.mc.net.packets.ChunkPreparation;
+import de.funky_clan.mc.net.packets.P050ChunkPreparation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +46,9 @@ public class OreDetectorService extends BaseOreDetectorService {
                 }
             }
         });
-        eventBus.subscribe(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
+        eventBus.subscribe(P050ChunkPreparation.class, new EventHandler<P050ChunkPreparation>() {
             @Override
-            public void handleEvent(ChunkPreparation event) {
+            public void handleEvent(P050ChunkPreparation event) {
                 if (!event.isLoad()) {
                     ores.remove(Chunk.getChunkId(event.getX(), event.getZ()));
                 }

@@ -3,12 +3,10 @@ package de.funky_clan.mc.services;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.eventbus.NetworkEvent;
-import de.funky_clan.mc.eventbus.VetoHandler;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.events.script.SendScriptData;
 import de.funky_clan.mc.model.Box;
@@ -16,10 +14,9 @@ import de.funky_clan.mc.model.Chunk;
 import static de.funky_clan.mc.model.Chunk.CHUNK_ARRAY_SIZE;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.net.MinecraftServer;
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
-import de.funky_clan.mc.net.packets.BlockSignUpdate;
-import de.funky_clan.mc.net.packets.BlockUpdate;
-import de.funky_clan.mc.net.packets.ChunkData;
+import de.funky_clan.mc.net.packets.P051ChunkData;
+import de.funky_clan.mc.net.packets.P052BlockMultiUpdate;
+import de.funky_clan.mc.net.packets.P053BlockUpdate;
 import de.funky_clan.mc.scripts.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +32,7 @@ public class BlueprintInjectorService {
     private final EventDispatcher eventDispatcher;
     @Inject
     private Model model;
-    private final HashMap<Long, BlockMultiUpdate> updates    = new HashMap<Long, BlockMultiUpdate>();
+    private final HashMap<Long, P052BlockMultiUpdate> updates    = new HashMap<Long, P052BlockMultiUpdate>();
     @Inject @Named("SelectionBox")
     private Box selectionBox;
     private int lastX = Integer.MAX_VALUE;
@@ -123,22 +120,22 @@ public class BlueprintInjectorService {
             @Override
             public void handleEvent(SendScriptData event) {
                 Script script = event.getScript();
-                HashMap<Long, BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
+                HashMap<Long, P052BlockMultiUpdate> chunkUpdates = script.getChunkUpdates();
 
-                for (BlockMultiUpdate update : chunkUpdates.values()) {
+                for (P052BlockMultiUpdate update : chunkUpdates.values()) {
                     server.publish(update);
                 }
 
                 script.setSent(true);
             }
         });
-        server.subscribe(BlockMultiUpdate.class, new EventHandler<BlockMultiUpdate>() {
+        server.subscribe(P052BlockMultiUpdate.class, new EventHandler<P052BlockMultiUpdate>() {
             @Override
-            public void handleEvent(BlockMultiUpdate event) {
+            public void handleEvent(P052BlockMultiUpdate event) {
 //                logger.info(String.format("MultiUpdate chunk: %d, %d blocks: %d", event.getChunkX(), event.getChunkZ(), event.getSize()));
                 event.dropPacket();
-                final BlockMultiUpdate update = new BlockMultiUpdate(NetworkEvent.SERVER, event.getChunkX(), event.getChunkZ() );
-                event.each(new BlockMultiUpdate.Each() {
+                final P052BlockMultiUpdate update = new P052BlockMultiUpdate(NetworkEvent.SERVER, event.getChunkX(), event.getChunkZ() );
+                event.each(new P052BlockMultiUpdate.Each() {
                     @Override
                     public void update(int x, int y, int z, byte type, byte meta) {
                         byte pixel;
@@ -160,9 +157,9 @@ public class BlueprintInjectorService {
                 server.sendPacket(update);
             }
         });
-        server.subscribe(BlockUpdate.class, new EventHandler<BlockUpdate>() {
+        server.subscribe(P053BlockUpdate.class, new EventHandler<P053BlockUpdate>() {
             @Override
-            public void handleEvent(BlockUpdate event) {
+            public void handleEvent(P053BlockUpdate event) {
 //                logger.info(String.format("Update pos: %d, %d, %d, %d, %d ", event.getX(), event.getY(), event.getZ(), event.getType(), event.getMeta()));
                 if( event.getType()==0 ) {
                     event.dropPacket();
@@ -177,13 +174,13 @@ public class BlueprintInjectorService {
                         pixel = (byte) model.getPixelOrBlueprint(x, y, z);
 //                        logger.info(String.format(" pixel or blueprint: %d, %d, %d, %d, %d -> %d", x,y,z,event.getType(), event.getMeta(), pixel));
                     }
-                    server.sendPacket(new BlockUpdate(NetworkEvent.SERVER, x, y, z, pixel, event.getMeta() ));
+                    server.sendPacket(new P053BlockUpdate(NetworkEvent.SERVER, x, y, z, pixel, event.getMeta() ));
                 }
             }
         });
-        server.subscribe(ChunkData.class, new EventHandler<ChunkData>() {
+        server.subscribe(P051ChunkData.class, new EventHandler<P051ChunkData>() {
             @Override
-            public void handleEvent(final ChunkData event) {
+            public void handleEvent(final P051ChunkData event) {
 //                logger.info("Chunk Data");
                 final byte[] data = event.getData();
                 model.interate(event,  new Model.BlockUpdateCallable() {
@@ -214,25 +211,25 @@ public class BlueprintInjectorService {
             }
         });
 /*
-        eventDispatcher.subscribeVeto(eventBus, BlockSignUpdate.class, new VetoHandler<BlockSignUpdate>() {
+        eventDispatcher.subscribeVeto(eventBus, P130BlockSignUpdate.class, new VetoHandler<P130BlockSignUpdate>() {
             @Override
-            public boolean isVeto(BlockSignUpdate event) {
+            public boolean isVeto(P130BlockSignUpdate event) {
                 return true;
             }
 
             @Override
-            public void handleVeto(BlockSignUpdate event) {
+            public void handleVeto(P130BlockSignUpdate event) {
                 eventDispatcher.publish(event, true);
             }
         });
-        eventDispatcher.subscribeVeto(eventBus, ChunkData.class, new VetoHandler<ChunkData>() {
+        eventDispatcher.subscribeVeto(eventBus, P051ChunkData.class, new VetoHandler<P051ChunkData>() {
             @Override
-            public boolean isVeto(ChunkData event) {
+            public boolean isVeto(P051ChunkData event) {
                 return true;
             }
 
             @Override
-            public void handleVeto(final ChunkData event) {
+            public void handleVeto(final P051ChunkData event) {
                 final byte newMap[] = event.getData();
 
                 model.interate(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
@@ -265,7 +262,7 @@ public class BlueprintInjectorService {
                                 newMap[index] = value;
                             }
                         });
-                eventDispatcher.publish(new ChunkData(event.getSource(), event.getX(), event.getY(), event.getZ(),
+                eventDispatcher.publish(new P051ChunkData(event.getSource(), event.getX(), event.getY(), event.getZ(),
                         event.getSizeX(), event.getSizeY(), event.getSizeZ(), newMap), true);
             }
         });
@@ -296,7 +293,7 @@ public class BlueprintInjectorService {
                         continue;
                     }
 
-                    BlockMultiUpdate update = getUpdate( rx, ry, rz );
+                    P052BlockMultiUpdate update = getUpdate( rx, ry, rz );
 
                     if(( x == -3 ) || ( x == 3 ) || ( y == -3 ) || ( y == 3 ) || ( z == -3 ) || ( z == 3 )) {
                         update.add( rx, ry, rz, (byte) (( pixel > 0 )
@@ -313,14 +310,14 @@ public class BlueprintInjectorService {
     }
 
     private void publishUpdates() {
-        for( BlockMultiUpdate update : updates.values() ) {
+        for( P052BlockMultiUpdate update : updates.values() ) {
             if( update.getSize() > 1 ) {
                 server.sendPacket(update);
             } else if( update.getSize()>0 ) {
-                update.each(new BlockMultiUpdate.Each() {
+                update.each(new P052BlockMultiUpdate.Each() {
                     @Override
                     public void update(int x, int y, int z, byte type, byte meta) {
-                        server.sendPacket(new BlockUpdate(NetworkEvent.SERVER, x, y, z, type, meta));
+                        server.sendPacket(new P053BlockUpdate(NetworkEvent.SERVER, x, y, z, type, meta));
 
                     }
                 });
@@ -330,16 +327,16 @@ public class BlueprintInjectorService {
         updates.clear();
     }
 
-    private BlockMultiUpdate getUpdate( int rx, int ry, int rz ) {
+    private P052BlockMultiUpdate getUpdate( int rx, int ry, int rz ) {
         int              chunkX = rx >> 4;
         int              chunkZ = rz >> 4;
         long             id     = Chunk.getChunkId(chunkX, chunkZ);
-        BlockMultiUpdate update;
+        P052BlockMultiUpdate update;
 
         if( updates.containsKey( id )) {
             update = updates.get( id );
         } else {
-            update = new BlockMultiUpdate( NetworkEvent.SERVER, chunkX, chunkZ );
+            update = new P052BlockMultiUpdate( NetworkEvent.SERVER, chunkX, chunkZ );
             updates.put( id, update );
         }
 

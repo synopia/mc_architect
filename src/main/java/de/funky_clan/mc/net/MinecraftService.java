@@ -9,8 +9,8 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
-import de.funky_clan.mc.net.packets.Disconnect;
-import de.funky_clan.mc.net.packets.Handshake;
+import de.funky_clan.mc.net.packets.P255Disconnect;
+import de.funky_clan.mc.net.packets.P002Handshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +54,9 @@ public class MinecraftService {
                 start();
             }
         });
-        eventBus.subscribe(Handshake.class, new EventHandler<Handshake>() {
+        eventBus.subscribe(P002Handshake.class, new EventHandler<P002Handshake>() {
             @Override
-            public void handleEvent(Handshake event) {
+            public void handleEvent(P002Handshake event) {
                 logger.info("Received handshake signal from " + event.getSourceName() + ". (" + event.getUsername()
                         + ")");
 
@@ -72,9 +72,9 @@ public class MinecraftService {
                 start();
             }
         });
-        server.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
+        server.subscribe(P255Disconnect.class, new EventHandler<P255Disconnect>() {
             @Override
-            public void handleEvent(Disconnect event) {
+            public void handleEvent(P255Disconnect event) {
                 logger.info("Received disconnect signal from " + event.getSourceName() + ".");
                 event.setReason("MCA -> "+event.getReason());
             }
@@ -103,10 +103,18 @@ public class MinecraftService {
                     client.connect( fromSource, toTarget );
                     server.connect( fromTarget, toSource );
                     logger.info( "connection established!" );
-                    serverSocket.close();
+
                 } catch( IOException e ) {
                     logger.info( "connection could not established!" );
                     e.printStackTrace();
+                } finally {
+                    try {
+                        if( serverSocket!=null ) {
+                            serverSocket.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
             }
         } );

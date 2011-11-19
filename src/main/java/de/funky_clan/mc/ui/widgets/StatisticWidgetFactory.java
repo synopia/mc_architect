@@ -6,7 +6,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.swing.OreDisplayUpdate;
 import de.funky_clan.mc.model.Model;
-import de.funky_clan.mc.net.packets.ChunkData;
+import de.funky_clan.mc.net.packets.P051ChunkData;
 import de.funky_clan.mc.util.Benchmark;
 
 import javax.swing.JLabel;
@@ -33,9 +33,9 @@ public class StatisticWidgetFactory {
     @Inject
     public StatisticWidgetFactory( SwingEventBus eventBus ) {
         build();
-        eventBus.subscribe(ChunkData.class, new EventHandler<ChunkData>() {
+        eventBus.subscribe(P051ChunkData.class, new EventHandler<P051ChunkData>() {
             @Override
-            public void handleEvent(ChunkData event) {
+            public void handleEvent(P051ChunkData event) {
                 chunksLoaded++;
             }
         });

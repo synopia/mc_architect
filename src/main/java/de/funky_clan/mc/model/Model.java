@@ -9,10 +9,11 @@ import de.funky_clan.mc.eventbus.NetworkEvent;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.math.Position;
 import static de.funky_clan.mc.model.Chunk.getChunkId;
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
-import de.funky_clan.mc.net.packets.BlockUpdate;
-import de.funky_clan.mc.net.packets.ChunkData;
-import de.funky_clan.mc.net.packets.ChunkPreparation;
+
+import de.funky_clan.mc.net.packets.P051ChunkData;
+import de.funky_clan.mc.net.packets.P052BlockMultiUpdate;
+import de.funky_clan.mc.net.packets.P053BlockUpdate;
+import de.funky_clan.mc.net.packets.P050ChunkPreparation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,23 +32,23 @@ import java.util.HashMap;
 public class Model {
     private final HashMap<Long, Chunk>            chunks  = new HashMap<Long, Chunk>();
     private final Logger                          log     = LoggerFactory.getLogger( Model.class );
-    private final HashMap<Long, BlockMultiUpdate> updates = new HashMap<Long, BlockMultiUpdate>();
+    private final HashMap<Long, P052BlockMultiUpdate> updates = new HashMap<Long, P052BlockMultiUpdate>();
     private final EventDispatcher                 eventDispatcher;
 
     @Inject
     public Model( final EventDispatcher eventDispatcher, final ModelEventBus eventBus) {
         this.eventDispatcher = eventDispatcher;
-        eventBus.subscribe(BlockUpdate.class, new EventHandler<BlockUpdate>() {
+        eventBus.subscribe(P053BlockUpdate.class, new EventHandler<P053BlockUpdate>() {
             @Override
-            public void handleEvent(BlockUpdate event) {
+            public void handleEvent(P053BlockUpdate event) {
                 setPixel(event.getX(), event.getY(), event.getZ(), 0, event.getType());
                 eventDispatcher.publish(new ModelUpdate(event.getX(), event.getY(), event.getZ(), 1, 1, 1));
             }
         });
-        eventBus.subscribe(BlockMultiUpdate.class, new EventHandler<BlockMultiUpdate>() {
+        eventBus.subscribe(P052BlockMultiUpdate.class, new EventHandler<P052BlockMultiUpdate>() {
             @Override
-            public void handleEvent(BlockMultiUpdate event) {
-                event.each(new BlockMultiUpdate.Each() {
+            public void handleEvent(P052BlockMultiUpdate event) {
+                event.each(new P052BlockMultiUpdate.Each() {
                     @Override
                     public void update(int x, int y, int z, byte type, byte meta) {
                         setPixel(x, y, z, 0, type);
@@ -56,18 +57,18 @@ public class Model {
                 });
             }
         });
-        eventBus.subscribe(ChunkData.class, new EventHandler<ChunkData>() {
+        eventBus.subscribe(P051ChunkData.class, new EventHandler<P051ChunkData>() {
             @Override
-            public void handleEvent(ChunkData event) {
+            public void handleEvent(P051ChunkData event) {
                 setBlock(event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(),
                         event.getSizeZ(), event.getData());
                 eventDispatcher.publish(new ModelUpdate(event.getX(), event.getY(), event.getZ(), event.getSizeX(),
                         event.getSizeY(), event.getSizeZ()));
             }
         });
-        eventBus.subscribe(ChunkPreparation.class, new EventHandler<ChunkPreparation>() {
+        eventBus.subscribe(P050ChunkPreparation.class, new EventHandler<P050ChunkPreparation>() {
             @Override
-            public void handleEvent(ChunkPreparation event) {
+            public void handleEvent(P050ChunkPreparation event) {
                 if (!event.isLoad()) {
                     int chunkX = event.getX();
                     int chunkZ = event.getZ();
@@ -85,7 +86,7 @@ public class Model {
     public void interate( ModelUpdate event , BlockUpdateCallable callable ) {
         interate( event.getStartX(), event.getStartY(), event.getStartZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), callable );
     }
-    public void interate( ChunkData event , BlockUpdateCallable callable ) {
+    public void interate( P051ChunkData event , BlockUpdateCallable callable ) {
         interate( event.getX(), event.getY(), event.getZ(), event.getSizeX(), event.getSizeY(), event.getSizeZ(), callable );
     }
     public void interate( int sx, int sy, int sz, int sizeX, int sizeY, int sizeZ, BlockUpdateCallable callable ) {
@@ -129,12 +130,12 @@ public class Model {
             int              chunkX = x >> 4;
             int              chunkZ = z >> 4;
             long             id     = Chunk.getChunkId( chunkX, chunkZ );
-            BlockMultiUpdate update;
+            P052BlockMultiUpdate update;
 
             if( updates.containsKey( id )) {
                 update = updates.get( id );
             } else {
-                update = new BlockMultiUpdate( NetworkEvent.SERVER, chunkX, chunkZ );
+                update = new P052BlockMultiUpdate( NetworkEvent.SERVER, chunkX, chunkZ );
                 updates.put( id, update );
             }
 
@@ -234,8 +235,8 @@ public class Model {
         }
     }
 
-    public HashMap<Long, BlockMultiUpdate> getUpdates() {
-        HashMap<Long, BlockMultiUpdate> result = new HashMap<Long, BlockMultiUpdate>(updates);
+    public HashMap<Long, P052BlockMultiUpdate> getUpdates() {
+        HashMap<Long, P052BlockMultiUpdate> result = new HashMap<Long, P052BlockMultiUpdate>(updates);
         updates.clear();
         return result;
     }

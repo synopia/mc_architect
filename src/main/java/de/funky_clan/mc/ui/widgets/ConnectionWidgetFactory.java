@@ -8,7 +8,7 @@ import de.funky_clan.mc.eventbus.SwingEventBus;
 import de.funky_clan.mc.events.network.ConnectionEstablished;
 import de.funky_clan.mc.events.network.ConnectionLost;
 import de.funky_clan.mc.events.swing.ConnectionDetailsChanged;
-import de.funky_clan.mc.net.packets.Disconnect;
+import de.funky_clan.mc.net.packets.P255Disconnect;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -40,9 +40,9 @@ public class ConnectionWidgetFactory {
                 updateStatus(false, "disconnected");
             }
         });
-        eventBus.subscribe(Disconnect.class, new EventHandler<Disconnect>() {
+        eventBus.subscribe(P255Disconnect.class, new EventHandler<P255Disconnect>() {
             @Override
-            public void handleEvent(Disconnect event) {
+            public void handleEvent(P255Disconnect event) {
                 updateStatus(false, "disconnected");
             }
         });

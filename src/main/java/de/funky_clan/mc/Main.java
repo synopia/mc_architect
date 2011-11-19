@@ -15,9 +15,8 @@ import de.funky_clan.mc.events.swing.Initialize;
 import de.funky_clan.mc.net.MinecraftClient;
 import de.funky_clan.mc.net.MinecraftServer;
 import de.funky_clan.mc.net.MinecraftService;
-import de.funky_clan.mc.net.packets.PlayerSpawnPosition;
+import de.funky_clan.mc.net.packets.P006PlayerSpawnPosition;
 import de.funky_clan.mc.scripts.ScriptFactory;
-import de.funky_clan.mc.services.BlueprintInjectorService;
 import de.funky_clan.mc.services.OreDetectorService;
 import de.funky_clan.mc.ui.MainPanel;
 import de.funky_clan.mc.util.StatusBar;
@@ -93,14 +92,14 @@ public class Main extends JFrame {
             @Override
             public void handleEvent(Initialize event) {
                 setBounds(20, 20, 600, 500);
-                eventDispatcher.publish(new PlayerSpawnPosition());
+                eventDispatcher.publish(new P006PlayerSpawnPosition());
             }
         });
         eventDispatcher.publish(new Initialize());
 
         if( isDebug() ) {
-//            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));
-            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "localhost"));
+            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));
+//            eventDispatcher.publish(new ConnectionDetailsChanged(12345, "localhost"));
         } else {
             eventDispatcher.publish(new ConnectionDetailsChanged(12345, "mc.funky-clan.de"));
         }

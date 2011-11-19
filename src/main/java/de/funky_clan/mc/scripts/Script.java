@@ -1,9 +1,8 @@
 package de.funky_clan.mc.scripts;
 
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
+import de.funky_clan.mc.net.packets.P052BlockMultiUpdate;
 import org.jruby.RubyHash;
 import org.jruby.RubySymbol;
-import org.jruby.embed.EvalFailedException;
 import org.jruby.embed.PathType;
 import org.jruby.embed.ScriptingContainer;
 
@@ -23,7 +22,7 @@ public class Script {
     private Exception                       hasError;
     private boolean                         loaded;
     private String                          name;
-    private HashMap<Long, BlockMultiUpdate> updates;
+    private HashMap<Long, P052BlockMultiUpdate> updates;
     private final boolean                   useClasspath;
     private StringWriter                    writer;
 
@@ -131,7 +130,7 @@ public class Script {
         int total = 0;
 
         if( updates != null ) {
-            for( BlockMultiUpdate update : updates.values() ) {
+            for( P052BlockMultiUpdate update : updates.values() ) {
                 total += update.getSize();
             }
         }
@@ -139,11 +138,11 @@ public class Script {
         return total;
     }
 
-    public void setChunkUpdates( HashMap<Long, BlockMultiUpdate> updates ) {
+    public void setChunkUpdates( HashMap<Long, P052BlockMultiUpdate> updates ) {
         this.updates = updates;
     }
 
-    public HashMap<Long, BlockMultiUpdate> getChunkUpdates() {
+    public HashMap<Long, P052BlockMultiUpdate> getChunkUpdates() {
         return updates;
     }
 

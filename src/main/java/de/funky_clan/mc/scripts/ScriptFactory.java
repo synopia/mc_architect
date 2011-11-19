@@ -9,15 +9,11 @@ import de.funky_clan.mc.events.script.LoadScript;
 import de.funky_clan.mc.events.script.RunScript;
 import de.funky_clan.mc.events.script.ScriptFinished;
 import de.funky_clan.mc.events.script.ScriptLoaded;
-import de.funky_clan.mc.events.script.SendScriptData;
 import de.funky_clan.mc.file.SchematicLoader;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
-import de.funky_clan.mc.net.packets.BlockMultiUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
 
 /**
  * @author synopia

@@ -10,8 +10,9 @@ import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import static de.funky_clan.mc.model.Chunk.getChunkId;
 import static de.funky_clan.mc.model.Chunk.getChunkXForId;
 import static de.funky_clan.mc.model.Chunk.getChunkYForId;
-import de.funky_clan.mc.net.packets.ChunkData;
-import de.funky_clan.mc.net.packets.ChunkPreparation;
+
+import de.funky_clan.mc.net.packets.P051ChunkData;
+import de.funky_clan.mc.net.packets.P050ChunkPreparation;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;
@@ -68,7 +69,7 @@ public class RegionFileService {
         logger.info( "unloading " + toRemove.size() + " chunks" );
 
         for( Long id : toRemove ) {
-            eventDispatcher.publish(new ChunkPreparation(NetworkEvent.SERVER, getChunkXForId(id),
+            eventDispatcher.publish(new P050ChunkPreparation(NetworkEvent.SERVER, getChunkXForId(id),
                     getChunkYForId(id), false));
         }
 
@@ -86,7 +87,7 @@ public class RegionFileService {
                 CompoundTag    level  = (CompoundTag) root.getValue().get( "Level" );
                 ByteArrayTag   blocks = (ByteArrayTag) level.getValue().get( "Blocks" );
 
-                eventDispatcher.publish(new ChunkData(ChunkData.SERVER, chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7,
+                eventDispatcher.publish(new P051ChunkData(P051ChunkData.SERVER, chunkX << 4, 0, chunkZ << 4, 1 << 4, 1 << 7,
                         1 << 4, blocks.getValue()));
             } catch( IOException e ) {
                 e.printStackTrace();
