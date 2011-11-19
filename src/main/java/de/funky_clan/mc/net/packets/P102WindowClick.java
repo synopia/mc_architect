@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.net.ItemStack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,13 +13,12 @@ import java.io.IOException;
 public class P102WindowClick extends BasePacket {
     public static final int ID = 0x66;
     private short           actionNumber;
-    private byte            itemCount;
-    private short           itemId;
-    private short           itemUses;
     private byte            rightClick;
     private short           slot;
     private byte            windowId;
     private boolean         f;
+    
+    private ItemStack       itemStack;
 
     @Override
     public int getPacketId() {
@@ -32,12 +32,7 @@ public class P102WindowClick extends BasePacket {
         rightClick   = in.readByte();
         actionNumber = in.readShort();
         f            = in.readBoolean();
-        itemId       = in.readShort();
-
-        if( itemId != -1 ) {
-            itemCount = in.readByte();
-            itemUses  = in.readShort();
-        }
+        itemStack    = readItem(in);
     }
 
     @Override
@@ -47,11 +42,6 @@ public class P102WindowClick extends BasePacket {
         out.writeByte( rightClick );
         out.writeShort( actionNumber );
         out.writeBoolean( f );
-        out.writeShort( itemId );
-
-        if( itemId != -1 ) {
-            out.writeByte( itemCount );
-            out.writeShort( itemUses );
-        }
+        writeItem( out, itemStack );
     }
 }

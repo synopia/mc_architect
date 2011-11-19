@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.net.ItemStack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,7 +13,7 @@ import java.io.IOException;
 public class P104WindowMultiSlotUpdate extends BasePacket {
     public static final int ID = 0x68;
     private short           count;
-    private Item[]          items;
+    private ItemStack[]          items;
     private byte            windowId;
 
     @Override
@@ -24,14 +25,10 @@ public class P104WindowMultiSlotUpdate extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         windowId = in.readByte();
         count    = in.readShort();
-        items    = new Item[count];
+        items    = new ItemStack[count];
 
         for( int i = 0; i < count; i++ ) {
-            short itemId = in.readShort();
-
-            if( itemId != -1 ) {
-                items[i] = new Item( itemId, in.readByte(), in.readShort() );
-            }
+            items[i] = readItem(in);
         }
     }
 
@@ -40,26 +37,9 @@ public class P104WindowMultiSlotUpdate extends BasePacket {
         out.writeByte( windowId );
         out.writeShort( count );
 
-        for( Item item : items ) {
-            if( item != null ) {
-                out.writeShort( item.itemId );
-                out.writeByte( item.count );
-                out.writeShort( item.uses );
-            } else {
-                out.writeShort( -1 );
-            }
+        for( ItemStack item : items ) {
+            writeItem(out, item);
         }
     }
 
-    public static class Item {
-        public final byte  count;
-        public final short itemId;
-        public final short uses;
-
-        public Item( short itemId, byte count, short uses ) {
-            this.itemId = itemId;
-            this.count  = count;
-            this.uses   = uses;
-        }
-    }
 }

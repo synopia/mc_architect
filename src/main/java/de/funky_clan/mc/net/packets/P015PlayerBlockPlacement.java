@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.net.ItemStack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,13 +12,11 @@ import java.io.IOException;
  */
 public class P015PlayerBlockPlacement extends BasePacket {
     public static final int ID = 0x0f;
-    private byte            amount;
-    private short           blockId;
-    private short           damage;
     private byte            direction;
     private int             x;
     private byte            y;
     private int             z;
+    private ItemStack       itemStack;
 
     @Override
     public int getPacketId() {
@@ -30,12 +29,7 @@ public class P015PlayerBlockPlacement extends BasePacket {
         y         = in.readByte();
         z         = in.readInt();
         direction = in.readByte();
-        blockId   = in.readShort();
-
-        if( blockId >= 0 ) {
-            amount = in.readByte();
-            damage = in.readShort();
-        }
+        itemStack = readItem(in);
     }
 
     @Override
@@ -44,11 +38,6 @@ public class P015PlayerBlockPlacement extends BasePacket {
         out.writeByte( y );
         out.writeInt( z );
         out.writeByte( direction );
-        out.writeShort( blockId );
-
-        if( blockId >= 0 ) {
-            out.writeByte( amount );
-            out.writeShort( damage );
-        }
+        writeItem(out, itemStack);
     }
 }

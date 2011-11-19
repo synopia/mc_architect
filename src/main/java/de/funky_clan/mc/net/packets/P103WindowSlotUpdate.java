@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.net.ItemStack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,11 +12,9 @@ import java.io.IOException;
  */
 public class P103WindowSlotUpdate extends BasePacket {
     public static final int ID = 0x67;
-    private byte            itemCount;
-    private short           itemId;
-    private short           itemUses;
     private short           slot;
     private byte            windowId;
+    private ItemStack       itemStack;
 
     @Override
     public int getPacketId() {
@@ -26,23 +25,13 @@ public class P103WindowSlotUpdate extends BasePacket {
     public void decode( DataInputStream in ) throws IOException {
         windowId = in.readByte();
         slot     = in.readShort();
-        itemId   = in.readShort();
-
-        if( itemId != -1 ) {
-            itemCount = in.readByte();
-            itemUses  = in.readShort();
-        }
+        itemStack = readItem(in);
     }
 
     @Override
     public void encode( DataOutputStream out ) throws IOException {
         out.writeByte( windowId );
         out.writeShort( slot );
-        out.writeShort( itemId );
-
-        if( itemId != -1 ) {
-            out.writeByte( itemCount );
-            out.writeShort( itemUses );
-        }
+        writeItem(out, itemStack);
     }
 }

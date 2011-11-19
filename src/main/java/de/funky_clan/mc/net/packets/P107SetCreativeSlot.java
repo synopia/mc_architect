@@ -1,6 +1,7 @@
 package de.funky_clan.mc.net.packets;
 
 import de.funky_clan.mc.net.BasePacket;
+import de.funky_clan.mc.net.ItemStack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,9 +14,7 @@ public class P107SetCreativeSlot extends BasePacket {
 
     public static final int ID = 0x6b;
     private short a;
-    private short itemId;
-    private short itemCount;
-    private short itemUses;
+    private ItemStack itemStack;
 
     @Override
     public int getPacketId() {
@@ -25,20 +24,12 @@ public class P107SetCreativeSlot extends BasePacket {
     @Override
     public void decode(DataInputStream in) throws IOException {
         a = in.readShort();
-        itemId   = in.readShort();
-        if( itemId != -1 ) {
-            itemCount = in.readByte();
-            itemUses  = in.readShort();
-        }
+        itemStack = readItem(in);
     }
 
     @Override
     public void encode(DataOutputStream out) throws IOException {
         out.writeShort(a);
-        out.writeShort(itemId);
-        if( itemId!=-1 ) {
-            out.writeShort(itemCount);
-            out.writeShort(itemUses);
-        }
+        writeItem(out, itemStack);
     }
 }
