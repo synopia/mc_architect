@@ -25,12 +25,12 @@ public class Colors {
         colorData[DataValues.BEDROCK.getId()]            = new Color( 84, 84, 84, 255 );
         colorData[DataValues.WATER.getId()]              = new Color( 38, 65, 128, 50 );
         colorData[DataValues.STATIONARYWATER.getId()]    = colorData[DataValues.WATER.getId()];
-        colorData[DataValues.LAVA.getId()]               = new Color( 255, 90, 0, 255 );
+        colorData[DataValues.LAVA.getId()]               = new Color( 255, 255, 0, 255 );
         colorData[DataValues.STATIONARYLAVA.getId()]     = colorData[DataValues.LAVA.getId()];
         colorData[DataValues.SAND.getId()]               = new Color( 218, 210, 158, 255 );
         colorData[DataValues.GRAVEL.getId()]             = new Color( 136, 126, 126, 255 );
         colorData[DataValues.GOLDORE.getId()]            = new Color( 143, 140, 125, 255 );
-        colorData[DataValues.IRONORE.getId()]            = new Color( 255, 255, 255, 255 );
+        colorData[DataValues.IRONORE.getId()]            = new Color( 235, 235, 235, 255 );
         colorData[DataValues.COALORE.getId()]            = new Color( 0, 0, 0, 255 );
         colorData[DataValues.LOG.getId()]                = new Color( 102, 81, 51, 255 );
         colorData[DataValues.LEAVES.getId()]             = new Color( 60, 192, 41, 100 );
@@ -50,7 +50,7 @@ public class Colors {
         colorData[DataValues.FIRE.getId()]               = new Color( 255, 170, 30, 200 );
         colorData[DataValues.WOODENSTAIRS.getId()]       = new Color( 157, 128, 79, 255 );
         colorData[DataValues.CHEST.getId()]              = new Color( 125, 91, 38, 255 );
-        colorData[DataValues.DIAMONDORE.getId()]         = new Color( 0, 255, 0, 255 );
+        colorData[DataValues.DIAMONDORE.getId()]         = new Color( 255, 50, 255, 255 );
         colorData[DataValues.DIAMONDBLOCK.getId()]       = new Color( 45, 166, 152, 255 );
         colorData[DataValues.WORKBENCH.getId()]          = new Color( 114, 88, 56, 255 );
         colorData[DataValues.CROPS.getId()]              = new Color( 146, 192, 0, 255 );
@@ -63,7 +63,7 @@ public class Colors {
         colorData[DataValues.MINECARTTRACK.getId()]      = new Color( 150, 134, 102, 180 );
         colorData[DataValues.COBBLESTONESTAIRS.getId()]  = new Color( 115, 115, 115, 255 );
         colorData[DataValues.IRONDOOR.getId()]           = new Color( 191, 191, 191, 255 );
-        colorData[DataValues.REDSTONEORE.getId()]        = new Color( 131, 107, 107, 255 );
+        colorData[DataValues.REDSTONEORE.getId()]        = new Color( 255,  50,  50, 255 );
         colorData[DataValues.GLOWINGREDSTONEORE.getId()] = colorData[DataValues.REDSTONEORE.getId()];
         colorData[DataValues.REDSTONETORCHON.getId()]    = new Color( 181, 140, 64, 32 );
         colorData[DataValues.REDSTONETORCHOFF.getId()]   = new Color( 255, 0, 0, 200 );

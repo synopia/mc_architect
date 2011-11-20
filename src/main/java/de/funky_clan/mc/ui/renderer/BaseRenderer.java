@@ -12,6 +12,11 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
     protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
                               double worldEndX, double worldEndY, double worldEndZ, Color color, boolean centered,
                               boolean unitSize ) {
+        renderBox(c, worldStartX, worldStartY, worldStartZ, worldEndX, worldEndY, worldEndZ, color, centered, unitSize, false);
+    }
+    protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
+                              double worldEndX, double worldEndY, double worldEndZ, Color color, boolean centered,
+                              boolean unitSize, boolean solid ) {
         Position position = c.getPosition();
         double   sizeX    = 0;
         double   sizeZ    = 0;
@@ -44,7 +49,14 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
             h += c.screenUnitY();
         }
 
-        c.getGraphics().setColor( position.fadeOut( color ));
-        c.getGraphics().drawRect( x, y, w, h );
+        if( solid ) {
+            c.getGraphics().setColor( position.fadeOut( color ));
+            c.getGraphics().fillRect( x, y, w, h );
+            c.getGraphics().setColor( color );
+            c.getGraphics().drawRect( x, y, w, h );
+        } else {
+            c.getGraphics().setColor( position.fadeOut( color ));
+            c.getGraphics().drawRect( x, y, w, h );
+        }
     }
 }

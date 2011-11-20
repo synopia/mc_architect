@@ -1,6 +1,7 @@
 package de.funky_clan.mc.services;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
@@ -28,6 +29,8 @@ public abstract class BaseOreDetectorService {
     private int             startX;
     private int             startY;
     private int             startZ;
+    @Inject
+    private Provider<Ore>   oreProvider;
 
     @Inject
     public BaseOreDetectorService( final ModelEventBus eventBus ) {
@@ -56,7 +59,7 @@ public abstract class BaseOreDetectorService {
                                             Ore ore = findOre(startX + x, startY + y, startZ + z);
 
                                             if (ore == null) {
-                                                ore = new Ore(startX + x, startY + y, startZ + z);
+                                                ore = oreProvider.get();
                                             }
 
                                             ore = followOre(x, y, z, ore);

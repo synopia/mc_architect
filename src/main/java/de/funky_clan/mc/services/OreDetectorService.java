@@ -110,7 +110,7 @@ public class OreDetectorService extends BaseOreDetectorService {
             }
         }
 
-        eventDispatcher.publish(new OreDisplayUpdate(component, all, total));
+        eventDispatcher.publish(new OreDisplayUpdate(component, all, all.size()));
     }
 
     protected void addFiltered( JComponent component, List<Ore> target, List<Ore> source ) {

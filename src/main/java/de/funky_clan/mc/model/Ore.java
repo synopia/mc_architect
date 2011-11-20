@@ -1,6 +1,10 @@
 package de.funky_clan.mc.model;
 
+import com.google.inject.Inject;
+import de.funky_clan.mc.config.Colors;
 import de.funky_clan.mc.config.DataValues;
+
+import java.awt.*;
 
 /**
  * @author synopia
@@ -13,7 +17,12 @@ public class Ore {
     private int             startX;
     private int             startY;
     private int             startZ;
+    @Inject 
+    private Colors          colors;
 
+    public Ore() {
+        this( Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE );
+    }
     public Ore( int startX, int startY, int startZ ) {
         this( startX, startY, startZ, startX, startY, startZ );
     }
@@ -128,5 +137,16 @@ public class Ore {
         }
 
         return true;
+    }
+    
+    public Color getColor() {
+        Color result = null;
+        for (int i = 0; i < oreTypes.length; i++) {
+            if( oreTypes[i] ) {
+                result = colors.getColorForBlock(OreType.values()[i].getBlockId());
+                break;
+            }
+        }
+        return result;
     }
 }
