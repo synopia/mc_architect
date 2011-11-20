@@ -64,4 +64,8 @@ public class PlayerBlock extends SelectedBlock {
     public Color getColor() {
         return colors.getPlayerBlockColor();
     }
+
+    public void move( double dx, double dy, double dz ) {
+        setPosition( getPositionX()+dx, getPositionY()+dy, getPositionZ()+dz );
+    }
 }

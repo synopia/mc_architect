@@ -49,4 +49,32 @@ public class P024EntitySpawn extends BasePacket {
         out.writeByte( pitch );
         writeMetadata( out, meta );
     }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public byte getPitch() {
+        return pitch;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public byte getYaw() {
+        return yaw;
+    }
+
+    public int getZ() {
+        return z;
+    }
 }

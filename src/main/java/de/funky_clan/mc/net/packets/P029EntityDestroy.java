@@ -27,4 +27,8 @@ public class P029EntityDestroy extends BasePacket {
     public void encode( DataOutputStream out ) throws IOException {
         out.writeInt( eid );
     }
+
+    public int getEid() {
+        return eid;
+    }
 }

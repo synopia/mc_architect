@@ -48,4 +48,32 @@ public class P020EntitySpawnNamed extends BasePacket {
         out.writeByte( pitch );
         out.writeShort( currentItem );
     }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public byte getPitch() {
+        return pitch;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public byte getYaw() {
+        return yaw;
+    }
+
+    public int getZ() {
+        return z;
+    }
 }

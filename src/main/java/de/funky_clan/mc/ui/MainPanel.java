@@ -14,6 +14,7 @@ import de.funky_clan.mc.events.swing.MouseRectangle;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.SliceType;
+import de.funky_clan.mc.services.EntityPositionService;
 import de.funky_clan.mc.services.PlayerPositionService;
 import de.funky_clan.mc.ui.widgets.ConnectionWidgetFactory;
 import de.funky_clan.mc.ui.widgets.PlayerInfoWidgetFactory;
@@ -45,6 +46,8 @@ public class MainPanel extends CControl {
     PlayerInfoWidgetFactory       playerInfoWidgetFactory;
     @Inject
     private PlayerPositionService playerPositionService;
+//    @Inject
+//    private EntityPositionService entityPositionService;
     @Inject
     ScriptsPanel                  scriptsPanel;
     @Inject @Named("SelectionBox")

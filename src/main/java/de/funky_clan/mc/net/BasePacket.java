@@ -20,6 +20,7 @@ public abstract class BasePacket implements NetworkEvent {
         damageableList[257] = true;
         damageableList[258] = true;
         damageableList[259] = true;
+        damageableList[261] = true;
         damageableList[267] = true;
         damageableList[268] = true;
         damageableList[269] = true;
