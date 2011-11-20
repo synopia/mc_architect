@@ -9,7 +9,7 @@ construction sliced by levels and your current position in a running minecraft c
 
 h1. Download and Installation
 
- * Release 1.0: "mc_architect-0.3.10.jar, latest, 0.3.10":http://download.funky-clan.de/mc_architect-0.3.10.jar (~ 4.2mb)
+ * Release 1.0: "mc_architect-0.3.11.jar, latest, 0.3.11":http://download.funky-clan.de/mc_architect-0.3.11.jar (~ 4.2mb)
  * "Dependency file for mc_architect.jar":http://download.funky-clan.de/jruby-complete-1.5.2.jar (~ 11mb)
 
  To start Minecraft Architect, copy mc_architect.jar and the jruby.jar into any directory:
@@ -80,6 +80,9 @@ h1. Development environment
 </code></pre>
 
 h1. History
+
+h4. 0.3.11
+* Fixed bow
 
 h4. 0.3.10
 * Updated to Release 1.0
