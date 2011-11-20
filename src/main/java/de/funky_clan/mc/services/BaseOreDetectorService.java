@@ -136,12 +136,16 @@ public abstract class BaseOreDetectorService {
             return ore;
         }
 
-        result = followOre( x + 1, y, z, result );
-        result = followOre( x, y + 1, z, result );
-        result = followOre( x, y, z + 1, result );
-        result = followOre( x - 1, y, z, result );
-        result = followOre( x, y - 1, z, result );
-        result = followOre( x, y, z - 1, result );
+        for( int nx=-1; nx<=1; nx ++ ) {
+            for( int ny=-1; ny<=1; ny ++ ) {
+                for( int nz=-1; nz<=1; nz ++ ) {
+                    if( nx==0 && ny==0 && nz==0 ) {
+                        continue;
+                    }
+                    result = followOre(x+nx, y+ny, z+nz, result);
+                }
+            }
+        }
 
         return result;
     }

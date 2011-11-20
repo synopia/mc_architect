@@ -54,9 +54,20 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
             c.getGraphics().fillRect( x, y, w, h );
             c.getGraphics().setColor( color );
             c.getGraphics().drawRect( x, y, w, h );
+            double dist = position.distToSlice();
+            char ch = 0;
+            if( dist >0 ) {
+                ch = '^';
+            } else if( dist <0 ) {
+                ch = 'v';
+            } else {
+                ch = '-';
+            }
+            int textW = c.getGraphics().getFontMetrics().charWidth(ch);
+            c.getGraphics().drawString(ch+"", x+(w-textW)/2, y);
         } else {
             c.getGraphics().setColor( position.fadeOut( color ));
-            c.getGraphics().drawRect( x, y, w, h );
+            c.getGraphics().drawRect(x, y, w, h);
         }
     }
 }
