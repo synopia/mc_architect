@@ -55,4 +55,24 @@ public class P023EntityCreated extends BasePacket {
             out.writeShort(g);
         }
     }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
 }

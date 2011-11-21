@@ -2,6 +2,7 @@ package de.funky_clan.mc.services;
 
 import com.google.inject.Singleton;
 import de.funky_clan.mc.config.DataValues;
+import de.funky_clan.mc.config.EntityType;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 @Singleton
 public class ImageService {
     private final HashMap<DataValues, Tile> tiles = new HashMap<DataValues, Tile>();
+    private final HashMap<EntityType, BufferedImage> images = new HashMap<EntityType, BufferedImage>();
 
     public ImageService() {
         addTile( DataValues.DIAMONDORE, 112, 48 );
@@ -24,14 +26,29 @@ public class ImageService {
         addTile( DataValues.IRONORE, 112, 16 );
         addTile( DataValues.REDSTONEORE, 128, 48 );
         addTile( DataValues.LAPIZLAZULIORE, 224, 128 );
-        load( "items.png" );
+        loadTiles("items.png");
+
+        for (EntityType type : EntityType.values()) {
+            if( type.getImageName()!=null ) {
+                loadImage(type, type.getImageName());
+            }
+        }
     }
 
     public void addTile( DataValues value, int x, int y ) {
         tiles.put( value, new Tile( value, x, y ));
     }
+    
+    protected void loadImage( EntityType type, String name ) {
+        try {
+            BufferedImage image  = ImageIO.read( getClass().getResourceAsStream( "/" + name ));
+            images.put(type, image);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot load "+name);
+        }
+    }
 
-    public void load( String name ) {
+    protected void loadTiles(String name) {
         try {
             int[]         pixels = new int[1 << 16];
             BufferedImage image  = ImageIO.read( getClass().getResourceAsStream( "/" + name ));
@@ -51,6 +68,10 @@ public class ImageService {
         } catch( InterruptedException e ) {
             e.printStackTrace();    // To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    public BufferedImage getImage( EntityType type ) {
+        return images.get(type);
     }
 
     public ImageIcon getIcon( DataValues type ) {

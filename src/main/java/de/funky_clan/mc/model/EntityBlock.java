@@ -2,19 +2,29 @@ package de.funky_clan.mc.model;
 
 import com.google.inject.Inject;
 import de.funky_clan.mc.config.Colors;
+import de.funky_clan.mc.config.EntityType;
+import de.funky_clan.mc.services.ImageService;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 /**
  *
  * @author synopia
  */
-public class PlayerBlock extends SelectedBlock {
+public class EntityBlock extends SelectedBlock {
     @Inject
     private Colors  colors;
+    @Inject
+    private ImageService imageService;
     private int     direction;
     private boolean drawViewCone;
     private int     z;
+    private EntityType type = EntityType.PLAYER;
+
+    public void setType(EntityType type) {
+        this.type = type;
+    }
 
     public void setDrawViewCone( boolean drawViewCone ) {
         this.drawViewCone = drawViewCone;
@@ -47,25 +57,32 @@ public class PlayerBlock extends SelectedBlock {
 
     @Override
     public double getHeight() {
-        return 1.8;
+        return type.getHeight();
     }
 
     @Override
     public double getSizeX() {
-        return 0.7;
+        return type.getSize();
     }
 
     @Override
     public double getSizeY() {
-        return 0.7;
+        return type.getSize();
     }
 
     @Override
     public Color getColor() {
-        return colors.getPlayerBlockColor();
+        return type.getColor();
     }
 
     public void move( double dx, double dy, double dz ) {
         setPosition( getPositionX()+dx, getPositionY()+dy, getPositionZ()+dz );
+    }
+    
+    public BufferedImage getImage() {
+        if( type!=null ) {
+            return imageService.getImage(type);
+        }
+        return null;
     }
 }

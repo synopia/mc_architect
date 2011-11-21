@@ -46,8 +46,8 @@ public class MainPanel extends CControl {
     PlayerInfoWidgetFactory       playerInfoWidgetFactory;
     @Inject
     private PlayerPositionService playerPositionService;
-//    @Inject
-//    private EntityPositionService entityPositionService;
+    @Inject
+    private EntityPositionService entityPositionService;
     @Inject
     ScriptsPanel                  scriptsPanel;
     @Inject @Named("SelectionBox")

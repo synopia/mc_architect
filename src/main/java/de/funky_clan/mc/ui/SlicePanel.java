@@ -24,7 +24,7 @@ import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
 import de.funky_clan.mc.model.Ore;
-import de.funky_clan.mc.model.PlayerBlock;
+import de.funky_clan.mc.model.EntityBlock;
 import de.funky_clan.mc.model.RenderContext;
 import de.funky_clan.mc.model.SelectedBlock;
 import de.funky_clan.mc.model.Slice;
@@ -32,13 +32,12 @@ import de.funky_clan.mc.model.SliceType;
 import de.funky_clan.mc.ui.renderer.BlockRenderer;
 import de.funky_clan.mc.ui.renderer.BoxRenderer;
 import de.funky_clan.mc.ui.renderer.OreRenderer;
-import de.funky_clan.mc.ui.renderer.PlayerRenderer;
+import de.funky_clan.mc.ui.renderer.EntityRenderer;
 import de.funky_clan.mc.ui.renderer.SliceRenderer;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
@@ -76,9 +75,9 @@ public class SlicePanel extends ZoomPanel {
     @Inject
     private OreRenderer                  oreRenderer;
     @Inject
-    private PlayerBlock playerBlock;
+    private EntityBlock playerBlock;
     @Inject
-    private PlayerRenderer               playerRenderer;
+    private EntityRenderer playerRenderer;
     @Inject @Named("SelectionBox")
     private Box                          selectedBox;
     private boolean                      selectionBoxMode;
@@ -88,7 +87,7 @@ public class SlicePanel extends ZoomPanel {
     @Inject
     private SliceRenderer                sliceRenderer;
     
-    private HashMap<Integer, PlayerBlock> entities = new HashMap<Integer, PlayerBlock>();
+    private HashMap<Integer, EntityBlock> entities = new HashMap<Integer, EntityBlock>();
 
     public enum MouseMode {ZOOM, SELECTION}
 
@@ -105,12 +104,14 @@ public class SlicePanel extends ZoomPanel {
             @Override
             public void handleEvent(EntityPositionUpdate event) {
                 entities.put(event.getEid(), event.getBlock());
+                repaint();
             }
         });
         eventBus.subscribe(EntityRemoved.class, new EventHandler<EntityRemoved>() {
             @Override
             public void handleEvent(EntityRemoved event) {
                 entities.remove(event.getEid());
+                repaint();
             }
         });
         eventBus.subscribe(ScriptFinished.class, new EventHandler<ScriptFinished>() {
@@ -284,7 +285,7 @@ public class SlicePanel extends ZoomPanel {
             playerRenderer.render(playerBlock, context );
         }
 
-        for (PlayerBlock block : entities.values()) {
+        for (EntityBlock block : entities.values()) {
             playerRenderer.render(block, context);
         }
     }
