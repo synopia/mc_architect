@@ -13,12 +13,13 @@ public class Ore {
     private int             endX;
     private int             endY;
     private int             endZ;
-    private final boolean[] oreTypes;
+    private OreType         oreType;
     private int             startX;
     private int             startY;
     private int             startZ;
     @Inject 
     private Colors          colors;
+    private int             numberOfBlocks;
 
     public Ore() {
         this( Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE );
@@ -34,7 +35,6 @@ public class Ore {
         this.endX   = endX;
         this.endY   = endY;
         this.endZ   = endZ;
-        oreTypes    = new boolean[OreType.values().length];
     }
 
     public enum OreType {
@@ -100,53 +100,47 @@ public class Ore {
         return endZ;
     }
 
-    public void addOre( int x, int y, int z, int value ) {
-        oreTypes[OreType.forBlockId( value ).ordinal()] = true;
+    public void addOre( int x, int y, int z ) {
         startX                                          = Math.min( startX, x );
         startY                                          = Math.min( startY, y );
         startZ                                          = Math.min( startZ, z );
         endX                                            = Math.max( endX, x );
         endY                                            = Math.max( endY, y );
         endZ                                            = Math.max( endZ, z );
+        numberOfBlocks ++;
     }
 
-    public boolean contains( int x, int y, int z ) {
-        return( x >= startX ) && ( y >= startY ) && ( z >= startZ ) && ( x <= endX ) && ( y <= endY ) && ( z <= endZ );
+    public boolean contains( int x, int y, int z, int dataValue ) {
+        return oreType.getBlockId()==dataValue && ( x >= startX ) && ( y >= startY ) && ( z >= startZ ) && ( x <= endX ) && ( y <= endY ) && ( z <= endZ );
     }
 
     public void addOre( Ore ore ) {
-        for( int i = 0; i < oreTypes.length; i++ ) {
-            oreTypes[i] |= ore.oreTypes[i];
-        }
-
-        addOre( ore.getStartX(), ore.getStartY(), ore.getStartZ(), -1 );
-        addOre( ore.getEndX(), ore.getEndY(), ore.getEndZ(), -1 );
+        startX                                          = Math.min( startX, ore.getStartX() );
+        startY                                          = Math.min(startY, ore.getStartY());
+        startZ                                          = Math.min(startZ, ore.getStartZ());
+        endX                                            = Math.max( endX,   ore.getEndX() );
+        endY                                            = Math.max( endY,   ore.getEndX() );
+        endZ                                            = Math.max( endZ,   ore.getEndX() );
+        numberOfBlocks += ore.numberOfBlocks;
     }
 
-    public boolean hasOreType( OreType type ) {
-        return oreTypes[type.ordinal()];
+    public OreType getOreType() {
+        return oreType;
     }
 
     public boolean matches( boolean[] oreTypes ) {
-        for( int i = 0; i < oreTypes.length; i++ ) {
-            if( oreTypes[i] != this.oreTypes[i] ) {
-                if( !oreTypes[i] ) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return oreTypes[oreType.ordinal()];
     }
     
     public Color getColor() {
-        Color result = null;
-        for (int i = 0; i < oreTypes.length; i++) {
-            if( oreTypes[i] ) {
-                result = colors.getColorForBlock(OreType.values()[i].getBlockId());
-                break;
-            }
-        }
-        return result;
+        return colors.getColorForBlock(oreType.getBlockId());
+    }
+
+    public void setOreType( int blockId ) {
+        oreType = OreType.forBlockId(blockId);
+    }
+
+    public int getNumberOfBlocks() {
+        return numberOfBlocks;
     }
 }

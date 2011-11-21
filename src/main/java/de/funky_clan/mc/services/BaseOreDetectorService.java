@@ -56,10 +56,11 @@ public abstract class BaseOreDetectorService {
 
                                     if (isOre(data[i])) {
                                         if (!closedMap[i]) {
-                                            Ore ore = findOre(startX + x, startY + y, startZ + z);
+                                            Ore ore = findOre(startX + x, startY + y, startZ + z, data[i]);
 
                                             if (ore == null) {
                                                 ore = oreProvider.get();
+                                                ore.setOreType(data[i]);
                                             }
 
                                             ore = followOre(x, y, z, ore);
@@ -90,9 +91,9 @@ public abstract class BaseOreDetectorService {
               || ( data == DataValues.LAPIZLAZULIORE.getId() ) || ( data == DataValues.REDSTONEORE.getId() );
     }
 
-    public Ore findOre(int x, int y, int z) {
+    public Ore findOre(int x, int y, int z, int dataValue ) {
         for( Ore ore : ores ) {
-            if( ore.contains( x, y, z )) {
+            if( ore.contains( x, y, z, dataValue )) {
                 return ore;
             }
         }
@@ -108,13 +109,13 @@ public abstract class BaseOreDetectorService {
             int pixel = model.getPixel( startX + x, startY + y, startZ + z, 0 );
 
             if( isOre( pixel )) {
-                otherChunk = findOre( startX + x, startY + y, startZ + z );
+                otherChunk = findOre( startX + x, startY + y, startZ + z, ore.getOreType().getBlockId() );
 
                 if( otherChunk != null ) {
                     result = otherChunk;
                     result.addOre( ore );
                 } else {
-                    ore.addOre( startX + x, startY + y, startZ + z, pixel );
+                    ore.addOre( startX + x, startY + y, startZ + z);
                     result = ore;
                 }
             }
@@ -128,11 +129,22 @@ public abstract class BaseOreDetectorService {
             return ore;
         }
 
-        closedMap[index] = true;
+        if( data[index]==ore.getOreType().getBlockId() ) {
+            otherChunk = findOre( startX + x, startY + y, startZ + z, ore.getOreType().getBlockId() );
 
-        if( isOre( data[index] )) {
-            result.addOre( startX + x, startY + y, startZ + z, data[index] );
+            if( otherChunk != null ) {
+                result = otherChunk;
+                result.addOre( ore );
+            } else {
+                ore.addOre( startX + x, startY + y, startZ + z);
+                result = ore;
+            }
+
+            closedMap[index] = true;
         } else {
+            if( !isOre(data[index]) ) {
+                closedMap[index] = true;
+            }
             return ore;
         }
 

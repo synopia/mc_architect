@@ -104,13 +104,15 @@ public class OreDetectorService extends BaseOreDetectorService {
         for( Long id : chunksForPlayer ) {
             if( ores.containsKey( id )) {
                 List<Ore> source = ores.get( id );
-
-                total += source.size();
                 addFiltered( component, all, source );
             }
         }
 
-        eventDispatcher.publish(new OreDisplayUpdate(component, all, all.size()));
+        for (Ore ore : all) {
+            total += ore.getNumberOfBlocks();
+        }
+
+        eventDispatcher.publish(new OreDisplayUpdate(component, all, total));
     }
 
     protected void addFiltered( JComponent component, List<Ore> target, List<Ore> source ) {
