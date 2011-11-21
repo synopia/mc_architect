@@ -113,6 +113,7 @@ public class Main extends JFrame {
         eventDispatcher.publish(new LoadScript("spider.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("dino.rb", !Main.isDebug()));
         eventDispatcher.publish(new LoadScript("skull.rb", !Main.isDebug()));
+        eventDispatcher.publish(new LoadScript("ModernVilla.schematic", !Main.isDebug()));
 
         if( Main.isDebug() ) {
             eventDispatcher.publish(new LoadScript("test.rb", false));

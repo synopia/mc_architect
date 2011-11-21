@@ -45,9 +45,6 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
         int w      = Math.abs( endX - startX );
         int h      = Math.abs( endY - startY );
 
-        w += c.screenUnitX();
-        h += c.screenUnitY();
-
         float alpha = 1;
         double distToSlice = position.distToSlice();
         if(distToSlice!=0) {

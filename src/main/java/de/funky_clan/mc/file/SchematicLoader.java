@@ -1,6 +1,7 @@
 package de.funky_clan.mc.file;
 
 import com.google.inject.Singleton;
+import de.funky_clan.mc.config.DataValues;
 import de.funky_clan.mc.scripts.Graphics;
 import org.jnbt.ByteArrayTag;
 import org.jnbt.CompoundTag;
@@ -38,7 +39,7 @@ public class SchematicLoader {
             int sizeY = height.getValue();
 
             int startX = mid_x - sizeX/2;
-            int startY = mid_y - sizeY/2;
+            int startY = mid_y;
             int startZ = mid_z - sizeZ/2;
 
             ByteArrayTag byteArrayTag = (ByteArrayTag) root.getValue().get("Blocks");
@@ -47,7 +48,7 @@ public class SchematicLoader {
                 for( int y = 0; y < sizeY; y++ ) {
                     for( int z = 0; z < sizeZ; z++ ) {
                         int   i     = x + ( y*sizeZ+z ) * sizeX;
-                        if( blocks[i]>0 ) {
+                        if( blocks[i]>0 && blocks[i]!= DataValues.GLASS.getId() && blocks[i]!=DataValues.GLASS_PANE.getId()) {
                             int xx = x;
                             int yy = y;
                             int zz = z;

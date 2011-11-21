@@ -12,63 +12,31 @@ import java.util.HashMap;
 /**
  * @author synopia
  */
-public class Script {
-    private boolean                         running  = false;
-    private boolean                         finished = false;
-    private boolean                         sent     = false;
-    private String                          author;
-    ScriptingContainer                      container;
-    private final String                    filename;
-    private Exception                       hasError;
-    private boolean                         loaded;
-    private String                          name;
-    private HashMap<Long, P052BlockMultiUpdate> updates;
-    private final boolean                   useClasspath;
-    private StringWriter                    writer;
+public abstract class Script {
+    protected String                    filename;
+    protected boolean                   useClasspath;
 
-    public Script( String filename, boolean useClasspath ) {
+    protected boolean                         running  = false;
+    protected boolean                         finished = false;
+    protected boolean                         sent     = false;
+    protected String                          author;
+    protected Exception                       hasError;
+    protected boolean                         loaded;
+    protected String                          name;
+    protected HashMap<Long, P052BlockMultiUpdate> updates;
+    protected StringWriter                    writer;
+
+    public void setFilename( String filename, boolean useClasspath ) {
         this.filename     = filename;
         this.useClasspath = useClasspath;
+        writer = new StringWriter();
     }
 
-    public void init() {
-        if( container == null ) {
-            writer    = new StringWriter();
-            container = new ScriptingContainer();
-        }
-    }
+    public abstract void init();
 
-    public void put( String key, Object value ) {
-        init();
-        container.put( key, value );
-    }
+    public abstract void load();
 
-    public void load() {
-        init();
-
-        Object result;
-
-        try {
-            result = interalRun( "info" );
-
-            RubyHash hash = (RubyHash) result;
-
-            author = getString( hash, "author" );
-            name   = getString( hash, "name" );
-            loaded = true;
-        } catch( Exception e ) {
-            hasError = e;
-        }
-    }
-
-    public void run() {
-        init();
-        running = true;
-        interalRun( "run" );
-        running   = false;
-        finished  = true;
-        container = null;
-    }
+    public abstract void run();
 
     public String getFilename() {
         return filename;
@@ -158,41 +126,4 @@ public class Script {
         return writer.toString();
     }
 
-    protected Object interalRun( String methodCall ) {
-        container.put( "@dummy", this );
-        writer = new StringWriter();
-        container.setWriter( writer );
-        container.setErrorWriter( writer );
-        container.runScriptlet( "def info\nraise 'Script must implement " + methodCall + "()!'\nend\n" );
-
-        if( useClasspath ) {
-            container.runScriptlet( PathType.CLASSPATH, filename );
-        } else {
-            container.runScriptlet( PathType.ABSOLUTE, filename );
-        }
-
-        try {
-            return container.runScriptlet( methodCall );
-        } catch (Exception e) {
-            hasError = e;
-            return null;
-        }
-
-    }
-
-    protected String getString( RubyHash hash, String key ) {
-        Object                 result      = null;
-        RubySymbol.SymbolTable symbolTable = container.getRuntime().getSymbolTable();
-        RubySymbol             symbol      = symbolTable.getSymbol( key );
-
-        if( symbol != null ) {
-            result = hash.get( symbol );
-        }
-
-        if( result != null ) {
-            return result.toString();
-        } else {
-            return null;
-        }
-    }
 }

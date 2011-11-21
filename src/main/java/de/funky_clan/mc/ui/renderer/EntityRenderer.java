@@ -23,7 +23,7 @@ public class EntityRenderer extends BaseRenderer<EntityBlock> {
         } else {
             renderBox( c, object.getPositionX(), object.getPositionY(), object.getPositionZ(),
                     object.getPositionX() + object.getSizeX(), object.getPositionY() + object.getHeight(),
-                    object.getPositionZ() + object.getSizeY(), object.getColor(), true, true);
+                    object.getPositionZ() + object.getSizeY(), object.getColor(), true, false);
         }
 
         if( object.isDrawViewCone() ) {

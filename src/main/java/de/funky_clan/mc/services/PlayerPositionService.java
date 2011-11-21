@@ -166,4 +166,24 @@ public class PlayerPositionService {
         this.yShift = yShift;
         firePositionUpdate();
     }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public double getZ() {
+        return z;
+    }
 }

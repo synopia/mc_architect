@@ -1,6 +1,7 @@
 package de.funky_clan.mc.scripts;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import de.funky_clan.mc.eventbus.EventDispatcher;
 import de.funky_clan.mc.eventbus.EventHandler;
@@ -22,21 +23,14 @@ import org.slf4j.LoggerFactory;
 public class ScriptFactory {
     private final Logger  logger = LoggerFactory.getLogger( ScriptFactory.class );
     @Inject
-    BinvoxLoader          binvoxLoader;
+    private Provider<RubyScript> rubyScriptProvider;
+    @Inject
+    private Provider<SchematicScript> schematicScriptProvider;
+    @Inject
+    private Model model;
+
     @Inject
     EventDispatcher eventDispatcher;
-    @Inject
-    private Model         model;
-    @Inject
-    private SchematicLoader schematicLoader;
-    @Inject
-    private SliceGraphics sliceGraphicsX;
-    @Inject
-    private SliceGraphics sliceGraphicsY;
-    @Inject
-    private SliceGraphics sliceGraphicsZ;
-    @Inject
-    private WorldGraphics worldGraphics;
 
     @Inject
     public ScriptFactory( final ModelEventBus eventBus ) {
@@ -46,11 +40,15 @@ public class ScriptFactory {
                 Script script;
 
                 if (!event.hasScript()) {
-                    if (!event.getFileName().endsWith(".rb")) {
+                    if (event.getFileName().endsWith(".rb")) {
+                        script = rubyScriptProvider.get();
+                        script.setFilename(event.getFileName(), event.isUseClasspath());
+                    } else if( event.getFileName().endsWith(".schematic") ) {
+                        script = schematicScriptProvider.get();
+                        script.setFilename(event.getFileName(), event.isUseClasspath() );
+                    } else {
                         return;
                     }
-
-                    script = new Script(event.getFileName(), event.isUseClasspath());
                 } else {
                     script = event.getScript();
                 }
@@ -63,19 +61,7 @@ public class ScriptFactory {
         eventBus.subscribe(RunScript.class, new EventHandler<RunScript>() {
             @Override
             public void handleEvent(RunScript event) {
-                sliceGraphicsX.setSliceType(SliceType.X);
-                sliceGraphicsY.setSliceType(SliceType.Y);
-                sliceGraphicsZ.setSliceType(SliceType.Z);
-
                 Script script = event.getScript();
-
-                script.put("@slice_x", sliceGraphicsX);
-                script.put("@slice_y", sliceGraphicsY);
-                script.put("@slice_z", sliceGraphicsZ);
-                script.put("@world", worldGraphics);
-                script.put("@binvox", binvoxLoader);
-                script.put("@schematic", schematicLoader);
-                script.put("@model", model);
                 logger.info("Running script " + script.getName());
                 script.run();
                 script.setChunkUpdates(model.getUpdates());
