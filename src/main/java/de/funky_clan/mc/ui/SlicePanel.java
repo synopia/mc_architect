@@ -100,7 +100,6 @@ public class SlicePanel extends ZoomPanel {
         setAutoscrolls(true);
         context.setColors(colors);
         context.setWindowSize(50, 50);
-        playerBlock.setName("Tester");
         eventBus.subscribe(EntityFilterChanged.class, new EventHandler<EntityFilterChanged>() {
             @Override
             public void handleEvent(EntityFilterChanged event) {

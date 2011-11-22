@@ -53,7 +53,7 @@ public class ColorsPanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -64,6 +64,9 @@ public class ColorsPanel extends JPanel {
 
             case 1:
                 return colors.getColorForBlock( DataValues.values()[rowIndex].getId() );
+
+            case 2:
+                return colors.getColorForBlueprint(DataValues.values()[rowIndex].getId());
             }
 
             return null;
@@ -71,14 +74,25 @@ public class ColorsPanel extends JPanel {
 
         @Override
         public void setValueAt( Object aValue, int rowIndex, int columnIndex ) {
+            int id;
             switch( columnIndex ) {
-            case 1:
-                int id = DataValues.values()[rowIndex].getId();
+                case 1:
+                id = DataValues.values()[rowIndex].getId();
 
                 if( !colors.getColorForBlock( id ).equals( aValue )) {
                     colors.setColorForBlock( id, (Color) aValue );
                     eventDispatcher.publish(new ColorChanged(id, (Color) aValue));
                 }
+                break;
+
+            case 2:
+                id = DataValues.values()[rowIndex].getId();
+
+                if( !colors.getColorForBlueprint( id ).equals( aValue )) {
+                    colors.setColorForBlueprint( id, (Color) aValue );
+                    eventDispatcher.publish(new ColorChanged(id, (Color) aValue));
+                }
+                break;
             }
         }
 
@@ -90,6 +104,9 @@ public class ColorsPanel extends JPanel {
 
             case 1:
                 return Color.class;
+
+            case 2:
+                return Color.class;
             }
 
             return null;
@@ -97,7 +114,7 @@ public class ColorsPanel extends JPanel {
 
         @Override
         public boolean isCellEditable( int rowIndex, int columnIndex ) {
-            return columnIndex == 1;
+            return columnIndex == 1 || columnIndex==2;
         }
     }
 }

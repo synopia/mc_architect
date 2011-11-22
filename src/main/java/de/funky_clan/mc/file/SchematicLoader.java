@@ -21,6 +21,101 @@ import java.util.zip.GZIPInputStream;
  */
 @Singleton
 public class SchematicLoader {
+    public static class Schematic {
+        private int sizeX;
+        private int sizeY;
+        private int sizeZ;
+        private byte[] blocks;
+        
+        public void inject( Graphics g, int mid_x, int mid_y, int mid_z, int dir) {
+            int startX;
+            int startY = mid_y;
+            int startZ;
+            switch (dir) {
+                case 0:
+                    startX = mid_x - sizeX/2;
+                    startZ = mid_z - sizeZ/2;
+                break;
+                case 1:
+                    startX = mid_x - sizeZ/2;
+                    startZ = mid_z + sizeX/2;
+                    break;
+                case 2:
+                    startX = mid_x + sizeX/2;
+                    startZ = mid_z + sizeZ/2;
+                    break;
+                case 3:
+                    startX = mid_x + sizeZ/2;
+                    startZ = mid_z - sizeX/2;
+                    break;
+                default:
+                    throw new IllegalArgumentException("dir must be between 0 and 3");
+            }
+            
+            for( int x = 0; x < sizeX; x++ ) {
+                for( int y = 0; y < sizeY; y++ ) {
+                    for( int z = 0; z < sizeZ; z++ ) {
+                        int   i     = x + ( y*sizeZ+z ) * sizeX;
+                        byte value = blocks[i];
+                        if(value>0) {
+                            int tx = 0;
+                            int ty = y+startY;
+                            int tz = 0;
+                            switch (dir) {
+                                case 0:
+                                    tx = startX+x;
+                                    tz = startZ+z;
+                                    break;
+                                case 1:
+                                    tx = startX+z;
+                                    tz = startZ-x;
+                                    break;
+                                case 2:
+                                    tx = startX-x;
+                                    tz = startZ-z;
+                                    break;
+                                case 3:
+                                    tx = startX-z;
+                                    tz = startZ+x;
+                                    break;
+                            }
+                            g.setPixel(tx, ty, tz, value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public Schematic load( String filename ) {
+        try {
+            InputStream fileInput;
+            fileInput = getClass().getResourceAsStream( "/" + filename );
+            if( fileInput==null ) {
+                fileInput = new FileInputStream(filename);
+            }
+            Schematic schematic = new Schematic();
+            
+            DataInputStream in = new DataInputStream( new GZIPInputStream( fileInput ));
+            NBTInputStream nbt    = new NBTInputStream( in );
+            CompoundTag root   = (CompoundTag) nbt.readTag();
+            ShortTag width = (ShortTag) root.getValue().get("Width");
+            ShortTag length = (ShortTag) root.getValue().get("Length");
+            ShortTag height = (ShortTag) root.getValue().get("Height");
+            ByteArrayTag byteArrayTag = (ByteArrayTag) root.getValue().get("Blocks");
+            schematic.sizeX = width.getValue();
+            schematic.sizeZ = length.getValue();
+            schematic.sizeY = height.getValue();
+            schematic.blocks = byteArrayTag.getValue();
+            
+            return schematic;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
     public void load(Graphics g, String filename, int mid_x, int mid_y, int mid_z, int dirX, int dirY, int dirZ) {
         try {
             InputStream fileInput;

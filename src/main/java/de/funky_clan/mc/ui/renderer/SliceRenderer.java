@@ -75,13 +75,6 @@ public class SliceRenderer implements Renderer<Slice> {
             return;
         }
 
-        Color bc = colors.getColorForBlock( DataValues.BLUEPRINT.getId() );
-
-        blueprint[0] = bc.getRed() / 255.f;
-        blueprint[1] = bc.getGreen() / 255.f;
-        blueprint[2] = bc.getBlue() / 255.f;
-        blueprint[3] = bc.getAlpha() / 255.f;
-
         for( int chunkX = chunkStartX; chunkX <= chunkEndX; chunkX++ ) {
             for( int chunkZ = chunkStartZ; chunkZ <= chunkEndZ; chunkZ++ ) {
                 Chunk chunk = model.getChunk( chunkX, chunkZ );
@@ -199,12 +192,17 @@ public class SliceRenderer implements Renderer<Slice> {
         int     offset = ( cz * 128 ) + ( cx * 128 * 16 );
         float[] color  = null;
 
-        if( map[offset + cy] >= 0 ) {
+        byte mapValue = map[offset + cy];
+        if( mapValue >= 0 ) {
             color = findColor( chunk, cx, cy, cz, useAlpha );
         }
 
-        if(( map[offset + cy + Chunk.CHUNK_ARRAY_SIZE] > 0 ) && ( map[offset + cy] == 0 )) {
-            color = blueprint;
+        byte blueprintValue = map[offset + cy + Chunk.CHUNK_ARRAY_SIZE];
+        if( mapValue == 0 ) {
+            float[] bColor = colors.getColorForBlueprint(blueprintValue, blueprint);
+            if( bColor[3]>0 ) {
+                color = bColor;
+            }
         }
 
         if( color != null ) {

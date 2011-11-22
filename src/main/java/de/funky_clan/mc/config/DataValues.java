@@ -126,7 +126,6 @@ public enum DataValues {
     END_STONE,
     DRAGON_EGG,
 
-    BLUEPRINT,
     NOT_LOADED,
     ;
     //J+

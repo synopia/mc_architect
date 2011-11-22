@@ -19,6 +19,7 @@ public class SchematicScript extends Script {
     private WorldGraphics worldGraphics;
     @Inject
     private PlayerPositionService playerPositionService;
+    private SchematicLoader.Schematic schematic;
 
     @Override
     public void init() {
@@ -29,7 +30,11 @@ public class SchematicScript extends Script {
     public void load() {
         author = "";
         name   = getFilename();
-        loaded = true;
+        
+        schematic = schematicLoader.load(name);
+        if( schematic!=null ) {
+            loaded = true;
+        }
     }
 
     @Override
@@ -39,7 +44,24 @@ public class SchematicScript extends Script {
         int x = (int) playerPositionService.getX();
         int y = (int) playerPositionService.getY();
         int z = (int) playerPositionService.getZ();
-        schematicLoader.load(worldGraphics, getFilename(), x, y, z, 1,1,1);
+        int angle = (int) playerPositionService.getYaw()+45;
+        angle %= 360;
+        while( angle < 0 ) {
+            angle += 360;
+        }
+
+        int dir = 0;
+        if( angle < 90 ) {
+            dir = 0;
+        } else if( angle < 180 ) {
+            dir = 1;
+        } else if( angle < 270 ) {
+            dir = 2;
+        } else {
+            dir = 3;
+        }
+        
+        schematic.inject(worldGraphics, x, y, z, dir);
         running   = false;
         finished  = true;
     }
