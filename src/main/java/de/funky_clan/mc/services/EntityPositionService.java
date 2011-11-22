@@ -9,6 +9,7 @@ import de.funky_clan.mc.eventbus.EventHandler;
 import de.funky_clan.mc.eventbus.ModelEventBus;
 import de.funky_clan.mc.events.model.EntityPositionUpdate;
 import de.funky_clan.mc.events.model.EntityRemoved;
+import de.funky_clan.mc.events.swing.EntityFilterChanged;
 import de.funky_clan.mc.model.EntityBlock;
 import de.funky_clan.mc.net.packets.*;
 
@@ -49,7 +50,7 @@ public class EntityPositionService {
                 block.setPosition(event.getX()/32., event.getY()/32., event.getZ()/32.);
                 block.setDirection(event.getYaw());
                 block.setType(EntityType.SMP_PLAYER);
-
+                block.setName( event.getPlayerName() );
                 eventDispatcher.publish(new EntityPositionUpdate(event.getEid(), block));
             }
         });

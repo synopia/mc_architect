@@ -14,6 +14,6 @@ public class BoxRenderer extends BaseRenderer<Box> {
         Color color = c.getColors().getSelectedBlockColor();
 
         renderBox( c, object.getStartX(), object.getStartY(), object.getStartZ(), object.getEndX(), object.getEndY(),
-                   object.getEndZ(), color, false, false );
+                   object.getEndZ(), color, 1, null, false, false );
     }
 }

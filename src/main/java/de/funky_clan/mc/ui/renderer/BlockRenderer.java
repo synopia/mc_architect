@@ -21,7 +21,7 @@ public class BlockRenderer<B extends SelectedBlock> extends BaseRenderer<B> {
 
         renderBox( c, object.getPositionX(), object.getPositionY(), object.getPositionZ(),
                    object.getPositionX() + object.getSizeX(), object.getPositionY() + object.getHeight(),
-                   object.getPositionZ() + object.getSizeY(), color, object.getType() == SelectedBlock.Type.CENTERED,
+                   object.getPositionZ() + object.getSizeY(), color, 1, null, object.getType() == SelectedBlock.Type.CENTERED,
                    false );
     }
 }

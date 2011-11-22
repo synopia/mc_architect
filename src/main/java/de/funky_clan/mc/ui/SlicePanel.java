@@ -16,10 +16,7 @@ import de.funky_clan.mc.events.model.EntityRemoved;
 import de.funky_clan.mc.events.model.ModelUpdate;
 import de.funky_clan.mc.events.model.PlayerPositionUpdate;
 import de.funky_clan.mc.events.script.ScriptFinished;
-import de.funky_clan.mc.events.swing.ColorChanged;
-import de.funky_clan.mc.events.swing.MouseMoved;
-import de.funky_clan.mc.events.swing.MouseRectangle;
-import de.funky_clan.mc.events.swing.OreDisplayUpdate;
+import de.funky_clan.mc.events.swing.*;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.Box;
 import de.funky_clan.mc.model.Model;
@@ -73,6 +70,8 @@ public class SlicePanel extends ZoomPanel {
     @Inject
     private OrePanel                     orePanel;
     @Inject
+    private EntityPanel                  entityPanel;
+    @Inject
     private OreRenderer                  oreRenderer;
     @Inject
     private EntityBlock playerBlock;
@@ -88,6 +87,7 @@ public class SlicePanel extends ZoomPanel {
     private SliceRenderer                sliceRenderer;
     
     private HashMap<Integer, EntityBlock> entities = new HashMap<Integer, EntityBlock>();
+    private boolean[] entityFilter;
 
     public enum MouseMode {ZOOM, SELECTION}
 
@@ -100,6 +100,13 @@ public class SlicePanel extends ZoomPanel {
         setAutoscrolls(true);
         context.setColors(colors);
         context.setWindowSize(50, 50);
+        playerBlock.setName("Tester");
+        eventBus.subscribe(EntityFilterChanged.class, new EventHandler<EntityFilterChanged>() {
+            @Override
+            public void handleEvent(EntityFilterChanged event) {
+                entityFilter = event.getFilter();
+            }
+        });
         eventBus.subscribe(EntityPositionUpdate.class, new EventHandler<EntityPositionUpdate>() {
             @Override
             public void handleEvent(EntityPositionUpdate event) {
@@ -286,7 +293,9 @@ public class SlicePanel extends ZoomPanel {
         }
 
         for (EntityBlock block : entities.values()) {
-            playerRenderer.render(block, context);
+            if( block.matches(entityFilter) ) {
+                playerRenderer.render(block, context);
+            }
         }
     }
 
@@ -347,6 +356,7 @@ public class SlicePanel extends ZoomPanel {
             }
         } );
         dockable.addAction( orePanel.getMenu( this ));
+        dockable.addAction( entityPanel.getMenu(this) );
 
         return dockable;
     }

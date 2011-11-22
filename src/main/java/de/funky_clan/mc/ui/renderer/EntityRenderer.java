@@ -1,5 +1,6 @@
 package de.funky_clan.mc.ui.renderer;
 
+import de.funky_clan.mc.config.EntityType;
 import de.funky_clan.mc.math.Position;
 import de.funky_clan.mc.model.EntityBlock;
 import de.funky_clan.mc.model.RenderContext;
@@ -16,14 +17,22 @@ public class EntityRenderer extends BaseRenderer<EntityBlock> {
 
     @Override
     public void render( EntityBlock object, RenderContext c ) {
+        Position position = c.getPosition();
+        position.setWorld( object.getPositionX(), object.getPositionY(), object.getPositionZ() );
+        float alpha = 1;
+        double distToSlice = position.distToSlice();
+        if(distToSlice!=0) {
+            alpha = 1.f / (float) Math.abs(distToSlice);
+        }
+
         if( object.getImage()!=null ) {
             renderBox( c, object.getPositionX(), object.getPositionY(), object.getPositionZ(),
                     object.getPositionX() + object.getSizeX(), object.getPositionY() + object.getHeight(),
-                    object.getPositionZ() + object.getSizeY(), object.getImage() );
+                    object.getPositionZ() + object.getSizeY(), object.getImage(), alpha, object.getName() );
         } else {
             renderBox( c, object.getPositionX(), object.getPositionY(), object.getPositionZ(),
                     object.getPositionX() + object.getSizeX(), object.getPositionY() + object.getHeight(),
-                    object.getPositionZ() + object.getSizeY(), object.getColor(), true, false);
+                    object.getPositionZ() + object.getSizeY(), object.getColor(), alpha, object.getName(), true, false);
         }
 
         if( object.isDrawViewCone() ) {

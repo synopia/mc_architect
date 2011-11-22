@@ -10,16 +10,18 @@ import java.awt.image.BufferedImage;
  * @author synopia
  */
 public abstract class BaseRenderer<T> implements Renderer<T> {
-    protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
-                              double worldEndX, double worldEndY, double worldEndZ, Color color, boolean centered,
-                              boolean unitSize ) {
-        renderBox(c, worldStartX, worldStartY, worldStartZ, worldEndX, worldEndY, worldEndZ, color, centered, unitSize, false);
+    protected void renderBox( RenderContext c, 
+                              double worldStartX, double worldStartY, double worldStartZ,
+                              double worldEndX, double worldEndY, double worldEndZ, 
+                              Color color, float alpha, String name,
+                              boolean centered, boolean unitSize ) {
+        renderBox(c, worldStartX, worldStartY, worldStartZ, worldEndX, worldEndY, worldEndZ, color, alpha, name, centered, unitSize, false);
     }
 
-    protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
+    protected void renderBox( RenderContext c, 
+                              double worldStartX, double worldStartY, double worldStartZ,
                               double worldEndX, double worldEndY, double worldEndZ, 
-                              BufferedImage image ) {
-        
+                              BufferedImage image, float alpha, String text ) {
         Position position = c.getPosition();
         double   sizeX    = 0;
         double   sizeZ    = 0;
@@ -44,23 +46,25 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
                      : endY;
         int w      = Math.abs( endX - startX );
         int h      = Math.abs( endY - startY );
+        
+        if( alpha<0.1 || x+w<0 || y+h<0 || x>c.getScreenSizeX() || y>c.getScreenSizeY() ) {
+            return;
+        }
 
-        float alpha = 1;
-        double distToSlice = position.distToSlice();
-        if(distToSlice!=0) {
-            alpha = 1.f / (float) Math.abs(distToSlice);
+        Composite composite = c.getGraphics().getComposite();
+        c.getGraphics().setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+        c.getGraphics().drawImage(image, x, y, x+w, y+h, 0,0, image.getWidth(), image.getHeight(), null);
+        if( text!=null ) {
+            int textW = c.getGraphics().getFontMetrics().stringWidth(text);
+            c.getGraphics().drawString(text, x+(w-textW)/2, y-1);
         }
-        if( alpha>0.1 ) {
-            Composite composite = c.getGraphics().getComposite();
-            c.getGraphics().setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-            c.getGraphics().drawImage(image, x, y, x+w, y+h, 0,0, image.getWidth(), image.getHeight(), null);
-            c.getGraphics().setComposite(composite);
-        }
+        c.getGraphics().setComposite(composite);
     }
 
-    protected void renderBox( RenderContext c, double worldStartX, double worldStartY, double worldStartZ,
+    protected void renderBox( RenderContext c, 
+                              double worldStartX, double worldStartY, double worldStartZ,
                               double worldEndX, double worldEndY, double worldEndZ, 
-                              Color color, 
+                              Color color, float alpha, String text,
                               boolean centered, boolean unitSize, boolean solid ) {
         Position position = c.getPosition();
         double   sizeX    = 0;
@@ -94,34 +98,28 @@ public abstract class BaseRenderer<T> implements Renderer<T> {
             h += c.screenUnitY();
         }
 
+        if( alpha<0.1 || x+w<0 || y+h<0 || x>c.getScreenSizeX() || y>c.getScreenSizeY() ) {
+            return;
+        }
+
         if( solid ) {
-            float alpha = 1;
-            double distToSlice = position.distToSlice();
-            if(distToSlice!=0) {
-                alpha = 1.f / (float) Math.abs(distToSlice);
+            Composite composite = c.getGraphics().getComposite();
+            c.getGraphics().setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            c.getGraphics().setColor( color );
+            c.getGraphics().fillRect( x, y, w, h );
+            c.getGraphics().drawRect( x, y, w, h );
+            if( text!=null ) {
+                int textW = c.getGraphics().getFontMetrics().stringWidth(text);
+                c.getGraphics().drawString(text, x+(w-textW)/2, y-1);
             }
-            if( alpha>0.1 ) {
-                Composite composite = c.getGraphics().getComposite();
-                c.getGraphics().setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-                c.getGraphics().setColor( color );
-                c.getGraphics().fillRect( x, y, w, h );
-                c.getGraphics().drawRect( x, y, w, h );
-                double dist = position.distToSlice();
-                char ch = 0;
-                if( dist >0 ) {
-                    ch = '^';
-                } else if( dist <0 ) {
-                    ch = 'v';
-                } else {
-                    ch = '-';
-                }
-                int textW = c.getGraphics().getFontMetrics().charWidth(ch);
-                c.getGraphics().drawString(ch+"", x+(w-textW)/2, y);
-                c.getGraphics().setComposite(composite);
-            }
+            c.getGraphics().setComposite(composite);
         } else {
             c.getGraphics().setColor( position.fadeOut( color ));
             c.getGraphics().drawRect(x, y, w, h);
+            if( text!=null ) {
+                int textW = c.getGraphics().getFontMetrics().stringWidth(text);
+                c.getGraphics().drawString(text, x+(w-textW)/2, y-1);
+            }
         }
     }
 }
